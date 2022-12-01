@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "583251478285",
+    "project_id": "paylasimmvvm",
+    "storage_bucket": "paylasimmvvm.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:583251478285:android:10e2cb94c5f4e9d1155244",
+        "android_client_info": {
+          "package_name": "com.example.paylasimmvvm"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "583251478285-l2limcasm026iil9320nv1hfh2jb33jt.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB-JoOTr0df_PNC8aEpH1CMvMmnwZp8QVw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "583251478285-l2limcasm026iil9320nv1hfh2jb33jt.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
