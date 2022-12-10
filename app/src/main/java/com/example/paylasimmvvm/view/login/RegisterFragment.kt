@@ -53,29 +53,13 @@ class RegisterFragment : Fragment() {
         mref = FirebaseDatabase.getInstance().reference
         auth= FirebaseAuth.getInstance()
 
-
-
-
-
         setupAuthLis(view)
-
-
-
-
-
-
-
-
         register()
         return view
     }
 
     fun checkMail(kontrolEdilenMail: String): Boolean {
 
-        if (kontrolEdilenMail == null) {
-            return false
-
-        }
         return android.util.Patterns.EMAIL_ADDRESS.matcher(kontrolEdilenMail).matches()
 
     }
@@ -374,6 +358,7 @@ class RegisterFragment : Fragment() {
                                         }
 
                                         override fun onCancelled(error: DatabaseError) {
+                                            Log.e("hata","hatacalıstı")
                                         }
 
                                     })
