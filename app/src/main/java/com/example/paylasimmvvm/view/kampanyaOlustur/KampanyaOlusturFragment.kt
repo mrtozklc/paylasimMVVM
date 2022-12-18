@@ -169,9 +169,10 @@ class KampanyaOlusturFragment : Fragment() {
                 Log.e("auth","auth çalıstı"+user)
 
                 if (user==null){
-                    Navigation.findNavController(requireView()).popBackStack(R.id.homeFragment,true)
+                    findNavController().popBackStack(R.id.kampanyaOlusturFragment,true)
 
-                  findNavController().navigate(R.id.loginFragment)
+
+                    findNavController().navigate(R.id.loginFragment)
 
 
                 }

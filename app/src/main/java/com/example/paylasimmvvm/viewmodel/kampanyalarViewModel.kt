@@ -1,16 +1,18 @@
 package com.example.paylasimmvvm.viewmodel
 
+import android.app.Application
 import android.util.Log
-import android.view.View
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import com.example.paylasimmvvm.databinding.FragmentHomeBinding
 import com.example.paylasimmvvm.model.KampanyaOlustur
 import com.example.paylasimmvvm.model.KullaniciBilgileri
 import com.example.paylasimmvvm.model.KullaniciKampanya
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.*
+import com.google.firebase.ktx.Firebase
+
 
 class kampanyalarViewModel: ViewModel() {
     lateinit var mref: DatabaseReference
@@ -24,48 +26,55 @@ class kampanyalarViewModel: ViewModel() {
 
 
 
-
-
     fun refreshKampanyalar(){
         yukleniyor.value=true
 
         mref=FirebaseDatabase.getInstance().reference
 
-        tumGonderiler.clear()
-        tumPostlar.clear()
+        val user = Firebase.auth.currentUser
+        if (user != null) {
+            tumGonderiler.clear()
+            tumPostlar.clear()
 
 
-        mref.child("kampanya").addListenerForSingleValueEvent(object :ValueEventListener{
-            override fun onCancelled(p0: DatabaseError) {
-
-            }
-
-            override fun onDataChange(p0: DataSnapshot) {
-                if(p0.getValue()!=null){
-                    for(ds in p0.children){
-                        tumPostlar.add(ds.key!!)
-                    }
-
-
-                    verileriGetir()
-
+            mref.child("kampanya").addListenerForSingleValueEvent(object :ValueEventListener{
+                override fun onCancelled(p0: DatabaseError) {
 
                 }
+
+                override fun onDataChange(p0: DataSnapshot) {
+                    if(p0.getValue()!=null){
+                        for(ds in p0.children){
+                            tumPostlar.add(ds.key!!)
+                        }
+
+
+                        verileriGetir()
+
+
+                    }
+                }
+
+
+            })
+            if (tumGonderiler.size==0){
+                kampanyalar.value= tumGonderiler
+                kampanyaYok.value=true
+                yukleniyor.value=false
             }
 
 
-        })
-        if (tumGonderiler.size==0){
-            kampanyalar.value= tumGonderiler
-            kampanyaYok.value=true
-            yukleniyor.value=false
         }
+
 
 
 
     }
 
     private fun verileriGetir() {
+
+        yukleniyor.value=true
+
 
         mref=FirebaseDatabase.getInstance().reference
 

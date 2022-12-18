@@ -98,11 +98,7 @@ class RegisterFragment : Fragment() {
 
 
 
-        binding.textView3.setOnClickListener {
-            val action=RegisterFragmentDirections.actionRegisterFragmentToLoginFragment()
-            Navigation.findNavController(it).navigate(action)
 
-        }
 
         binding.textViewTelefon.setOnClickListener() {
             binding.view2.visibility = View.VISIBLE
@@ -256,7 +252,8 @@ class RegisterFragment : Fragment() {
 
                                                 binding.loginroot.visibility = View.GONE
                                                 binding. loginframe.visibility = View.VISIBLE
-                                             findNavController().navigate(R.id.kullaniciKayitBilgileriFragment)
+
+                                                findNavController().navigate(R.id.kullaniciKayitBilgileriFragment)
 
                                                 EventBus.getDefault().postSticky(
                                                     EventbusData.kayitBilgileriniGonder(
@@ -315,6 +312,7 @@ class RegisterFragment : Fragment() {
 
                                                     binding.loginroot.visibility = View.GONE
                                                     binding.loginframe.visibility = View.VISIBLE
+
                                                     findNavController().navigate(R.id.kullaniciKayitBilgileriFragment)
 
                                                     EventBus.getDefault().postSticky(
@@ -339,6 +337,7 @@ class RegisterFragment : Fragment() {
 
                                                 binding. loginroot.visibility = View.GONE
                                                 binding. loginframe.visibility = View.VISIBLE
+
                                                 findNavController().navigate(R.id.kullaniciKayitBilgileriFragment)
 
                                                 EventBus.getDefault().postSticky(
@@ -441,6 +440,7 @@ class RegisterFragment : Fragment() {
                                                 if (!emailKullanimdaMi){
                                                     binding. loginroot.visibility = View.GONE
                                                     binding. loginframe.visibility = View.VISIBLE
+
                                                     findNavController().navigate(R.id.isletmeKayitBilgileriFragment)
 
                                                     EventBus.getDefault().postSticky(
@@ -463,6 +463,7 @@ class RegisterFragment : Fragment() {
 
                                                 binding.loginroot.visibility = View.GONE
                                                 binding. loginframe.visibility = View.VISIBLE
+
                                                 findNavController().navigate(R.id.isletmeKayitBilgileriFragment)
 
                                                 EventBus.getDefault().postSticky(
@@ -522,6 +523,7 @@ class RegisterFragment : Fragment() {
 
                                                     binding. loginroot.visibility = View.GONE
                                                     binding.loginframe.visibility = View.VISIBLE
+
                                                     findNavController().navigate(R.id.isletmeKayitBilgileriFragment)
 
                                                     EventBus.getDefault().postSticky(
@@ -546,6 +548,7 @@ class RegisterFragment : Fragment() {
 
                                                 binding. loginroot.visibility = View.GONE
                                                 binding.  loginframe.visibility = View.VISIBLE
+
                                                 findNavController().navigate(R.id.isletmeKayitBilgileriFragment)
 
                                                 EventBus.getDefault().postSticky(

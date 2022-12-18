@@ -122,9 +122,7 @@ class YorumlarFragment : Fragment() {
 
         setupProfilPicture()
 
-        binding.imgBackk.setOnClickListener {
-            requireActivity().onBackPressed()
-        }
+
 
 
         return view
@@ -201,8 +199,19 @@ class YorumlarFragment : Fragment() {
                             sonuc= Html.fromHtml(userNameveYorum)
                         }
                         kullaniciAdiveYorum.setText(sonuc)
-                       // imageLoader.setImage(snapshot!!.getValue(kullanicilar::class.java)!!.user_detail!!.profile_picture!!.toString(),yorumYapanUserPhoto,null,"")
-                        Picasso.get().load(snapshot!!.getValue(KullaniciBilgileri::class.java)!!.user_detail!!.profile_picture!!.toString()).placeholder(R.drawable.ic_baseline_person).error(R.drawable.ic_baseline_person).into(yorumYapanUserPhoto)
+                        if (!snapshot!!.getValue(KullaniciBilgileri::class.java)!!.user_detail!!.profile_picture!!.toString().isEmpty())
+                         {
+                             Picasso.get().load(snapshot!!.getValue(KullaniciBilgileri::class.java)!!.user_detail!!.profile_picture!!.toString()).placeholder(R.drawable.ic_baseline_person).error(R.drawable.ic_baseline_person).into(yorumYapanUserPhoto)
+
+
+
+                         }else {
+
+                           Picasso.get().load(R.drawable.ic_baseline_person).placeholder(R.drawable.ic_baseline_person).error(R.drawable.ic_baseline_person).into(yorumYapanUserPhoto)
+
+
+
+                        }
 
 
                     }

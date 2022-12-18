@@ -111,7 +111,16 @@ class HomeFragmentRecyclerAdapter (var context: Context, var tumKampanyalar:Arra
 
 
 
-         Picasso.get().load(anlikGonderi.userPhotoURL).placeholder(R.drawable.ic_baseline_person).error(R.drawable.ic_baseline_person).fit().centerCrop().into(profileImage)
+
+            if (!anlikGonderi.userPhotoURL!!.isEmpty()){
+                Picasso.get().load(anlikGonderi.userPhotoURL).placeholder(R.drawable.ic_baseline_person).error(R.drawable.ic_baseline_person).fit().centerCrop().into(profileImage)
+
+
+            }else {
+                Picasso.get().load(R.drawable.ic_baseline_person).placeholder(R.drawable.ic_baseline_person).error(R.drawable.ic_baseline_person).fit().centerCrop().into(profileImage)
+
+
+            }
 
             userNameveAciklama.setText(anlikGonderi.userName.toString()+" "+anlikGonderi.postAciklama.toString())
 
@@ -376,9 +385,6 @@ class HomeFragmentRecyclerAdapter (var context: Context, var tumKampanyalar:Arra
 
                                 ref.child("begeniler").child(anlikGonderi.postID!!).child(currentID)
                                     .removeValue()
-
-
-
 
                                 if (anlikGonderi.userID!= FirebaseAuth.getInstance().currentUser!!.uid){
                                     Bildirimler.bildirimKaydet(

@@ -8,64 +8,82 @@ import com.example.paylasimmvvm.model.KampanyaOlustur
 import com.example.paylasimmvvm.model.KullaniciBilgileri
 import com.example.paylasimmvvm.model.KullaniciKampanya
 import com.example.paylasimmvvm.util.EventbusData
+import com.example.paylasimmvvm.view.profil.ProfilFragment
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.*
+import com.google.firebase.ktx.Firebase
 import org.greenrobot.eventbus.EventBus
 
 class ProfilViewModel:ViewModel() {
     val profilKampanya=MutableLiveData<List<KullaniciKampanya>>()
     val kampanyalarArray=ArrayList<KullaniciKampanya>()
     lateinit var mref: DatabaseReference
-    lateinit var muser: FirebaseUser
 
     fun refreshProfilKampanya(){
         mref= FirebaseDatabase.getInstance().reference
-        muser= FirebaseAuth.getInstance().currentUser!!
-        kampanyalarArray.clear()
 
 
-            mref.child("users").child("isletmeler").child(muser.uid).addListenerForSingleValueEvent(object :
+        val user = Firebase.auth.currentUser
+        if (user != null) {
+
+            kampanyalarArray.clear()
+
+
+
+            mref.child("users").child("isletmeler").child(FirebaseAuth.getInstance().currentUser!!.uid).addListenerForSingleValueEvent(object :
                 ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
+                    var userID=snapshot.getValue(KullaniciBilgileri::class.java)!!.user_id
 
-                 //   var userID=kullanicid
-                    var kullaniciadi=snapshot.getValue(KullaniciBilgileri::class.java)!!.user_name
-                    var photoURL=snapshot.getValue(KullaniciBilgileri::class.java)!!.user_detail!!.profile_picture
 
-                    mref.child("kampanya").child(muser!!.uid).addListenerForSingleValueEvent(object :
-                        ValueEventListener {
-                        override fun onDataChange(snapshot: DataSnapshot) {
-                            if (snapshot!!.hasChildren()){
+                    if (snapshot.getValue()!=null){
+                        //   var userID=kullanicid
+                        var kullaniciadi=snapshot.getValue(KullaniciBilgileri::class.java)!!.user_name
+                        var photoURL=snapshot.getValue(KullaniciBilgileri::class.java)!!.user_detail!!.profile_picture
 
-                                for (ds in snapshot!!.children){
-                                    var eklenecekUserPost= KullaniciKampanya()
-                                 //   eklenecekUserPost.userID=userID
-                                    eklenecekUserPost.userName=kullaniciadi
-                                    eklenecekUserPost.userPhotoURL=photoURL
-                                    eklenecekUserPost.postID=ds.getValue(KampanyaOlustur::class.java)!!.post_id
-                                    eklenecekUserPost.postURL=ds.getValue(KampanyaOlustur::class.java)!!.file_url
-                                    eklenecekUserPost.postAciklama=ds.getValue(KampanyaOlustur::class.java)!!.aciklama
-                                    eklenecekUserPost.postYuklenmeTarih=ds.getValue(KampanyaOlustur::class.java)!!.yuklenme_tarih
+                        mref.child("kampanya").child(FirebaseAuth.getInstance().currentUser!!.uid).addListenerForSingleValueEvent(object :
+                            ValueEventListener {
+                            override fun onDataChange(snapshot: DataSnapshot) {
+                                if (snapshot.getValue()!=null){
+                                    if (snapshot!!.hasChildren()){
 
-                                    kampanyalarArray.add(eklenecekUserPost)
+                                        for (ds in snapshot!!.children){
+                                            var eklenecekUserPost= KullaniciKampanya()
+                                            eklenecekUserPost.userID=userID
+                                            eklenecekUserPost.userName=kullaniciadi
+                                            eklenecekUserPost.userPhotoURL=photoURL
+                                            eklenecekUserPost.postID=ds.getValue(KampanyaOlustur::class.java)!!.post_id
+                                            eklenecekUserPost.postURL=ds.getValue(KampanyaOlustur::class.java)!!.file_url
+                                            eklenecekUserPost.postAciklama=ds.getValue(KampanyaOlustur::class.java)!!.aciklama
+                                            eklenecekUserPost.postYuklenmeTarih=ds.getValue(KampanyaOlustur::class.java)!!.yuklenme_tarih
 
-                                    Log.e("tomprofil","sayisi:"+kampanyalarArray.size)
+                                            kampanyalarArray.add(eklenecekUserPost)
 
+                                            Log.e("tomprofil","sayisi:"+kampanyalarArray.size)
+
+
+                                        }
+
+                                    }
+
+                                    profilKampanya.value=kampanyalarArray
 
                                 }
 
                             }
 
-                            profilKampanya.value=kampanyalarArray
-                        }
+                            override fun onCancelled(error: DatabaseError) {
 
-                        override fun onCancelled(error: DatabaseError) {
-
-                        }
+                            }
 
 
-                    })
+                        })
+
+                    }
+
+
 
                 }
 
@@ -74,25 +92,25 @@ class ProfilViewModel:ViewModel() {
 
             })
 
-            mref.child("users").child("kullanicilar").child(muser!!.uid).addListenerForSingleValueEvent(object :
+            mref.child("users").child("kullanicilar").child(FirebaseAuth.getInstance().currentUser!!.uid).addListenerForSingleValueEvent(object :
                 ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
 
 
                     if (snapshot!!.getValue()!=null){
 
-                      //  var userID=kullanicid
+                        //  var userID=kullanicid
                         var kullaniciadi=snapshot.getValue(KullaniciBilgileri::class.java)!!.user_name
                         var photoURL=snapshot.getValue(KullaniciBilgileri::class.java)!!.user_detail!!.profile_picture
 
-                        mref.child("kampanya").child(muser!!.uid).addListenerForSingleValueEvent(object :
+                        mref.child("kampanya").child(FirebaseAuth.getInstance().currentUser!!.uid).addListenerForSingleValueEvent(object :
                             ValueEventListener {
                             override fun onDataChange(snapshot: DataSnapshot) {
                                 if (snapshot!!.hasChildren()){
 
                                     for (ds in snapshot!!.children){
                                         var eklenecekUserPost= KullaniciKampanya()
-                                       // eklenecekUserPost.userID=userID
+                                        // eklenecekUserPost.userID=userID
                                         eklenecekUserPost.userName=kullaniciadi
                                         eklenecekUserPost.userPhotoURL=photoURL
                                         eklenecekUserPost.postID=ds.getValue(KampanyaOlustur::class.java)!!.post_id
@@ -132,12 +150,10 @@ class ProfilViewModel:ViewModel() {
 
             })
 
+            profilKampanya.value=kampanyalarArray
 
 
+        }
 
-
-
-
-        profilKampanya.value=kampanyalarArray
     }
 }

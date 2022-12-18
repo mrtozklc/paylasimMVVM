@@ -3,6 +3,7 @@ package com.example.paylasimmvvm.adapter
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.DialogInterface
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,6 +19,7 @@ import com.example.paylasimmvvm.util.Bildirimler.mref
 import com.example.paylasimmvvm.util.Bildirimler.muser
 import com.example.paylasimmvvm.util.EventbusData
 import com.example.paylasimmvvm.util.TimeAgo
+import com.example.paylasimmvvm.view.home.HomeFragmentDirections
 import com.example.paylasimmvvm.view.profil.ProfilFragmentDirections
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
@@ -69,8 +71,15 @@ class ProfilFragmentRecyclerAdapter (var context: Context, var tumKampanyalar: A
         fun setData(position: Int, anlikGonderi: KullaniciKampanya) {
 
             userNameTitle.setText(anlikGonderi.userName)
-            Picasso.get().load(anlikGonderi.userPhotoURL!!).placeholder(R.drawable.ic_baseline_person).error(R.drawable.ic_baseline_person).into(profileImage)
+            if (!anlikGonderi.userPhotoURL!!.isEmpty()){
+                Picasso.get().load(anlikGonderi.userPhotoURL).placeholder(R.drawable.ic_baseline_person).error(R.drawable.ic_baseline_person).fit().centerCrop().into(profileImage)
 
+
+            }else {
+                Picasso.get().load(R.drawable.ic_baseline_person).placeholder(R.drawable.ic_baseline_person).error(R.drawable.ic_baseline_person).fit().centerCrop().into(profileImage)
+
+
+            }
 
             userNameveAciklama.setText(anlikGonderi.userName.toString()+" "+anlikGonderi.postAciklama.toString())
             Picasso.get().load(anlikGonderi.postURL).centerCrop().fit().into(gonderi)
@@ -168,7 +177,7 @@ class ProfilFragmentRecyclerAdapter (var context: Context, var tumKampanyalar: A
                                 ref.child("begeniler").child(anlikGonderi.postID!!).child(currentID)
                                     .removeValue()
                                 if (anlikGonderi.userID!= FirebaseAuth.getInstance().currentUser!!.uid){
-                                    Bildirimler.bildirimKaydet(anlikGonderi.userID!!,Bildirimler.KAMPANYA_BEGENILDI_GERI,anlikGonderi.postID!!)
+                                Bildirimler.bildirimKaydet(anlikGonderi.userID!!,Bildirimler.KAMPANYA_BEGENILDI_GERI,anlikGonderi.postID!!)
 
 
                                 }
@@ -177,8 +186,11 @@ class ProfilFragmentRecyclerAdapter (var context: Context, var tumKampanyalar: A
                             } else {
                                 ref.child("begeniler").child(anlikGonderi.postID!!).child(currentID)
                                     .setValue(currentID)
+                                Log.e("bildirim",""+anlikGonderi)
                                 if (anlikGonderi.userID!= FirebaseAuth.getInstance().currentUser!!.uid){
-                                    Bildirimler.bildirimKaydet(anlikGonderi.userID!!,Bildirimler.KAMPANYA_BEGENILDI,anlikGonderi.postID!!)
+                                 Bildirimler.bildirimKaydet(anlikGonderi.userID!!,Bildirimler.KAMPANYA_BEGENILDI,anlikGonderi.postID!!)
+                                }else{
+
                                 }
 
                                 gonderiBegen.setImageResource(R.drawable.ic_launcher_like_red_foreground)

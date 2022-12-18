@@ -13,6 +13,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.navigation.Navigation
+import androidx.navigation.fragment.findNavController
 import com.example.paylasimmvvm.R
 import com.example.paylasimmvvm.databinding.FragmentKullaniciKayitBilgileriBinding
 import com.example.paylasimmvvm.model.KullaniciBilgiDetaylari
@@ -136,7 +137,7 @@ class KullaniciKayitBilgileriFragment : Fragment() {
 
 
                                                                     var kaydedilecekKullaniciDetaylari=
-                                                                        KullaniciBilgiDetaylari("0","0","0","","",null,null)
+                                                                        KullaniciBilgiDetaylari("0","","","","",null,null)
 
                                                                     var kaydedilecekKullanici = KullaniciBilgileri(gelenEmail, sifre, userName, adSoyad, "",userID,"",kaydedilecekKullaniciDetaylari)
 
@@ -147,6 +148,9 @@ class KullaniciKayitBilgileriFragment : Fragment() {
                                                                             OnCompleteListener<Void> {
                                                                             override fun onComplete(p0: Task<Void>) {
                                                                                 if (p0!!.isSuccessful) {
+                                                                                    Toast.makeText(activity, "Hoşgeldiniz +${userName}", Toast.LENGTH_SHORT).show()
+
+                                                                                    findNavController().navigate(R.id.homeFragment)
 
 
                                                                                 } else {
@@ -214,7 +218,7 @@ class KullaniciKayitBilgileriFragment : Fragment() {
 
                                                     //oturum açan kullanıcın verilerini databaseye kaydedelim...
                                                     var kaydedilecekKullaniciDetaylari=
-                                                        KullaniciBilgiDetaylari("0","0","0","","",null,null)
+                                                        KullaniciBilgiDetaylari("0","","","","",null,null)
 
                                                     var kaydedilecekKullanici = KullaniciBilgileri(gelenEmail, sifre, userName, adSoyad, "",userID,"",kaydedilecekKullaniciDetaylari)
 
@@ -226,6 +230,9 @@ class KullaniciKayitBilgileriFragment : Fragment() {
                                                             OnCompleteListener<Void> {
                                                             override fun onComplete(p0: Task<Void>) {
                                                                 if (p0!!.isSuccessful) {
+                                                                    Toast.makeText(activity, "Hoşgeldiniz +${userName}", Toast.LENGTH_SHORT).show()
+
+                                                                    findNavController().navigate(R.id.homeFragment)
 
 
                                                                 } else {

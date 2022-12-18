@@ -15,6 +15,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.navigation.Navigation
+import androidx.navigation.fragment.findNavController
 import com.example.paylasimmvvm.R
 import com.example.paylasimmvvm.databinding.FragmentIsletmeKayitBilgileriBinding
 import com.example.paylasimmvvm.model.KullaniciBilgiDetaylari
@@ -22,6 +23,7 @@ import com.example.paylasimmvvm.model.KullaniciBilgileri
 import com.example.paylasimmvvm.util.EventbusData
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.Task
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
@@ -115,9 +117,6 @@ class IsletmeKayitBilgileriFragment : Fragment() {
                                             }
                                             if (!userNameKullanimdaMi) {
 
-
-
-                                                //kullanıcı email ile kayıt
                                                 if (emailleKayit) {
 
                                                     var sifre =  binding.etSifreIsletme.text.toString()
@@ -142,7 +141,7 @@ class IsletmeKayitBilgileriFragment : Fragment() {
 
 
                                                                     var kaydedilecekKullaniciDetaylari=
-                                                                        KullaniciBilgiDetaylari("0","0","0","",adres,null,null)
+                                                                        KullaniciBilgiDetaylari("0","","","",adres,null,null)
 
                                                                     var kaydedilecekKullanici = KullaniciBilgileri(gelenEmail, sifre, userName, adSoyad, telefon,userID,"",kaydedilecekKullaniciDetaylari)
 
@@ -152,6 +151,12 @@ class IsletmeKayitBilgileriFragment : Fragment() {
                                                                             OnCompleteListener<Void> {
                                                                             override fun onComplete(p0: Task<Void>) {
                                                                                 if (p0!!.isSuccessful) {
+                                                                                    Toast.makeText(activity, "Hoşgeldiniz ${userName}", Toast.LENGTH_SHORT).show()
+                                                                                    val action=IsletmeKayitBilgileriFragmentDirections.actionIsletmeKayitBilgileriFragmentToHomeFragment()
+                                                                                    Navigation.findNavController(it).navigate(action)
+                                                                                  //  findNavController().navigate(R.id.homeFragment)
+                                                                                    val bottomNav = requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView)
+                                                                                    bottomNav.visibility=View.VISIBLE
 
                                                                                 } else {
 
@@ -225,7 +230,7 @@ class IsletmeKayitBilgileriFragment : Fragment() {
                                                     //oturum açan kullanıcın verilerini databaseye kaydet
 
                                                     var kaydedilecekKullaniciDetaylari=
-                                                        KullaniciBilgiDetaylari("0","0","0","",adres,null,null)
+                                                        KullaniciBilgiDetaylari("0","","","",adres,null,null)
 
                                                     var kaydedilecekKullanici = KullaniciBilgileri(gelenEmail, sifre, userName, adSoyad, telefon,userID,"",kaydedilecekKullaniciDetaylari)
 
@@ -234,6 +239,12 @@ class IsletmeKayitBilgileriFragment : Fragment() {
                                                             OnCompleteListener<Void> {
                                                             override fun onComplete(p0: Task<Void>) {
                                                                 if (p0!!.isSuccessful) {
+                                                                    Toast.makeText(activity, "Hoşgeldiniz ${userName}", Toast.LENGTH_SHORT).show()
+                                                                    val action=IsletmeKayitBilgileriFragmentDirections.actionIsletmeKayitBilgileriFragmentToHomeFragment()
+                                                                    Navigation.findNavController(it).navigate(action)
+                                                                   // findNavController().navigate(R.id.homeFragment)
+                                                                    val bottomNav = requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView)
+                                                                    bottomNav.visibility=View.VISIBLE
 
                                                                 } else {
 

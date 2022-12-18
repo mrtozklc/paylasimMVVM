@@ -15,6 +15,7 @@ import com.example.paylasimmvvm.databinding.FragmentHomeBinding
 import com.example.paylasimmvvm.adapter.HomeFragmentRecyclerAdapter
 import com.example.paylasimmvvm.model.KullaniciKampanya
 import com.example.paylasimmvvm.viewmodel.kampanyalarViewModel
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DatabaseReference
@@ -26,7 +27,7 @@ import java.util.*
 class HomeFragment : Fragment() {
     lateinit var binding:FragmentHomeBinding
     private lateinit var auth : FirebaseAuth
-    lateinit var mauthLis: FirebaseAuth.AuthStateListener
+ //  lateinit var mauthLis: FirebaseAuth.AuthStateListener
     lateinit var mref: DatabaseReference
     private lateinit var kampanyalarViewModeli:kampanyalarViewModel
     private lateinit var recyclerviewadapter:HomeFragmentRecyclerAdapter
@@ -56,7 +57,7 @@ class HomeFragment : Fragment() {
         auth= Firebase.auth
         mref = FirebaseDatabase.getInstance().reference
 
-        setupAuthLis()
+      //  setupAuthLis()
 
 
 
@@ -75,11 +76,6 @@ class HomeFragment : Fragment() {
 
         observeliveData()
         setUpRecyclerview()
-
-
-
-
-
 
 
 
@@ -154,29 +150,7 @@ class HomeFragment : Fragment() {
     }
 
 
-    private fun setupAuthLis() {
 
-
-        mauthLis=object :FirebaseAuth.AuthStateListener{
-            override fun onAuthStateChanged(p0: FirebaseAuth) {
-
-
-
-                var user=FirebaseAuth.getInstance().currentUser
-                Log.e("auth","auth çalıstı"+user)
-
-                if (user==null){
-                    Navigation.findNavController(requireView()).popBackStack(R.id.bildirimlerFragment,true)
-                    findNavController().navigate(R.id.loginFragment)
-
-
-                }
-
-            }
-
-        }
-
-    }
 
     private fun setUpRecyclerview(){
 
@@ -235,12 +209,12 @@ class HomeFragment : Fragment() {
     override fun onStart() {
         super.onStart()
         Log.e("hata","homedasın")
-        auth.addAuthStateListener(mauthLis)
+       // auth.addAuthStateListener(mauthLis)
     }
 
     override fun onStop() {
         super.onStop()
-        auth.removeAuthStateListener(mauthLis)
+       // auth.removeAuthStateListener(mauthLis)
     }
 
 

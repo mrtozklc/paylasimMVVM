@@ -11,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
@@ -22,6 +23,7 @@ import com.example.paylasimmvvm.view.home.HomeFragmentDirections
 import com.example.paylasimmvvm.view.home.MainActivity
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.Task
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
@@ -32,15 +34,10 @@ class LoginFragment : Fragment() {
     private lateinit var binding:FragmentLoginBinding
     lateinit var auth: FirebaseAuth
     lateinit var mref: DatabaseReference
-
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    lateinit var mauthLis: FirebaseAuth.AuthStateListener
 
 
 
-
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -54,7 +51,6 @@ class LoginFragment : Fragment() {
         mref = FirebaseDatabase.getInstance().reference
 
 
-
         init()
 
         return view
@@ -64,39 +60,53 @@ class LoginFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-
-
-
-
         binding. tvKaydoll.setOnClickListener {
 
-            val action=LoginFragmentDirections.actionLoginFragmentToRegisterFragment()
-            Navigation.findNavController(it).navigate(action)
+           findNavController().navigate(R.id.registerFragment)
 
-
+            val bottomNav = requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView)
+            bottomNav.visibility=View.GONE
        }
-
-
-
     }
-
-
-
-
     fun init() {
-
+        setupAuthLis()
         binding.tvLogin.addTextChangedListener(watcher)
         binding.tvSifre.addTextChangedListener(watcher)
 
-       binding.btnLogin.setOnClickListener {
-
+        binding.btnLogin.setOnClickListener {
             girisYapacakKullanici(binding.tvLogin.text.toString(),binding. tvSifre.text.toString())
         }
 
     }
+    private fun setupAuthLis() {
 
 
+        mauthLis=object :FirebaseAuth.AuthStateListener{
+            override fun onAuthStateChanged(p0: FirebaseAuth) {
+
+
+
+                var user=FirebaseAuth.getInstance().currentUser
+                Log.e("auth","loginmauth çalıstı"+user)
+
+                if (user!=null){
+                    findNavController().navigate(R.id.homeFragment)
+
+                    val bottomNav = requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView)
+                    bottomNav.visibility=View.VISIBLE
+
+
+                }else{
+                    val bottomNav = requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView)
+                    bottomNav.visibility=View.GONE
+
+                }
+
+            }
+
+        }
+
+    }
 
     private fun girisYapacakKullanici(emailPhoneNumberUserName: String, sifre: String) {
 
@@ -105,9 +115,7 @@ class LoginFragment : Fragment() {
         mref.child("users").child("isletmeler").addListenerForSingleValueEvent(object :
             ValueEventListener {
             override fun onCancelled(error: DatabaseError) {
-
             }
-
             override fun onDataChange(snapshot: DataSnapshot) {
 
                 if(snapshot!!.getValue() != null ){
@@ -126,10 +134,7 @@ class LoginFragment : Fragment() {
                             kullaniciBulundu=true
                             break
                         }
-
                     }
-
-
                 }
 
                 mref.child("users").child("kullanicilar").addListenerForSingleValueEvent(object :
@@ -156,35 +161,15 @@ class LoginFragment : Fragment() {
                                     kullaniciBulundu=true
                                     break
                                 }
-
                             }
-
-                            if(kullaniciBulundu==false){
-                                Toast.makeText(activity,"Kullanıcı bulunamadı.Lütfen üye ol.", Toast.LENGTH_SHORT).show()
-
-
-                            }
-                        }else{
-                            Toast.makeText(activity,"Kullanıcı bulunamadı.Lütfen üye ol.", Toast.LENGTH_SHORT).show()
-
-
                         }
-
+                        if(!kullaniciBulundu){
+                            Toast.makeText(activity,"Kullanıcı bulunamadı.", Toast.LENGTH_SHORT).show()
+                        }
                     }
-
-
                 })
-
-
-
             }
-
-
         })
-
-
-
-
     }
 
     private fun oturumAc(okunanKullanici: KullaniciBilgileri, sifre: String) {
@@ -202,8 +187,13 @@ class LoginFragment : Fragment() {
 
 
                         // fcmTokenAl()
-                        Toast.makeText(
-                            activity,"Hoşgeldiniz:" + okunanKullanici.user_name, Toast.LENGTH_LONG).show()
+                         Toast.makeText( activity,"Hoşgeldiniz:" + okunanKullanici.user_name, Toast.LENGTH_LONG).show()
+
+                        findNavController().popBackStack(R.id.loginFragment,true)
+                        findNavController().navigate(R.id.homeFragment)
+                        Log.e("bulunanKullanici",""+okunanKullanici.user_name)
+                         val bottomNav = requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView)
+                         bottomNav.visibility=View.VISIBLE
 
 
                     } else {
@@ -333,6 +323,19 @@ class LoginFragment : Fragment() {
         }
 
     }
+
+    override fun onStart() {
+        super.onStart()
+        Log.e("hata","logindesin")
+        auth.addAuthStateListener(mauthLis)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        auth.removeAuthStateListener(mauthLis)
+    }
+
+
 
 
 
