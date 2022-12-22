@@ -2,6 +2,7 @@ package com.example.paylasimmvvm.adapter
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.location.Location
 import android.os.CountDownTimer
 import android.util.Log
@@ -329,12 +330,16 @@ class HomeFragmentRecyclerAdapter (var context: Context, var tumKampanyalar:Arra
 
                 }else{
 
-                    val action= HomeFragmentDirections.actionHomeFragmentToProfilFragment(anlikGonderi.userID!!)
+                    val action= HomeFragmentDirections.actionHomeFragmentToUserProfilFragment(anlikGonderi.userID!!)
                     Navigation.findNavController(it).navigate(action)
+
+
 
                 }
 
             }
+
+
             postMenu.setOnClickListener {
                 var mref= FirebaseDatabase.getInstance().reference
                 var mauth= FirebaseAuth.getInstance().currentUser!!.uid
@@ -351,7 +356,7 @@ class HomeFragmentRecyclerAdapter (var context: Context, var tumKampanyalar:Arra
 
 
                             }else{
-                                val action=HomeFragmentDirections.actionHomeFragmentToProfilFragment(anlikGonderi.userID!!)
+                                val action= HomeFragmentDirections.actionHomeFragmentToProfilFragment()
                                 Navigation.findNavController(it).navigate(action)
 
 
@@ -372,6 +377,12 @@ class HomeFragmentRecyclerAdapter (var context: Context, var tumKampanyalar:Arra
 
 
             }
+
+            val mauth:String=FirebaseAuth.getInstance().currentUser!!.uid
+            if (anlikGonderi.userID.equals(mauth)){
+                postMenu.visibility=View.GONE
+            }
+
 
             gonderiBegen.setOnClickListener {
 
@@ -440,11 +451,6 @@ class HomeFragmentRecyclerAdapter (var context: Context, var tumKampanyalar:Arra
 
             }
 
-            var mauth= FirebaseAuth.getInstance().currentUser!!.uid
-
-            if (anlikGonderi.userID.equals(mauth)){
-                postMenu.visibility=View.GONE
-            }
 
 
 
@@ -453,7 +459,15 @@ class HomeFragmentRecyclerAdapter (var context: Context, var tumKampanyalar:Arra
             }
 
 
+
+            if (anlikGonderi.userID.equals(mauth)){
+                postMenu.visibility=View.GONE
+            }
+
+
+
         }
+
         fun begeniKontrolu(anlikGonderi: KullaniciKampanya) {
 
             var mRef = FirebaseDatabase.getInstance().reference

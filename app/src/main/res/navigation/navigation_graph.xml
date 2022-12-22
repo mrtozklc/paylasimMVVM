@@ -118,6 +118,10 @@
         <action
             android:id="@+id/action_userProfilFragment_to_homeFragment2"
             app:destination="@id/homeFragment" />
+        <argument
+            android:name="userId"
+            app:argType="string"
+            android:defaultValue='userId' />
         <action
             android:id="@+id/action_userProfilFragment_to_yorumlarFragment"
             app:destination="@id/yorumlarFragment" />
@@ -133,10 +137,7 @@
         <action
             android:id="@+id/action_profilFragment_to_profilAyarlarFragment"
             app:destination="@id/profilAyarlarFragment" />
-        <argument
-            android:name="userId"
-            app:argType="string"
-            android:defaultValue='userId' />
+
         <action
             android:id="@+id/action_profilFragment_to_yorumlarFragment"
             app:destination="@id/yorumlarFragment" />

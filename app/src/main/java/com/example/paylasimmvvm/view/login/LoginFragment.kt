@@ -90,7 +90,11 @@ class LoginFragment : Fragment() {
                 Log.e("auth","loginmauth çalıstı"+user)
 
                 if (user!=null){
+
+
                     findNavController().navigate(R.id.homeFragment)
+
+
 
                     val bottomNav = requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView)
                     bottomNav.visibility=View.VISIBLE
@@ -187,8 +191,7 @@ class LoginFragment : Fragment() {
 
 
                         // fcmTokenAl()
-                         Toast.makeText( activity,"Hoşgeldiniz:" + okunanKullanici.user_name, Toast.LENGTH_LONG).show()
-
+                        Toast.makeText( activity,"Hoşgeldiniz:" + okunanKullanici.user_name, Toast.LENGTH_LONG).show()
                         findNavController().popBackStack(R.id.loginFragment,true)
                         findNavController().navigate(R.id.homeFragment)
                         Log.e("bulunanKullanici",""+okunanKullanici.user_name)

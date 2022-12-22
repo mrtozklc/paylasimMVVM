@@ -2,6 +2,7 @@ package com.example.paylasimmvvm.view.mesajlar
 
 import android.R
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -9,6 +10,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.paylasimmvvm.adapter.MesajlarRecyclerAdapter
@@ -18,8 +20,7 @@ import com.example.paylasimmvvm.model.Mesajlar
 import com.example.paylasimmvvm.viewmodel.MesajlarViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.*
 import com.google.firebase.ktx.Firebase
 
 
@@ -31,6 +32,7 @@ class MesajlarFragment : Fragment() {
     private lateinit var recyclerAdapter:MesajlarRecyclerAdapter
     private lateinit var mesajlarViewModeli:MesajlarViewModel
     var tumMesajlar=ArrayList<Mesajlar>()
+
 
 
 
@@ -67,7 +69,9 @@ class MesajlarFragment : Fragment() {
             Mesajlar.let {
 
                 binding.recyclerMesajlar.visibility = View.VISIBLE
-                recyclerAdapter!!.mesajlariGuncelle(Mesajlar)
+                if (Mesajlar != null) {
+                    recyclerAdapter!!.mesajlariGuncelle(Mesajlar)
+                }
 
             }
 
@@ -126,13 +130,33 @@ class MesajlarFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        Log.e("hata","mesajlardasın")
+        Log.e("hata","mesajlardasın"+tumMesajlar.size)
+
         auth.addAuthStateListener(mauthLis)
     }
 
     override fun onStop() {
         super.onStop()
+        Log.e("hata","onstop")
         auth.removeAuthStateListener(mauthLis)
     }
+
+
+    override fun onPause() {
+        super.onPause()
+
+        Log.e("hata","onpause")
+
+
+    }
+    override fun onResume() {
+        super.onResume()
+
+        Log.e("hata","onresume")
+
+    }
+
+
+
 
 }

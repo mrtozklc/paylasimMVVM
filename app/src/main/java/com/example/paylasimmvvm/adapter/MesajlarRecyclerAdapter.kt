@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.navigation.Navigation
 import androidx.recyclerview.widget.RecyclerView
 import com.example.paylasimmvvm.R
 import com.example.paylasimmvvm.databinding.RecyclerRowMesajlarBinding
@@ -14,6 +15,7 @@ import com.example.paylasimmvvm.model.KullaniciKampanya
 import com.example.paylasimmvvm.model.Mesajlar
 import com.example.paylasimmvvm.util.TimeAgo
 import com.example.paylasimmvvm.view.mesajlar.ChatFragment
+import com.example.paylasimmvvm.view.mesajlar.MesajlarFragmentDirections
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -65,7 +67,8 @@ class MesajlarRecyclerAdapter(var tumMesajlar:ArrayList<Mesajlar>):RecyclerView.
                 sonAtilanmesaj.setTextColor(ContextCompat.getColor(itemView.context,R.color.black))
                 gonderilmeZamani.setTextColor(ContextCompat.getColor(itemView.context,R.color.black))
 
-            }else {
+            }
+            else {
                 okunduBilgisi.visibility=View.INVISIBLE
                 userName.setTypeface(null,Typeface.NORMAL)
                 sonAtilanmesaj.setTypeface(null,Typeface.NORMAL)
@@ -75,6 +78,7 @@ class MesajlarRecyclerAdapter(var tumMesajlar:ArrayList<Mesajlar>):RecyclerView.
             }
 
             binding. tumLayout.setOnClickListener {
+                val action= MesajlarFragmentDirections.actionMesajlarFragmentToChatFragment(oankiKonusmalar.user_id!!)
 
                 var intent= Intent(itemView.context,ChatFragment::class.java).addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
                 intent.putExtra("konusulacakKisi",oankiKonusmalar.user_id.toString())
@@ -85,19 +89,15 @@ class MesajlarRecyclerAdapter(var tumMesajlar:ArrayList<Mesajlar>):RecyclerView.
                     .child(oankiKonusmalar.user_id.toString())
                     .child("goruldu").setValue(true)
                     .addOnCompleteListener {
-                        itemView.context.startActivity(intent)
+                        Navigation.findNavController(binding.tumLayout).navigate(action)
 
 
                     }
-
-
 
             }
 
 
             binding.tumLayout.setOnLongClickListener(View.OnLongClickListener {
-
-
 
                 var alert = androidx.appcompat.app.AlertDialog.Builder(itemView.context, androidx.appcompat.R.style.Base_Theme_AppCompat_Dialog_Alert)
                     .setTitle("MESAJI SİL ")
@@ -109,22 +109,19 @@ class MesajlarRecyclerAdapter(var tumMesajlar:ArrayList<Mesajlar>):RecyclerView.
 
                             mref.child("mesajlar").child(FirebaseAuth.getInstance().currentUser!!.uid!!).child(silinicekKonusma!!).addListenerForSingleValueEvent(object :ValueEventListener{
                                 override fun onDataChange(snapshot: DataSnapshot) {
+
                                     snapshot.ref.removeValue()
 
-
                                 }
-
                                 override fun onCancelled(error: DatabaseError) {
                                 }
 
                             })
 
-
-
-
                             mref.child("konusmalar").child(FirebaseAuth.getInstance().currentUser!!.uid!!).child(silinicekKonusma!!).addListenerForSingleValueEvent(object :ValueEventListener{
                                 override fun onDataChange(snapshot: DataSnapshot) {
                                     snapshot.ref.removeValue()
+
 
 
                                 }
@@ -135,6 +132,7 @@ class MesajlarRecyclerAdapter(var tumMesajlar:ArrayList<Mesajlar>):RecyclerView.
                             })
 
                         }
+
 
                     })
                     .setNegativeButton("VAZGEÇ", object : DialogInterface.OnClickListener {
@@ -184,7 +182,13 @@ class MesajlarRecyclerAdapter(var tumMesajlar:ArrayList<Mesajlar>):RecyclerView.
                     if (snapshot.value !=null){
 
                         userName.text=snapshot.child("user_name").getValue().toString()
-                        Picasso.get().load(snapshot.child("user_detail").child("profile_picture").getValue().toString()).error(R.drawable.ic_baseline_person).placeholder(R.drawable.ic_baseline_person).into(userpp)
+                        if (!snapshot.child("user_detail").child("profile_picture").getValue().toString().isEmpty()){
+                            Picasso.get().load(snapshot.child("user_detail").child("profile_picture").getValue().toString()).error(R.drawable.ic_baseline_person).placeholder(R.drawable.ic_baseline_person).into(userpp)
+
+                        }else{
+                            Picasso.get().load(R.drawable.ic_baseline_person).error(R.drawable.ic_baseline_person).placeholder(R.drawable.ic_baseline_person).into(userpp)
+
+                        }
 
                     }
                 }
@@ -194,9 +198,7 @@ class MesajlarRecyclerAdapter(var tumMesajlar:ArrayList<Mesajlar>):RecyclerView.
 
             })
 
-
         }
-
 
     }
 
@@ -213,6 +215,8 @@ class MesajlarRecyclerAdapter(var tumMesajlar:ArrayList<Mesajlar>):RecyclerView.
     override fun getItemCount(): Int {
       return tumMesajlar.size
     }
+
+
     fun mesajlariGuncelle(yeniMesajListesi:List<Mesajlar>){
         tumMesajlar.clear()
         tumMesajlar.addAll(yeniMesajListesi)

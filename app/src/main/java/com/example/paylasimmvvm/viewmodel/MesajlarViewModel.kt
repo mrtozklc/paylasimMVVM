@@ -1,16 +1,12 @@
 package com.example.paylasimmvvm.viewmodel
-
-import android.os.CountDownTimer
-import android.view.View
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.paylasimmvvm.model.Mesajlar
-import com.example.paylasimmvvm.util.Bildirimler.mref
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 
 class MesajlarViewModel:ViewModel() {
-    val mesajlarMutable= MutableLiveData<List<Mesajlar>>()
+    val mesajlarMutable= MutableLiveData<List<Mesajlar>?>()
     val mesajlarArray=ArrayList<Mesajlar>()
     val yukleniyor=MutableLiveData<Boolean>()
     val mesajYok=MutableLiveData<Boolean>()
@@ -32,17 +28,11 @@ class MesajlarViewModel:ViewModel() {
                     mref.child("konusmalar").child(auth.currentUser!!.uid).addListenerForSingleValueEvent(object :
                         ValueEventListener {
                         override fun onDataChange(snapshot: DataSnapshot) {
-                            if (snapshot.getValue()==null){
-                                mesajYok.value=true
-
-                              //  binding.mesajYok.visibility= View.VISIBLE
-                               // binding.recyclerMesajlar.visibility= View.GONE
-                            }else{
-                                mesajYok.value=false
-                              // binding.mesajYok.visibility= View.GONE
-                             //   binding. recyclerMesajlar.visibility= View.VISIBLE
+                            if (snapshot.value ==null){
+                                mesajYok.value = true
 
                             }
+
                         }
 
                         override fun onCancelled(error: DatabaseError) {
@@ -53,52 +43,46 @@ class MesajlarViewModel:ViewModel() {
 
 
     }
-    var mListener=object : ChildEventListener {
+    private var mListener=object : ChildEventListener {
         override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+            mesajlarArray.clear()
             mesajYok.value=false
             mesajlarMutable.value=mesajlarArray
-           // binding. mesajYok.visibility= View.GONE
-            //binding. recyclerMesajlar.visibility= View.VISIBLE
-            var eklenecekKonusma=snapshot.getValue(Mesajlar::class.java)
+            val eklenecekKonusma=snapshot.getValue(Mesajlar::class.java)
             eklenecekKonusma!!.user_id=snapshot.key
+            mesajlarArray.add(eklenecekKonusma)
             mesajlarMutable.value=mesajlarArray
-         //  tumKonusmalar.add(0,eklenecekKonusma!!)
-           // madapter.notifyItemInserted(0)
+            mesajlarArray.add(0, eklenecekKonusma)
 
         }
 
         override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
 
-            var kontrol =konusmaPositionBul(snapshot!!.key.toString())
+
+            val kontrol =konusmaPositionBul(snapshot.key.toString())
             if(kontrol != -1){
 
-                var guncellenecekKonusma = snapshot!!.getValue(Mesajlar::class.java)
-                guncellenecekKonusma!!.user_id=snapshot!!.key
+                val guncellenecekKonusma = snapshot.getValue(Mesajlar::class.java)
+                guncellenecekKonusma!!.user_id= snapshot.key
 
+                mesajlarArray.removeAt(kontrol)
+                mesajlarArray.add(0,guncellenecekKonusma)
                 mesajlarMutable.value=mesajlarArray
-
-                // tumKonusmalar.removeAt(kontrol)
-                //madapter.notifyItemRemoved(kontrol)
-                //tumKonusmalar.add(0,guncellenecekKonusma)
-                //madapter.notifyItemInserted(0)
-
 
             }
 
         }
 
         override fun onChildRemoved(snapshot: DataSnapshot) {
-            var kontrol =konusmaPositionBul(snapshot!!.key.toString())
+            val kontrol =konusmaPositionBul(snapshot.key.toString())
             if(kontrol != -1){
 
-                var guncellenecekKonusma = snapshot!!.getValue(Mesajlar::class.java)
-                guncellenecekKonusma!!.user_id=snapshot!!.key
+                val guncellenecekKonusma = snapshot.getValue(Mesajlar::class.java)
+                guncellenecekKonusma!!.user_id= snapshot.key
 
+
+               mesajlarArray.removeAt(kontrol)
                 mesajlarMutable.value=mesajlarArray
-
-
-              //  tumKonusmalar.removeAt(kontrol)
-              //  madapter.notifyItemRemoved(kontrol)
 
 
 
@@ -118,8 +102,8 @@ class MesajlarViewModel:ViewModel() {
     fun konusmaPositionBul(userID : String) : Int{
 
 
-        for(i in 0..mesajlarArray.size-1){
-            var gecici = mesajlarArray.get(i)
+        for(i in 0 until mesajlarArray.size){
+            val gecici = mesajlarArray[i]
 
             if(gecici.user_id.equals(userID)){
                 return i

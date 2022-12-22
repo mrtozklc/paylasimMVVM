@@ -21,7 +21,7 @@ class ProfilViewModel:ViewModel() {
     val kampanyalarArray=ArrayList<KullaniciKampanya>()
     lateinit var mref: DatabaseReference
 
-    fun refreshProfilKampanya(){
+    fun refreshProfilKampanya(secilenUser:String){
         mref= FirebaseDatabase.getInstance().reference
 
 
@@ -32,7 +32,7 @@ class ProfilViewModel:ViewModel() {
 
 
 
-            mref.child("users").child("isletmeler").child(FirebaseAuth.getInstance().currentUser!!.uid).addListenerForSingleValueEvent(object :
+            mref.child("users").child("isletmeler").child(secilenUser).addListenerForSingleValueEvent(object :
                 ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     var userID=snapshot.getValue(KullaniciBilgileri::class.java)!!.user_id
@@ -43,7 +43,7 @@ class ProfilViewModel:ViewModel() {
                         var kullaniciadi=snapshot.getValue(KullaniciBilgileri::class.java)!!.user_name
                         var photoURL=snapshot.getValue(KullaniciBilgileri::class.java)!!.user_detail!!.profile_picture
 
-                        mref.child("kampanya").child(FirebaseAuth.getInstance().currentUser!!.uid).addListenerForSingleValueEvent(object :
+                        mref.child("kampanya").child(secilenUser).addListenerForSingleValueEvent(object :
                             ValueEventListener {
                             override fun onDataChange(snapshot: DataSnapshot) {
                                 if (snapshot.getValue()!=null){

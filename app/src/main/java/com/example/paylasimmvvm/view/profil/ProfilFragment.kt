@@ -1,11 +1,13 @@
 package com.example.paylasimmvvm.view.profil
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.*
+import androidx.core.view.MenuHost
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
@@ -13,9 +15,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.paylasimmvvm.R
 import com.example.paylasimmvvm.adapter.ProfilFragmentRecyclerAdapter
 import com.example.paylasimmvvm.databinding.FragmentProfilBinding
+import com.example.paylasimmvvm.databinding.FragmentSignOutBinding
 import com.example.paylasimmvvm.model.KullaniciBilgileri
 import com.example.paylasimmvvm.model.KullaniciKampanya
 import com.example.paylasimmvvm.util.EventbusData
+import com.example.paylasimmvvm.view.login.SignOutFragment
 import com.example.paylasimmvvm.viewmodel.ProfilViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
@@ -47,7 +51,7 @@ class ProfilFragment : Fragment() {
         setupAuthLis()
 
         profilKampanyalarViewModeli= ViewModelProvider(this).get(ProfilViewModel::class.java)
-        profilKampanyalarViewModeli.refreshProfilKampanya()
+        profilKampanyalarViewModeli.refreshProfilKampanya(auth.currentUser!!.uid)
 
        kullaniciBilgileriVerileriniAl()
         observeliveData()
@@ -59,7 +63,26 @@ class ProfilFragment : Fragment() {
         recyclerviewadapter= ProfilFragmentRecyclerAdapter(requireActivity(),tumGonderiler)
         binding.recyclerProfil.adapter=recyclerviewadapter
 
+        val menuHost: MenuHost = requireActivity()
+
+
+        menuHost.addMenuProvider(object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                menuInflater.inflate(R.menu.menu2, menu)
+            }
+
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                if (menuItem.itemId== R.id.cikisYap){
+                    var dialog=SignOutFragment()
+                    dialog.show(parentFragmentManager,"Çıkış yap")
+                }
+                return true
+            }
+
+
+    }, viewLifecycleOwner, Lifecycle.State.RESUMED)
     }
+
     fun observeliveData(){
         profilKampanyalarViewModeli.profilKampanya.observe(viewLifecycleOwner, androidx.lifecycle.Observer { profilKampanya->
             profilKampanya.let {
@@ -166,6 +189,7 @@ class ProfilFragment : Fragment() {
 
 
     }
+
 
 
     private fun setupAuthLis() {
