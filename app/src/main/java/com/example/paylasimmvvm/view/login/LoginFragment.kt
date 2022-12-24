@@ -1,6 +1,5 @@
 package com.example.paylasimmvvm.view.login
 
-import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -11,20 +10,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.content.ContextCompat
-import androidx.drawerlayout.widget.DrawerLayout
-import androidx.navigation.Navigation
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import com.example.paylasimmvvm.R
 import com.example.paylasimmvvm.databinding.FragmentLoginBinding
 import com.example.paylasimmvvm.model.KullaniciBilgileri
-import com.example.paylasimmvvm.view.home.HomeFragment
-import com.example.paylasimmvvm.view.home.HomeFragmentDirections
-import com.example.paylasimmvvm.view.home.MainActivity
-import com.google.android.gms.tasks.OnCompleteListener
-import com.google.android.gms.tasks.Task
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 
@@ -34,7 +25,7 @@ class LoginFragment : Fragment() {
     private lateinit var binding:FragmentLoginBinding
     lateinit var auth: FirebaseAuth
     lateinit var mref: DatabaseReference
-    lateinit var mauthLis: FirebaseAuth.AuthStateListener
+    private lateinit var mauthLis: FirebaseAuth.AuthStateListener
 
 
 
@@ -42,11 +33,11 @@ class LoginFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
 
         binding= FragmentLoginBinding.inflate(layoutInflater,container,false)
-        var view=binding.root
+        val view=binding.root
         auth = FirebaseAuth.getInstance()
         mref = FirebaseDatabase.getInstance().reference
 
@@ -68,7 +59,7 @@ class LoginFragment : Fragment() {
             bottomNav.visibility=View.GONE
        }
     }
-    fun init() {
+    private fun init() {
         setupAuthLis()
         binding.tvLogin.addTextChangedListener(watcher)
         binding.tvSifre.addTextChangedListener(watcher)
@@ -81,33 +72,25 @@ class LoginFragment : Fragment() {
     private fun setupAuthLis() {
 
 
-        mauthLis=object :FirebaseAuth.AuthStateListener{
-            override fun onAuthStateChanged(p0: FirebaseAuth) {
+        mauthLis= FirebaseAuth.AuthStateListener {
+            val user=FirebaseAuth.getInstance().currentUser
+            Log.e("auth", "loginmauth çalıstı$user")
+
+            if (user!=null){
+                findNavController().popBackStack()
+
+                findNavController().navigate(R.id.homeFragment)
 
 
-
-                var user=FirebaseAuth.getInstance().currentUser
-                Log.e("auth","loginmauth çalıstı"+user)
-
-                if (user!=null){
+                val bottomNav = requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView)
+                bottomNav.visibility=View.VISIBLE
 
 
-                    findNavController().navigate(R.id.homeFragment)
-
-
-
-                    val bottomNav = requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView)
-                    bottomNav.visibility=View.VISIBLE
-
-
-                }else{
-                    val bottomNav = requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView)
-                    bottomNav.visibility=View.GONE
-
-                }
+            }else{
+                val bottomNav = requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView)
+                bottomNav.visibility=View.GONE
 
             }
-
         }
 
     }
@@ -122,18 +105,18 @@ class LoginFragment : Fragment() {
             }
             override fun onDataChange(snapshot: DataSnapshot) {
 
-                if(snapshot!!.getValue() != null ){
-                    for (ds in snapshot!!.children) {
+                if(snapshot.value != null ){
+                    for (ds in snapshot.children) {
 
-                        var okunanKullanici = ds.getValue(KullaniciBilgileri::class.java)
+                        val okunanKullanici = ds.getValue(KullaniciBilgileri::class.java)
 
-                        if (!okunanKullanici!!.email!!.isNullOrEmpty() && okunanKullanici!!.email!!.toString().equals(emailPhoneNumberUserName)) {
+                        if (okunanKullanici!!.email!!.isNotEmpty() && okunanKullanici.email!!.toString() == emailPhoneNumberUserName) {
 
                             oturumAc(okunanKullanici, sifre)
                             kullaniciBulundu=true
                             break
 
-                        } else if (!okunanKullanici!!.user_name!!.isNullOrEmpty() && okunanKullanici!!.user_name!!.toString().equals(emailPhoneNumberUserName)) {
+                        } else if (okunanKullanici.user_name!!.isNotEmpty() && okunanKullanici.user_name!!.toString() == emailPhoneNumberUserName) {
                             oturumAc(okunanKullanici, sifre)
                             kullaniciBulundu=true
                             break
@@ -149,18 +132,18 @@ class LoginFragment : Fragment() {
 
                     override fun onDataChange(snapshot: DataSnapshot) {
 
-                        if(snapshot!!.getValue() != null ){
-                            for (ds in snapshot!!.children) {
+                        if(snapshot.value != null ){
+                            for (ds in snapshot.children) {
 
-                                var okunanKullanici = ds.getValue(KullaniciBilgileri::class.java)
+                                val okunanKullanici = ds.getValue(KullaniciBilgileri::class.java)
 
-                                if (!okunanKullanici!!.email!!.isNullOrEmpty() && okunanKullanici!!.email!!.toString().equals(emailPhoneNumberUserName)) {
+                                if (okunanKullanici!!.email!!.isNotEmpty() && okunanKullanici.email!!.toString() == emailPhoneNumberUserName) {
 
                                     oturumAc(okunanKullanici, sifre)
                                     kullaniciBulundu=true
                                     break
 
-                                } else if (!okunanKullanici!!.user_name!!.isNullOrEmpty() && okunanKullanici!!.user_name!!.toString().equals(emailPhoneNumberUserName)) {
+                                } else if (okunanKullanici.user_name!!.isNotEmpty() && okunanKullanici.user_name!!.toString() == emailPhoneNumberUserName) {
                                     oturumAc(okunanKullanici, sifre)
                                     kullaniciBulundu=true
                                     break
@@ -178,36 +161,40 @@ class LoginFragment : Fragment() {
 
     private fun oturumAc(okunanKullanici: KullaniciBilgileri, sifre: String) {
 
-        var girisYapacakEmail = ""
 
-
-        girisYapacakEmail = okunanKullanici.email.toString()
+        val girisYapacakEmail: String = okunanKullanici.email.toString()
 
 
         auth.signInWithEmailAndPassword(girisYapacakEmail, sifre)
-            .addOnCompleteListener(object : OnCompleteListener<AuthResult> {
-                override fun onComplete(p0: Task<AuthResult>) {
-                    if (p0.isSuccessful) {
+            .addOnCompleteListener { p0 ->
+                if (p0.isSuccessful) {
+                    val navController = NavHostFragment.findNavController(this@LoginFragment)
+                    navController.navigate(R.id.registerFragment)
 
 
-                        // fcmTokenAl()
-                        Toast.makeText( activity,"Hoşgeldiniz:" + okunanKullanici.user_name, Toast.LENGTH_LONG).show()
-                        findNavController().popBackStack(R.id.loginFragment,true)
-                        findNavController().navigate(R.id.homeFragment)
-                        Log.e("bulunanKullanici",""+okunanKullanici.user_name)
-                         val bottomNav = requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView)
-                         bottomNav.visibility=View.VISIBLE
+                    // fcmTokenAl()
+
+                    Toast.makeText(
+                        requireContext(),
+                        "Hoşgeldiniz:" + okunanKullanici.user_name,
+                        Toast.LENGTH_LONG
+                    ).show()
+                    findNavController().popBackStack(R.id.loginFragment, true)
+                    findNavController().navigate(R.id.homeFragment)
+                    Log.e("bulunanKullanici", "" + okunanKullanici.user_name)
+                    val bottomNav =
+                        requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView)
+                    bottomNav.visibility = View.VISIBLE
 
 
-                    } else {
+                } else {
 
-                        Toast.makeText(
-                            activity,"Kullanıcı Adı/Şifre hatalı", Toast.LENGTH_LONG).show()
+                    Toast.makeText(
+                        activity, "Kullanıcı Adı/Şifre hatalı", Toast.LENGTH_LONG
+                    ).show()
 
-                    }
                 }
-
-            })
+            }
 
     }
 
@@ -233,38 +220,38 @@ class LoginFragment : Fragment() {
 
         if (FirebaseAuth.getInstance().currentUser!=null){
 
-            FirebaseDatabase.getInstance().getReference().child("users").child("isletmeler").addListenerForSingleValueEvent(object :
+            FirebaseDatabase.getInstance().reference.child("users").child("isletmeler").addListenerForSingleValueEvent(object :
                 ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    if (snapshot!!.getValue() != null) {
+                    if (snapshot.value != null) {
 
-                        for (user in snapshot!!.children) {
+                        for (user in snapshot.children) {
 
 
-                            var okunanKullanici = user.getValue(KullaniciBilgileri::class.java)
-                            if (okunanKullanici!!.user_id!!.equals(FirebaseAuth.getInstance().currentUser!!.uid)) {
+                            val okunanKullanici = user.getValue(KullaniciBilgileri::class.java)
+                            if (okunanKullanici!!.user_id!! == FirebaseAuth.getInstance().currentUser!!.uid) {
 
-                                FirebaseDatabase.getInstance().getReference().child("users").child("isletmeler").child(FirebaseAuth.getInstance().currentUser!!.uid).child("FCM_TOKEN").setValue(newToken)
+                                FirebaseDatabase.getInstance().reference.child("users").child("isletmeler").child(FirebaseAuth.getInstance().currentUser!!.uid).child("FCM_TOKEN").setValue(newToken)
 
 
 
                             }
                         }
                     }
-                    FirebaseDatabase.getInstance().getReference().child("users").child("kullanicilar").addListenerForSingleValueEvent(object:
+                    FirebaseDatabase.getInstance().reference.child("users").child("kullanicilar").addListenerForSingleValueEvent(object:
                         ValueEventListener {
                         override fun onDataChange(snapshot: DataSnapshot) {
-                            if (snapshot!!.getValue() != null) {
+                            if (snapshot.value != null) {
 
-                                for (user in snapshot!!.children) {
+                                for (user in snapshot.children) {
 
 
-                                    var okunanKullanici = user.getValue(KullaniciBilgileri::class.java)
-                                    Log.e("newtoken","okunankullanici"+okunanKullanici)
+                                    val okunanKullanici = user.getValue(KullaniciBilgileri::class.java)
+                                    Log.e("newtoken", "okunankullanici$okunanKullanici")
 
-                                    if (okunanKullanici!!.user_id!!.equals(FirebaseAuth.getInstance().currentUser!!.uid)) {
+                                    if (okunanKullanici!!.user_id!! == FirebaseAuth.getInstance().currentUser!!.uid) {
 
-                                        FirebaseDatabase.getInstance().getReference().child("users").child("kullanicilar").child(FirebaseAuth.getInstance().currentUser!!.uid).child("FCM_TOKEN").setValue(newToken)
+                                        FirebaseDatabase.getInstance().reference.child("users").child("kullanicilar").child(FirebaseAuth.getInstance().currentUser!!.uid).child("FCM_TOKEN").setValue(newToken)
 
 
 
@@ -291,7 +278,7 @@ class LoginFragment : Fragment() {
 
     }
 
-    var watcher: TextWatcher = object : TextWatcher {
+    private var watcher: TextWatcher = object : TextWatcher {
         override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
 
         }

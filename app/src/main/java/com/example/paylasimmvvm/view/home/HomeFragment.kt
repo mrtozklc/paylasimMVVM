@@ -1,19 +1,19 @@
 package com.example.paylasimmvvm.view.home
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.Navigation
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.paylasimmvvm.R
 import com.example.paylasimmvvm.databinding.FragmentHomeBinding
 import com.example.paylasimmvvm.adapter.HomeFragmentRecyclerAdapter
 import com.example.paylasimmvvm.model.KullaniciKampanya
+import com.example.paylasimmvvm.util.setBadge
+import com.example.paylasimmvvm.viewmodel.BadgeViewModel
 import com.example.paylasimmvvm.viewmodel.kampanyalarViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
@@ -30,27 +30,22 @@ class HomeFragment : Fragment() {
  //  lateinit var mauthLis: FirebaseAuth.AuthStateListener
     lateinit var mref: DatabaseReference
     private lateinit var kampanyalarViewModeli:kampanyalarViewModel
+    private lateinit var badgeViewModeli: BadgeViewModel
     private lateinit var recyclerviewadapter:HomeFragmentRecyclerAdapter
     var tumGonderiler=ArrayList<KullaniciKampanya>()
     var sayfaBasiGonderiler=ArrayList<KullaniciKampanya>()
     var tumPostlar=ArrayList<String>()
-    val SAYFA_BASI_GONDERI=10
-    var sayfaSayisi=1
+    private val SAYFA_BASI_GONDERI=10
+    private var sayfaSayisi=1
     var sayfaninSonunaGelindi = false
 
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-
-    }
 
 
     override fun onCreateView(
 
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
 
          binding= FragmentHomeBinding.inflate(layoutInflater,container,false)
         val view =binding.root
@@ -68,8 +63,13 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
 
-       kampanyalarViewModeli=ViewModelProvider(this).get(kampanyalarViewModel::class.java)
+       kampanyalarViewModeli= ViewModelProvider(this)[kampanyalarViewModel::class.java]
         kampanyalarViewModeli.refreshKampanyalar()
+
+        badgeViewModeli= ViewModelProvider(this)[BadgeViewModel::class.java]
+        badgeViewModeli.refreshBadge()
+
+        observeLiveDataBadge()
 
 
 
@@ -81,31 +81,29 @@ class HomeFragment : Fragment() {
 
 
     }
-    fun observeliveData(){
+    private fun observeliveData(){
 
 
         kampanyalarViewModeli.kampanyalar.observe(viewLifecycleOwner) { kampanyalar ->
             kampanyalar.let {
 
-                Collections.sort(kampanyalar,object : Comparator<KullaniciKampanya> {
-                    override fun compare(p0: KullaniciKampanya?, p1: KullaniciKampanya?): Int {
-                        if (p0!!.postYuklenmeTarih!!>p1!!.postYuklenmeTarih!!){
-                            return -1
-                        }else return 1
-                    }
-
-                })
+                Collections.sort(kampanyalar
+                ) { p0, p1 ->
+                    if (p0!!.postYuklenmeTarih!! > p1!!.postYuklenmeTarih!!) {
+                        -1
+                    } else 1
+                }
 
                 if (tumGonderiler.size >= SAYFA_BASI_GONDERI) {
 
 
-                    for (i in 0..SAYFA_BASI_GONDERI-1) {
-                        sayfaBasiGonderiler.add(tumGonderiler.get(i))
+                    for (i in 0 until SAYFA_BASI_GONDERI) {
+                        sayfaBasiGonderiler.add(tumGonderiler[i])
 
                     }
                 } else {
-                    for (i in 0..tumGonderiler.size-1) {
-                        sayfaBasiGonderiler.add(tumGonderiler.get(i))
+                    for (i in 0 until tumGonderiler.size) {
+                        sayfaBasiGonderiler.add(tumGonderiler[i])
 
 
                     }
@@ -113,40 +111,56 @@ class HomeFragment : Fragment() {
 
                 binding.recyclerAnaSayfa.visibility = View.VISIBLE
                 binding.kampanyaYok.visibility=View.VISIBLE
-                recyclerviewadapter!!.kampanyalariGuncelle(kampanyalar)
+                recyclerviewadapter.kampanyalariGuncelle(kampanyalar)
             }
 
         }
 
-        kampanyalarViewModeli.kampanyaYok.observe(viewLifecycleOwner, Observer { kampanyaYok->
+        kampanyalarViewModeli.kampanyaYok.observe(viewLifecycleOwner) { kampanyaYok ->
             kampanyaYok.let {
-                if (it){
-                    binding.kampanyaYok.visibility=View.VISIBLE
-                    binding.recyclerAnaSayfa.visibility=View.GONE
+                if (it) {
+                    binding.kampanyaYok.visibility = View.VISIBLE
+                    binding.recyclerAnaSayfa.visibility = View.GONE
 
-                }else{
-                    binding.kampanyaYok.visibility=View.GONE
+                } else {
+                    binding.kampanyaYok.visibility = View.GONE
 
                 }
 
             }
 
-        })
-        kampanyalarViewModeli.yukleniyor.observe(viewLifecycleOwner, Observer { yukleniyor->
+        }
+        kampanyalarViewModeli.yukleniyor.observe(viewLifecycleOwner) { yukleniyor ->
             yukleniyor.let {
-                if (it){
-                    binding.progressBar8.visibility=View.VISIBLE
-                    binding.kampanyaYok.visibility=View.GONE
-                    binding.recyclerAnaSayfa.visibility=View.GONE
+                if (it) {
+                    binding.progressBar8.visibility = View.VISIBLE
+                    binding.kampanyaYok.visibility = View.GONE
+                    binding.recyclerAnaSayfa.visibility = View.GONE
 
-                }else{
-                    binding.progressBar8.visibility=View.GONE
+                } else {
+                    binding.progressBar8.visibility = View.GONE
 
                 }
 
             }
 
-        })
+        }
+    }
+
+    private  fun observeLiveDataBadge(){
+        badgeViewModeli.badgeLive.observe(viewLifecycleOwner) {gorulmeyenMesajSayisi ->
+            gorulmeyenMesajSayisi.let {
+
+                val navView:BottomNavigationView = requireActivity().findViewById(R.id.bottomNavigationView)
+                if (gorulmeyenMesajSayisi != null) {
+                    navView.setBadge(R.id.mesajlarFragment, gorulmeyenMesajSayisi.size)
+
+                }
+
+            }
+
+        }
+
     }
 
 
@@ -174,9 +188,9 @@ class HomeFragment : Fragment() {
                 super.onScrolled(recyclerView, dx, dy)
 
 
-                if (dy > 0 && layoutManager.findLastVisibleItemPosition() ==  binding.recyclerAnaSayfa!!.adapter!!.itemCount - 1) {
+                if (dy > 0 && layoutManager.findLastVisibleItemPosition() ==  binding.recyclerAnaSayfa.adapter!!.itemCount - 1) {
 
-                    if (sayfaninSonunaGelindi == false)
+                    if (!sayfaninSonunaGelindi)
                         listeyeYeniElemanlariEkle()
                 }
 
@@ -185,14 +199,15 @@ class HomeFragment : Fragment() {
         })
 
     }
+    @SuppressLint("NotifyDataSetChanged")
     private fun listeyeYeniElemanlariEkle() {
 
-        var yeniGetirilecekElemanlarinAltSiniri = sayfaSayisi * SAYFA_BASI_GONDERI
-        var yeniGetirilecekElemanlarinUstSiniri = (sayfaSayisi +1) * SAYFA_BASI_GONDERI - 1
+        val yeniGetirilecekElemanlarinAltSiniri = sayfaSayisi * SAYFA_BASI_GONDERI
+        val yeniGetirilecekElemanlarinUstSiniri = (sayfaSayisi +1) * SAYFA_BASI_GONDERI - 1
         for (i in yeniGetirilecekElemanlarinAltSiniri..yeniGetirilecekElemanlarinUstSiniri) {
             if (sayfaBasiGonderiler.size <= tumGonderiler.size - 1) {
-                sayfaBasiGonderiler.add(tumGonderiler.get(i))
-                binding.recyclerAnaSayfa!!.adapter!!.notifyDataSetChanged()
+                sayfaBasiGonderiler.add(tumGonderiler[i])
+                binding.recyclerAnaSayfa.adapter!!.notifyDataSetChanged()
             } else {
                 sayfaninSonunaGelindi = true
                 sayfaSayisi = 0
@@ -200,7 +215,9 @@ class HomeFragment : Fragment() {
             }
 
         }
-        Log.e("XXX", "" + yeniGetirilecekElemanlarinAltSiniri + " dan " + yeniGetirilecekElemanlarinUstSiniri + " kadar eleman eklendi")
+        Log.e("XXX",
+            "$yeniGetirilecekElemanlarinAltSiniri dan $yeniGetirilecekElemanlarinUstSiniri kadar eleman eklendi"
+        )
         sayfaSayisi++
 
 

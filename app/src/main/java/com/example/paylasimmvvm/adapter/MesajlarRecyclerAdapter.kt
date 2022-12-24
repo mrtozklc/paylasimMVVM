@@ -3,6 +3,7 @@ package com.example.paylasimmvvm.adapter
 import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Typeface
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,7 +12,6 @@ import androidx.navigation.Navigation
 import androidx.recyclerview.widget.RecyclerView
 import com.example.paylasimmvvm.R
 import com.example.paylasimmvvm.databinding.RecyclerRowMesajlarBinding
-import com.example.paylasimmvvm.model.KullaniciKampanya
 import com.example.paylasimmvvm.model.Mesajlar
 import com.example.paylasimmvvm.util.TimeAgo
 import com.example.paylasimmvvm.view.mesajlar.ChatFragment
@@ -41,7 +41,7 @@ class MesajlarRecyclerAdapter(var tumMesajlar:ArrayList<Mesajlar>):RecyclerView.
             var sonAtilanmesajText=oankiKonusmalar.son_mesaj.toString()
 
 
-            if(!sonAtilanmesajText.isNullOrEmpty()){
+            if(sonAtilanmesajText.isNotEmpty()){
                 sonAtilanmesajText=sonAtilanmesajText.replace("\n"," ")
                 sonAtilanmesajText=sonAtilanmesajText.trim()
 
@@ -90,7 +90,6 @@ class MesajlarRecyclerAdapter(var tumMesajlar:ArrayList<Mesajlar>):RecyclerView.
                     .child("goruldu").setValue(true)
                     .addOnCompleteListener {
                         Navigation.findNavController(binding.tumLayout).navigate(action)
-
 
                     }
 

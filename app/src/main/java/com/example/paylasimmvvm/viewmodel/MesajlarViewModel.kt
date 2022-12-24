@@ -1,4 +1,5 @@
 package com.example.paylasimmvvm.viewmodel
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.paylasimmvvm.model.Mesajlar
@@ -45,19 +46,17 @@ class MesajlarViewModel:ViewModel() {
     }
     private var mListener=object : ChildEventListener {
         override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
-            mesajlarArray.clear()
+
             mesajYok.value=false
-            mesajlarMutable.value=mesajlarArray
             val eklenecekKonusma=snapshot.getValue(Mesajlar::class.java)
             eklenecekKonusma!!.user_id=snapshot.key
-            mesajlarArray.add(eklenecekKonusma)
-            mesajlarMutable.value=mesajlarArray
             mesajlarArray.add(0, eklenecekKonusma)
+            mesajlarMutable.value=mesajlarArray
+
 
         }
 
         override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
-
 
             val kontrol =konusmaPositionBul(snapshot.key.toString())
             if(kontrol != -1){
@@ -68,6 +67,8 @@ class MesajlarViewModel:ViewModel() {
                 mesajlarArray.removeAt(kontrol)
                 mesajlarArray.add(0,guncellenecekKonusma)
                 mesajlarMutable.value=mesajlarArray
+
+
 
             }
 

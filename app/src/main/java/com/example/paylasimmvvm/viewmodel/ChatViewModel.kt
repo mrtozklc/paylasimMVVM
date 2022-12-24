@@ -1,6 +1,5 @@
 package com.example.paylasimmvvm.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.paylasimmvvm.model.ChatModel
@@ -62,7 +61,6 @@ class ChatViewModel:ViewModel() {
 
                 chatMutable.value = chatArray
                 yukleniyor.value = false
-                Log.e("getirilenmesajid",""+getirilenMesajId)
 
 
             }

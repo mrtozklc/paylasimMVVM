@@ -10,7 +10,6 @@ import androidx.navigation.NavController
 
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.ui.onNavDestinationSelected
 import androidx.navigation.ui.setupWithNavController
 import com.example.paylasimmvvm.R
 
@@ -24,10 +23,6 @@ class MainActivity : AppCompatActivity() {
 
 
     private lateinit var binding: ActivityMainBinding
-
-
-
-
 
 
 
@@ -50,12 +45,45 @@ class MainActivity : AppCompatActivity() {
     private fun setupBottomNavMenu(navController: NavController) {
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottomNavigationView)
         bottomNav?.setupWithNavController(navController)
+
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return item.onNavDestinationSelected(findNavController(R.id.fragmentContainerView)) || super.onOptionsItemSelected(item)
+        when (item.itemId) {
+            R.id.profilFragment -> {
+                findNavController(R.id.fragmentContainerView).popBackStack(R.id.profilFragment, true)
+                findNavController(R.id.fragmentContainerView).navigate(R.id.profilFragment)
+                return true
+            }
+            R.id.bildirimlerFragment -> {
+                findNavController(R.id.fragmentContainerView).popBackStack(R.id.bildirimlerFragment, true)
+                findNavController(R.id.fragmentContainerView).navigate(R.id.bildirimlerFragment)
+                return true
+            }
+            R.id.mesajlarFragment -> {
+                findNavController(R.id.fragmentContainerView).popBackStack(R.id.mesajlarFragment, true)
+                findNavController(R.id.fragmentContainerView).navigate(R.id.mesajlarFragment)
+                return true
+            }
+            R.id.kampanyaOlusturFragment -> {
+                findNavController(R.id.fragmentContainerView).popBackStack(R.id.kampanyaOlusturFragment, true)
+                findNavController(R.id.fragmentContainerView).navigate(R.id.kampanyaOlusturFragment)
+                return true
+            }
+            R.id.homeFragment -> {
+                findNavController(R.id.fragmentContainerView).popBackStack(R.id.homeFragment, true)
+                findNavController(R.id.fragmentContainerView).navigate(R.id.homeFragment)
+                return true
+            }
+
+            else -> return super.onOptionsItemSelected(item)
+        }
     }
 
 
 
-}
+    }
+
+
+
+

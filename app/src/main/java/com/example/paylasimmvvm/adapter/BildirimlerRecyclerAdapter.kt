@@ -1,19 +1,15 @@
 package com.example.paylasimmvvm.adapter
 
-import android.content.Context
-import android.content.Intent
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.example.paylasimmvvm.R
 import com.example.paylasimmvvm.databinding.RecyclerRowBildirimlerBinding
 import com.example.paylasimmvvm.model.BildirimModel
-import com.example.paylasimmvvm.model.KullaniciKampanya
 import com.example.paylasimmvvm.util.TimeAgo
-import com.example.paylasimmvvm.view.bildirimler.BildirimlerFragment
 import com.example.paylasimmvvm.view.bildirimler.BildirimlerFragmentDirections
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
@@ -22,18 +18,16 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.squareup.picasso.Picasso
 import java.util.*
-import kotlin.Comparator
-import kotlin.collections.ArrayList
 
-class BildirimlerRecyclerAdapter( var tumBildirimler:ArrayList<BildirimModel>):
-    RecyclerView.Adapter<BildirimlerRecyclerAdapter.viewHolder>() {
+class BildirimlerRecyclerAdapter(private var tumBildirimler:ArrayList<BildirimModel>):
+    RecyclerView.Adapter<BildirimlerRecyclerAdapter.mviewHolder>() {
 
     init {
         Collections.sort(tumBildirimler, object : Comparator<BildirimModel> {
             override fun compare(o1: BildirimModel?, o2: BildirimModel?): Int {
-                if (o1!!.time!! > o2!!.time!!) {
-                    return -1
-                } else return 1
+                return if (o1!!.time!! > o2!!.time!!) {
+                    -1
+                } else 1
             }
         })}
 
@@ -42,13 +36,12 @@ class BildirimlerRecyclerAdapter( var tumBildirimler:ArrayList<BildirimModel>):
 
 
 
-    class viewHolder(itemview: View): RecyclerView.ViewHolder(itemview) {
+    class mviewHolder(itemview: View): RecyclerView.ViewHolder(itemview) {
         val binding = RecyclerRowBildirimlerBinding.bind(itemView)
 
 
         var gonderiBegenildi=binding.tvBegendi
         var yorumYapildi=binding.tvBegendi
-        var yorumBegenildi=binding.tvBegendi
         var begenenPP=binding.begenenppId
         var kampanya=binding.begenilenKampanyaId
 
@@ -86,6 +79,7 @@ class BildirimlerRecyclerAdapter( var tumBildirimler:ArrayList<BildirimModel>):
         private fun idsiVerilenKullanicininBilgileriYorum(user_id: String?, gonderi_id: String?, bildirimZamani: Long) {
 
             FirebaseDatabase.getInstance().getReference().child("users").child("kullanicilar").child(user_id!!).addListenerForSingleValueEvent(object :ValueEventListener{
+                @SuppressLint("SetTextI18n")
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if (snapshot.getValue()!=null){
 
@@ -95,8 +89,8 @@ class BildirimlerRecyclerAdapter( var tumBildirimler:ArrayList<BildirimModel>):
                             kampanya.visibility=View.GONE
 
                         }else{
-                            var userName = snapshot!!.child("user_name").getValue().toString()
-                            if (!snapshot!!.child("user_name").getValue().toString().isNullOrEmpty())
+                            val userName = snapshot!!.child("user_name").getValue().toString()
+                            if (snapshot!!.child("user_name").getValue().toString().isNotEmpty())
 
                                 yorumYapildi.setText(userName + " gönderine yorum yaptı.  " + TimeAgo.getTimeAgoForComments(bildirimZamani))
 
@@ -104,7 +98,7 @@ class BildirimlerRecyclerAdapter( var tumBildirimler:ArrayList<BildirimModel>):
 
 
                             if (!snapshot!!.child("user_detail").child("profile_picture").getValue().toString().isNullOrEmpty()) {
-                                var takipEdenPicURL = snapshot!!.child("user_detail").child("profile_picture").getValue().toString()
+                                val takipEdenPicURL = snapshot!!.child("user_detail").child("profile_picture").getValue().toString()
                                 Picasso.get().load(takipEdenPicURL).placeholder(R.drawable.ic_baseline_person).error(R.drawable.ic_baseline_person).into(begenenPP)
 
                             }
@@ -122,8 +116,9 @@ class BildirimlerRecyclerAdapter( var tumBildirimler:ArrayList<BildirimModel>):
             })
 
             FirebaseDatabase.getInstance().getReference().child("users").child("isletmeler").child(user_id!!).addListenerForSingleValueEvent(object :ValueEventListener{
+                @SuppressLint("SetTextI18n")
                 override fun onDataChange(snapshot: DataSnapshot)  {
-                    if (snapshot.getValue()!=null){
+                    if (snapshot.value !=null){
 
                         if (user_id.equals(FirebaseAuth.getInstance().currentUser!!.uid)){
                             begenenPP.visibility=View.GONE
@@ -131,7 +126,7 @@ class BildirimlerRecyclerAdapter( var tumBildirimler:ArrayList<BildirimModel>):
                             kampanya.visibility=View.GONE
 
                         }else{
-                            var userName = snapshot!!.child("user_name").getValue().toString()
+                            val userName = snapshot!!.child("user_name").getValue().toString()
                             if (!snapshot!!.child("user_name").getValue().toString().isNullOrEmpty())
 
                                 yorumYapildi.setText(userName + " gönderine yorum yaptı.  " + TimeAgo.getTimeAgoForComments(bildirimZamani))
@@ -291,16 +286,16 @@ class BildirimlerRecyclerAdapter( var tumBildirimler:ArrayList<BildirimModel>):
 
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): viewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): mviewHolder {
 
         var view=
 
             LayoutInflater.from(parent.context).inflate(R.layout.recycler_row_bildirimler,parent,false)
 
-        return BildirimlerRecyclerAdapter.viewHolder(view)
+        return BildirimlerRecyclerAdapter.mviewHolder(view)
     }
 
-    override fun onBindViewHolder(holder: viewHolder, position: Int) {
+    override fun onBindViewHolder(holder: mviewHolder, position: Int) {
 
         holder.setdata(tumBildirimler.get(position))
 

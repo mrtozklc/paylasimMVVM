@@ -3,29 +3,35 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
 
-
-    <item android:id="@+id/profilFragment"
+    <item
+        android:id="@+id/profilFragment"
         android:title=""
         android:icon="@drawable/ic_baseline_person"
-        app:showAsAction="always"></item>
+        app:showAsAction="always" />
 
-    <item android:id="@+id/bildirimlerFragment"
-        android:title="" android:icon="@drawable/ic_baseline_circle_notifications"
-       app:showAsAction="always"></item>
+    <item
+        android:id="@+id/bildirimlerFragment"
+        android:title=""
+        android:icon="@drawable/ic_baseline_circle_notifications"
+        app:showAsAction="always" />
 
-    <item android:id="@+id/homeFragment"
-        android:title="" android:icon="@drawable/ic_baseline_home_24"
-        app:showAsAction="always"></item>
+    <item
+        android:id="@+id/homeFragment"
+        android:title=""
+        android:icon="@drawable/ic_baseline_home_24"
+        app:showAsAction="always" />
 
-    <item android:id="@+id/kampanyaOlusturFragment"
+    <item
+        android:id="@+id/kampanyaOlusturFragment"
         android:title=""
         android:icon="@drawable/ic_baseline_ios_share"
-        app:showAsAction="always"
-        ></item>
+        app:showAsAction="always" />
 
-    <item android:id="@+id/mesajlarFragment"
-        android:title="" android:icon="@drawable/ic_baseline_email"
-        app:showAsAction="always"></item>
+    <item
+        android:id="@+id/mesajlarFragment"
+        android:title=""
+        android:icon="@drawable/ic_baseline_email"
+        app:showAsAction="always" />
 
 
 

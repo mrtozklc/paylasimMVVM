@@ -1,43 +1,31 @@
 package com.example.paylasimmvvm.view.bildirimler
 
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.addCallback
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.NavController
-import androidx.navigation.NavOptions
-import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.paylasimmvvm.R
 import com.example.paylasimmvvm.adapter.BildirimlerRecyclerAdapter
-import com.example.paylasimmvvm.adapter.ProfilFragmentRecyclerAdapter
 import com.example.paylasimmvvm.databinding.FragmentBildirimlerBinding
 import com.example.paylasimmvvm.model.BildirimModel
-import com.example.paylasimmvvm.model.KullaniciKampanya
-import com.example.paylasimmvvm.view.login.LoginFragment
 import com.example.paylasimmvvm.viewmodel.BildirimlerViewModel
-import com.example.paylasimmvvm.viewmodel.ProfilViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.ktx.Firebase
-import java.util.*
-import kotlin.collections.ArrayList
 
 
 class BildirimlerFragment : Fragment() {
     lateinit var binding:FragmentBildirimlerBinding
     private lateinit var auth : FirebaseAuth
     lateinit var recyclerviewadapter:BildirimlerRecyclerAdapter
-    lateinit var mauthLis: FirebaseAuth.AuthStateListener
+    private lateinit var mauthLis: FirebaseAuth.AuthStateListener
     lateinit var mref: DatabaseReference
     var tumBildirimler=ArrayList<BildirimModel>()
     private lateinit var bildirimlerViewModeli:BildirimlerViewModel
@@ -47,13 +35,6 @@ class BildirimlerFragment : Fragment() {
 
 
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-
-
-
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -75,7 +56,7 @@ class BildirimlerFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        bildirimlerViewModeli= ViewModelProvider(this).get(BildirimlerViewModel::class.java)
+        bildirimlerViewModeli= ViewModelProvider(this)[BildirimlerViewModel::class.java]
         bildirimlerViewModeli.refreshBildirimler()
 
 
@@ -88,26 +69,23 @@ class BildirimlerFragment : Fragment() {
         recyclerviewadapter= BildirimlerRecyclerAdapter(tumBildirimler)
         binding.recyclerBildirim.adapter=recyclerviewadapter
 
-        binding.refreshId.setOnRefreshListener(object : SwipeRefreshLayout.OnRefreshListener{
-            override fun onRefresh() {
-                tumBildirimler.clear()
-                recyclerviewadapter= BildirimlerRecyclerAdapter(tumBildirimler)
-                bildirimlerViewModeli.refreshBildirimler()
+        binding.refreshId.setOnRefreshListener {
+            tumBildirimler.clear()
+            recyclerviewadapter = BildirimlerRecyclerAdapter(tumBildirimler)
+            bildirimlerViewModeli.refreshBildirimler()
 
-                binding.refreshId.isRefreshing=false
-            }
-
-        })
+            binding.refreshId.isRefreshing = false
+        }
 
     }
-    fun observeliveData(){
+    private fun observeliveData(){
 
 
         bildirimlerViewModeli.tumBildirimlerLive.observe(viewLifecycleOwner) { bildirimler ->
             bildirimler.let {
 
                 binding.recyclerBildirim.visibility = View.VISIBLE
-                recyclerviewadapter!!.kampanyalariGuncelle(bildirimler)
+                recyclerviewadapter.kampanyalariGuncelle(bildirimler)
             }
 
         }
@@ -146,25 +124,18 @@ class BildirimlerFragment : Fragment() {
     private fun setupAuthLis() {
 
 
-        mauthLis=object :FirebaseAuth.AuthStateListener{
-            override fun onAuthStateChanged(p0: FirebaseAuth) {
+        mauthLis= FirebaseAuth.AuthStateListener {
+            val user=FirebaseAuth.getInstance().currentUser
+            Log.e("auth", "auth çalıstı$user")
 
+            if (user==null){
 
+                findNavController().popBackStack(R.id.bildirimlerFragment,true)
 
-                var user=FirebaseAuth.getInstance().currentUser
-                Log.e("auth","auth çalıstı"+user)
+                findNavController().navigate(R.id.loginFragment)
 
-                if (user==null){
-
-                    findNavController().popBackStack(R.id.bildirimlerFragment,true)
-
-                    findNavController().navigate(R.id.loginFragment)
-
-
-                }
 
             }
-
         }
 
     }
