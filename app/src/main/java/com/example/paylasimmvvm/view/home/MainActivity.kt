@@ -49,38 +49,84 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        val navController = findNavController(R.id.fragmentContainerView)
+        val currentDestination = navController.currentDestination
+
         when (item.itemId) {
             R.id.profilFragment -> {
-                findNavController(R.id.fragmentContainerView).popBackStack(R.id.profilFragment, true)
-                findNavController(R.id.fragmentContainerView).navigate(R.id.profilFragment)
+                if (currentDestination != null && currentDestination.id != R.id.profilFragment) {
+                    navController.popBackStack(R.id.profilFragment, true)
+                    navController.navigate(R.id.profilFragment)
+                }
                 return true
             }
             R.id.bildirimlerFragment -> {
-                findNavController(R.id.fragmentContainerView).popBackStack(R.id.bildirimlerFragment, true)
-                findNavController(R.id.fragmentContainerView).navigate(R.id.bildirimlerFragment)
+                if (currentDestination != null && currentDestination.id != R.id.bildirimlerFragment) {
+                    navController.popBackStack(R.id.bildirimlerFragment, true)
+                    navController.navigate(R.id.bildirimlerFragment)
+                }
                 return true
             }
             R.id.mesajlarFragment -> {
-                findNavController(R.id.fragmentContainerView).popBackStack(R.id.mesajlarFragment, true)
-                findNavController(R.id.fragmentContainerView).navigate(R.id.mesajlarFragment)
+                if (currentDestination != null && currentDestination.id != R.id.mesajlarFragment) {
+                    navController.popBackStack(R.id.mesajlarFragment, true)
+                    navController.navigate(R.id.mesajlarFragment)
+                }
                 return true
             }
             R.id.kampanyaOlusturFragment -> {
-                findNavController(R.id.fragmentContainerView).popBackStack(R.id.kampanyaOlusturFragment, true)
-                findNavController(R.id.fragmentContainerView).navigate(R.id.kampanyaOlusturFragment)
+                if (currentDestination != null && currentDestination.id != R.id.kampanyaOlusturFragment) {
+                    navController.popBackStack(R.id.kampanyaOlusturFragment, true)
+                    navController.navigate(R.id.kampanyaOlusturFragment)
+                }
                 return true
             }
             R.id.homeFragment -> {
-                findNavController(R.id.fragmentContainerView).popBackStack(R.id.homeFragment, true)
-                findNavController(R.id.fragmentContainerView).navigate(R.id.homeFragment)
+                if (currentDestination != null && currentDestination.id != R.id.homeFragment) {
+                    navController.popBackStack(R.id.homeFragment, true)
+                    navController.navigate(R.id.homeFragment)}
                 return true
             }
-
             else -> return super.onOptionsItemSelected(item)
         }
     }
 
 
+    override fun onBackPressed() {
+        val navController = findNavController(R.id.fragmentContainerView)
+        val currentDestination = navController.currentDestination
+
+        if (currentDestination != null && currentDestination.id == R.id.homeFragment) {
+            finish()
+
+        }else if(currentDestination != null && currentDestination.id == R.id.bildirimlerFragment){
+
+            navController.navigate(R.id.homeFragment)
+
+
+        }
+        else if(currentDestination != null && currentDestination.id == R.id.mesajlarFragment){
+            navController.navigate(R.id.homeFragment)
+
+
+        }
+        else if(currentDestination != null && currentDestination.id == R.id.kampanyaOlusturFragment){
+            navController.popBackStack(R.id.homeFragment, true)
+            navController.navigate(R.id.homeFragment)
+
+
+        }
+        else if(currentDestination != null && currentDestination.id == R.id.profilFragment){
+            navController.popBackStack(R.id.homeFragment, true)
+            navController.navigate(R.id.homeFragment)
+
+
+        }
+        else{
+            super.onBackPressed()
+        }
+
+    }
 
     }
 

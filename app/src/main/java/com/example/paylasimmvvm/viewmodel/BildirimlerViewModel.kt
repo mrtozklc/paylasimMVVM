@@ -18,14 +18,11 @@ class BildirimlerViewModel:ViewModel() {
     lateinit var mauth: FirebaseAuth
 
     fun refreshBildirimler(){
+        bildirimlerArray.clear()
         mref= FirebaseDatabase.getInstance().reference
         mauth=Firebase.auth
         bildirimYok.value=true
         yukleniyor.value=true
-
-      //  binding. progressBarBildirim.visibility= View.VISIBLE
-     //   binding. recyclerBildirim.visibility= View.INVISIBLE
-
 
 
         mref.child("bildirimler").child(mauth.currentUser!!.uid).orderByChild("time").addListenerForSingleValueEvent(object :

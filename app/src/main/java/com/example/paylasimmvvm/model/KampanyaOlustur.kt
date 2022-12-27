@@ -6,5 +6,4 @@ data class KampanyaOlustur(    var user_id:String?="",
                           var aciklama:String?="",
                           var geri_sayim:String?="",
                           var file_url:String?="",
-) {
-}
+)

@@ -1,6 +1,5 @@
 package com.example.paylasimmvvm.view.profil
 
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.*
@@ -15,7 +14,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.paylasimmvvm.R
 import com.example.paylasimmvvm.adapter.ProfilFragmentRecyclerAdapter
 import com.example.paylasimmvvm.databinding.FragmentProfilBinding
-import com.example.paylasimmvvm.databinding.FragmentSignOutBinding
 import com.example.paylasimmvvm.model.KullaniciBilgileri
 import com.example.paylasimmvvm.model.KullaniciKampanya
 import com.example.paylasimmvvm.util.EventbusData
@@ -23,7 +21,6 @@ import com.example.paylasimmvvm.view.login.SignOutFragment
 import com.example.paylasimmvvm.viewmodel.ProfilViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.*
 import com.google.firebase.ktx.Firebase
@@ -35,10 +32,9 @@ import java.util.*
 class ProfilFragment : Fragment() {
     private lateinit var binding: FragmentProfilBinding
     private lateinit var auth : FirebaseAuth
-    lateinit var mauthLis: FirebaseAuth.AuthStateListener
+    private lateinit var mauthLis: FirebaseAuth.AuthStateListener
     lateinit var mref: DatabaseReference
-    lateinit var muser: FirebaseUser
-    var tumGonderiler=ArrayList<KullaniciKampanya>()
+    private var tumGonderiler=ArrayList<KullaniciKampanya>()
     private lateinit var profilKampanyalarViewModeli:ProfilViewModel
     private lateinit var recyclerviewadapter:ProfilFragmentRecyclerAdapter
 
@@ -46,11 +42,11 @@ class ProfilFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         mref= FirebaseDatabase.getInstance().reference
-        Log.e("oncreated","")
+
 
         setupAuthLis()
 
-        profilKampanyalarViewModeli= ViewModelProvider(this).get(ProfilViewModel::class.java)
+        profilKampanyalarViewModeli= ViewModelProvider(this)[ProfilViewModel::class.java]
         profilKampanyalarViewModeli.refreshProfilKampanya(auth.currentUser!!.uid)
 
        kullaniciBilgileriVerileriniAl()
@@ -73,7 +69,7 @@ class ProfilFragment : Fragment() {
 
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
                 if (menuItem.itemId== R.id.cikisYap){
-                    var dialog=SignOutFragment()
+                    val dialog=SignOutFragment()
                     dialog.show(parentFragmentManager,"Çıkış yap")
                 }
                 return true
@@ -83,29 +79,29 @@ class ProfilFragment : Fragment() {
     }, viewLifecycleOwner, Lifecycle.State.RESUMED)
     }
 
-    fun observeliveData(){
-        profilKampanyalarViewModeli.profilKampanya.observe(viewLifecycleOwner, androidx.lifecycle.Observer { profilKampanya->
+    private fun observeliveData(){
+        profilKampanyalarViewModeli.profilKampanya.observe(viewLifecycleOwner) { profilKampanya ->
             profilKampanya.let {
-                Collections.sort(profilKampanya,object : Comparator<KullaniciKampanya> {
+                Collections.sort(profilKampanya, object : Comparator<KullaniciKampanya> {
                     override fun compare(p0: KullaniciKampanya?, p1: KullaniciKampanya?): Int {
-                        if (p0!!.postYuklenmeTarih!!>p1!!.postYuklenmeTarih!!){
+                        if (p0!!.postYuklenmeTarih!! > p1!!.postYuklenmeTarih!!) {
                             return -1
-                        }else return 1
+                        } else return 1
                     }
 
                 })
 
                 binding.recyclerProfil.visibility = View.VISIBLE
-                recyclerviewadapter!!.kampanyalariGuncelle(profilKampanya)
+                recyclerviewadapter.kampanyalariGuncelle(profilKampanya)
             }
-        })
+        }
 
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding= FragmentProfilBinding.inflate(layoutInflater,container,false)
         val view=binding.root
         auth= Firebase.auth
@@ -115,31 +111,31 @@ class ProfilFragment : Fragment() {
         return view
     }
 
-    fun kullaniciBilgileriVerileriniAl() {
+    private fun kullaniciBilgileriVerileriniAl() {
         val user = Firebase.auth.currentUser
         if (user != null) {
             mref.child("users").child("isletmeler").child(auth.currentUser!!.uid).addValueEventListener(object :
                 ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    if (snapshot!!.getValue()!=null){
-                        var okunanKullanici=snapshot!!.getValue(KullaniciBilgileri::class.java)
+                    if (snapshot.value !=null){
+                        val okunanKullanici= snapshot.getValue(KullaniciBilgileri::class.java)
                         EventBus.getDefault().postSticky(EventbusData.kullaniciBilgileriniGonder(okunanKullanici))
 
                         binding.tvMesaj.isEnabled=true
 
-                        binding.tvKullaniciAdi.setText(okunanKullanici!!.user_name)
+                        binding.tvKullaniciAdi.text = okunanKullanici!!.user_name
 
-                        binding.tvPost.text = okunanKullanici!!.user_detail!!.post
+                        binding.tvPost.text = okunanKullanici.user_detail!!.post
 
-                        Log.e("post","sayisi"+okunanKullanici)
-                        if (!okunanKullanici!!.user_detail!!.biography.isNullOrEmpty()){
-                            binding.tvBio.setText(okunanKullanici!!.user_detail!!.biography)
+                        Log.e("post", "sayisi$okunanKullanici")
+                        if (!okunanKullanici.user_detail!!.biography.isNullOrEmpty()){
+                            binding.tvBio.text = okunanKullanici.user_detail!!.biography
 
 
                         }
 
-                        var imgUrl:String=okunanKullanici!!.user_detail!!.profile_picture!!
-                        if (!imgUrl.isEmpty()){
+                        val imgUrl:String= okunanKullanici.user_detail!!.profile_picture!!
+                        if (imgUrl.isNotEmpty()){
                             Picasso.get().load(imgUrl).placeholder(R.drawable.ic_baseline_person).error(R.drawable.ic_baseline_person).into(binding.profileImage)
 
 
@@ -157,24 +153,31 @@ class ProfilFragment : Fragment() {
             mref.child("users").child("kullanicilar").child(auth.currentUser!!.uid).addValueEventListener(object :
                 ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    if (snapshot!!.getValue()!=null){
-                        var okunanKullanici=snapshot!!.getValue(KullaniciBilgileri::class.java)
+                    if (snapshot.value !=null){
+                        val okunanKullanici= snapshot.getValue(KullaniciBilgileri::class.java)
                         EventBus.getDefault().postSticky(EventbusData.kullaniciBilgileriniGonder(okunanKullanici))
 
                         binding.tvMesaj.isEnabled=true
 
-                        binding.tvKullaniciAdi.setText(okunanKullanici!!.user_name)
-                        binding.tvPost.setText(okunanKullanici!!.user_detail!!.post)
+                        binding.tvKullaniciAdi.text = okunanKullanici!!.user_name
+                        binding.tvPost.text = okunanKullanici.user_detail!!.post
 
-                        if (!okunanKullanici!!.user_detail!!.biography.isNullOrEmpty()){
-                            binding.tvBio.setText(okunanKullanici!!.user_detail!!.biography)
+                        if (!okunanKullanici.user_detail!!.biography.isNullOrEmpty()){
+                            binding.tvBio.text = okunanKullanici.user_detail!!.biography
 
 
                         }
 
-                        var imgUrl:String=okunanKullanici!!.user_detail!!.profile_picture!!
-                        Picasso.get().load(imgUrl).placeholder(R.drawable.ic_baseline_person).error(R.drawable.ic_baseline_person).into(binding.profileImage)
+                        val imgUrl:String= okunanKullanici.user_detail!!.profile_picture!!
 
+                        if (imgUrl.isNotEmpty()){
+                            Picasso.get().load(imgUrl).placeholder(R.drawable.ic_baseline_person).error(R.drawable.ic_baseline_person).into(binding.profileImage)
+
+
+                        }else {
+                            Picasso.get().load(R.drawable.ic_baseline_person).placeholder(R.drawable.ic_baseline_person).error(R.drawable.ic_baseline_person).into(binding.profileImage)
+
+                        }
 
                     }
                 }
@@ -193,25 +196,20 @@ class ProfilFragment : Fragment() {
 
 
     private fun setupAuthLis() {
-        var user=FirebaseAuth.getInstance().currentUser
+        val user=FirebaseAuth.getInstance().currentUser
 
 
 
 
-        mauthLis=object :FirebaseAuth.AuthStateListener{
-            override fun onAuthStateChanged(p0: FirebaseAuth) {
+        mauthLis= FirebaseAuth.AuthStateListener {
+            if (user==null){
+                findNavController().popBackStack(R.id.profilFragment,true)
+                findNavController().navigate(R.id.loginFragment)
+                val bottomNav = requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView)
+                bottomNav.visibility=View.GONE
 
-                if (user==null){
-                    findNavController().popBackStack(R.id.profilFragment,true)
-                    findNavController().navigate(R.id.loginFragment)
-                    val bottomNav = requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView)
-                    bottomNav.visibility=View.GONE
-
-
-                }
 
             }
-
         }
 
     }
@@ -228,9 +226,9 @@ class ProfilFragment : Fragment() {
         auth.removeAuthStateListener(mauthLis)
     }
 
-    fun profilDuzenle(){
-        binding.tvMesaj.setOnClickListener(){
-          Navigation.findNavController(it).navigate(R.id.profilAyarlarFragment)
+    private fun profilDuzenle(){
+        binding.tvMesaj.setOnClickListener {
+          Navigation.findNavController(it).navigate(R.id.profilEditFragment)
         }
     }
 

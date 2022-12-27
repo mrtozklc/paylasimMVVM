@@ -1,23 +1,20 @@
 package com.example.paylasimmvvm.view.mesajlar
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.text.TextUtils
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import com.example.paylasimmvvm.R
 import com.example.paylasimmvvm.adapter.ChatFragmentRecyclerAdapter
-import com.example.paylasimmvvm.adapter.MesajlarRecyclerAdapter
 import com.example.paylasimmvvm.databinding.FragmentChatBinding
 import com.example.paylasimmvvm.model.ChatModel
 import com.example.paylasimmvvm.model.KullaniciBilgileri
-import com.example.paylasimmvvm.model.Mesajlar
 import com.example.paylasimmvvm.view.profil.UserProfilFragmentArgs
 import com.example.paylasimmvvm.viewmodel.ChatViewModel
 import com.google.firebase.auth.FirebaseAuth
@@ -33,13 +30,11 @@ class ChatFragment : Fragment() {
     private lateinit var recyclerAdapter: ChatFragmentRecyclerAdapter
     private lateinit var chatViewModeli: ChatViewModel
     var tumMesajlar=ArrayList<ChatModel>()
-    lateinit var sohbetEdilcekKisi:String
-    lateinit var mesajGonderenId:String
+    private lateinit var mesajGonderenId:String
     lateinit var myRecyclerview: RecyclerView
-    lateinit var eventListener: ChildEventListener
-    lateinit var eventListenerRefresh: ChildEventListener
-    val gosterilecekMesajSayisi=10
-    var sayfaSayisi=1
+    private lateinit var eventListener: ChildEventListener
+    private lateinit var eventListenerRefresh: ChildEventListener
+    private val gosterilecekMesajSayisi=10
     var mesajPosition=0
     var refreshMesajPosition=0
     var getirilenMesajId=""
@@ -50,7 +45,7 @@ class ChatFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding=FragmentChatBinding.inflate(layoutInflater,container,false)
         val view =binding.root
         auth= Firebase.auth
@@ -66,48 +61,48 @@ class ChatFragment : Fragment() {
             sohbetEdilenUserName(sohbetEdilcekKisi)
             mesajGonderenId=FirebaseAuth.getInstance().currentUser!!.uid
 
-            chatViewModeli=ViewModelProvider(this).get(ChatViewModel::class.java)
+            chatViewModeli= ViewModelProvider(this)[ChatViewModel::class.java]
             chatViewModeli.refreshChat(sohbetEdilcekKisi)
 
-            observeLiveData(sohbetEdilcekKisi)
+            observeLiveData()
 
             binding.tvvMesajGonder.setOnClickListener {
 
-                var mesaj= binding.etMesajEkle.text.toString().trim()
+                val mesaj= binding.etMesajEkle.text.toString().trim()
 
-                if(!TextUtils.isEmpty(mesaj.toString())){
+                if(!TextUtils.isEmpty(mesaj)){
 
-                    var mesajAtan=HashMap<String,Any>()
-                    mesajAtan.put("mesaj",binding.etMesajEkle.text.toString())
-                    mesajAtan.put("gonderilmeZamani", ServerValue.TIMESTAMP)
-                    mesajAtan.put("type","text")
-                    mesajAtan.put("goruldu",true)
-                    mesajAtan.put("user_id",auth.currentUser!!.uid)
-                    var mesajKey = mref.child("mesajlar").child(auth.currentUser!!.uid).child(sohbetEdilcekKisi).push().key
+                    val mesajAtan=HashMap<String,Any>()
+                    mesajAtan["mesaj"] = binding.etMesajEkle.text.toString()
+                    mesajAtan["gonderilmeZamani"] = ServerValue.TIMESTAMP
+                    mesajAtan["type"] = "text"
+                    mesajAtan["goruldu"] = true
+                    mesajAtan["user_id"] = auth.currentUser!!.uid
+                    val mesajKey = mref.child("mesajlar").child(auth.currentUser!!.uid).child(sohbetEdilcekKisi).push().key
 
 
                     mref.child("mesajlar").child(auth.currentUser!!.uid).child(sohbetEdilcekKisi).child(mesajKey!!).setValue(mesajAtan)
 
-                    var mesajAlan=HashMap<String,Any>()
-                    mesajAlan.put("mesaj",binding.etMesajEkle.text.toString())
-                    mesajAlan.put("gonderilmeZamani", ServerValue.TIMESTAMP)
-                    mesajAlan.put("type","text")
-                    mesajAlan.put("goruldu",false)
-                    mesajAlan.put("user_id",auth.currentUser!!.uid)
+                    val mesajAlan=HashMap<String,Any>()
+                    mesajAlan["mesaj"] = binding.etMesajEkle.text.toString()
+                    mesajAlan["gonderilmeZamani"] = ServerValue.TIMESTAMP
+                    mesajAlan["type"] = "text"
+                    mesajAlan["goruldu"] = false
+                    mesajAlan["user_id"] = auth.currentUser!!.uid
                     mref.child("mesajlar").child(sohbetEdilcekKisi).child(auth.currentUser!!.uid).child(mesajKey).setValue(mesajAlan)
 
 
-                    var KonusmamesajAtan=HashMap<String,Any>()
-                    KonusmamesajAtan.put("son_mesaj",binding.etMesajEkle.text.toString())
-                    KonusmamesajAtan.put("gonderilmeZamani", ServerValue.TIMESTAMP)
-                    KonusmamesajAtan.put("goruldu",true)
+                    val KonusmamesajAtan=HashMap<String,Any>()
+                    KonusmamesajAtan["son_mesaj"] = binding.etMesajEkle.text.toString()
+                    KonusmamesajAtan["gonderilmeZamani"] = ServerValue.TIMESTAMP
+                    KonusmamesajAtan["goruldu"] = true
 
                     mref.child("konusmalar").child(auth.currentUser!!.uid).child(sohbetEdilcekKisi).setValue(KonusmamesajAtan)
 
-                    var KonusmamesajAlan=HashMap<String,Any>()
-                    KonusmamesajAlan.put("son_mesaj",binding.etMesajEkle.text.toString())
-                    KonusmamesajAlan.put("gonderilmeZamani", ServerValue.TIMESTAMP)
-                    KonusmamesajAlan.put("goruldu",false)
+                    val KonusmamesajAlan=HashMap<String,Any>()
+                    KonusmamesajAlan["son_mesaj"] = binding.etMesajEkle.text.toString()
+                    KonusmamesajAlan["gonderilmeZamani"] = ServerValue.TIMESTAMP
+                    KonusmamesajAlan["goruldu"] = false
 
                     mref.child("konusmalar").child(sohbetEdilcekKisi).child(auth.currentUser!!.uid).setValue(KonusmamesajAlan)
 
@@ -120,19 +115,18 @@ class ChatFragment : Fragment() {
 
 
             }
-            binding.refreshId.setOnRefreshListener(object : SwipeRefreshLayout.OnRefreshListener{
-                override fun onRefresh() {
-
-                    mref.child("mesajlar").child(mesajGonderenId).child(sohbetEdilcekKisi).addListenerForSingleValueEvent(object :ValueEventListener{
+            binding.refreshId.setOnRefreshListener {
+                mref.child("mesajlar").child(mesajGonderenId).child(sohbetEdilcekKisi)
+                    .addListenerForSingleValueEvent(object : ValueEventListener {
                         override fun onDataChange(snapshot: DataSnapshot) {
 
-                            if(snapshot!!.childrenCount.toInt() != tumMesajlar.size){
+                            if (snapshot.childrenCount.toInt() != tumMesajlar.size) {
 
-                                refreshMesajPosition=0
+                                refreshMesajPosition = 0
 
                                 refreshMesajlar()
 
-                            }else{
+                            } else {
 
                                 binding.refreshId.isRefreshing = false
                                 binding.refreshId.isEnabled = false
@@ -146,10 +140,8 @@ class ChatFragment : Fragment() {
                     })
 
 
-                    binding.refreshId.isRefreshing=false
-                }
-
-            })
+                binding.refreshId.isRefreshing = false
+            }
 
 
         }
@@ -166,13 +158,13 @@ class ChatFragment : Fragment() {
 
     }
 
-    private fun observeLiveData(secilenUser:String) {
+    private fun observeLiveData() {
 
         chatViewModeli.chatMutable.observe(viewLifecycleOwner) {sohbet->
             sohbet.let {
 
                 binding.sohbetRecycler.visibility = View.VISIBLE
-                recyclerAdapter!!.mesajlariGuncelle(sohbet)
+                recyclerAdapter.mesajlariGuncelle(sohbet)
             }
 
         }
@@ -196,10 +188,10 @@ class ChatFragment : Fragment() {
         mref.child("users").child("isletmeler").child(sohbetEdilcekKisi).addListenerForSingleValueEvent(object :
             ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                if (snapshot .getValue()!=null){
+                if (snapshot .value !=null){
 
-                    var bulunanKullanici=snapshot!!.getValue(KullaniciBilgileri::class.java)!!.user_name
-                    binding.tvMesajlasLanUserName.setText(bulunanKullanici)
+                    val bulunanKullanici= snapshot.getValue(KullaniciBilgileri::class.java)!!.user_name
+                    binding.tvMesajlasLanUserName.text = bulunanKullanici
 
 
 
@@ -208,10 +200,10 @@ class ChatFragment : Fragment() {
                 mref.child("users").child("kullanicilar").child(sohbetEdilcekKisi).addListenerForSingleValueEvent(object :
                     ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
-                        if (snapshot .getValue()!=null){
+                        if (snapshot .value !=null){
 
-                            var bulunanKullanici=snapshot!!.getValue(KullaniciBilgileri::class.java)!!.user_name
-                            binding.tvMesajlasLanUserName.setText(bulunanKullanici)
+                            val bulunanKullanici= snapshot.getValue(KullaniciBilgileri::class.java)!!.user_name
+                            binding.tvMesajlasLanUserName.text = bulunanKullanici
 
 
                         }
@@ -248,8 +240,8 @@ class ChatFragment : Fragment() {
 
                     if (mesajPosition==0){
 
-                        getirilenMesajId= snapshot!!.key!!
-                        zatenListedeOlanMesajID=snapshot!!.key!!
+                        getirilenMesajId= snapshot.key!!
+                        zatenListedeOlanMesajID= snapshot.key!!
 
                     }
                     mesajPosition++
@@ -273,11 +265,12 @@ class ChatFragment : Fragment() {
             })
 
             eventListenerRefresh=mref.child("mesajlar").child(mesajGonderenId).child(sohbetEdilcekKisi).orderByKey().endAt(getirilenMesajId).limitToLast(gosterilecekMesajSayisi).addChildEventListener(object :ChildEventListener{
+                @SuppressLint("NotifyDataSetChanged")
                 override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
 
-                    var okunanMesaj=snapshot.getValue(ChatModel::class.java)
+                    val okunanMesaj=snapshot.getValue(ChatModel::class.java)
 
-                    if(!zatenListedeOlanMesajID.equals(snapshot!!.key)){
+                    if(zatenListedeOlanMesajID != snapshot.key){
 
 
 
@@ -295,7 +288,7 @@ class ChatFragment : Fragment() {
 
                     if(refreshMesajPosition==1){
 
-                        getirilenMesajId=snapshot!!.key!!
+                        getirilenMesajId= snapshot.key!!
 
 
                     }

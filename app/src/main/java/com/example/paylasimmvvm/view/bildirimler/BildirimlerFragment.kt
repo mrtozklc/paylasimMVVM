@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.paylasimmvvm.R
 import com.example.paylasimmvvm.adapter.BildirimlerRecyclerAdapter
 import com.example.paylasimmvvm.databinding.FragmentBildirimlerBinding
@@ -24,10 +25,10 @@ import com.google.firebase.ktx.Firebase
 class BildirimlerFragment : Fragment() {
     lateinit var binding:FragmentBildirimlerBinding
     private lateinit var auth : FirebaseAuth
-    lateinit var recyclerviewadapter:BildirimlerRecyclerAdapter
+    private lateinit var recyclerviewadapter:BildirimlerRecyclerAdapter
     private lateinit var mauthLis: FirebaseAuth.AuthStateListener
     lateinit var mref: DatabaseReference
-    var tumBildirimler=ArrayList<BildirimModel>()
+    private var tumBildirimler=ArrayList<BildirimModel>()
     private lateinit var bildirimlerViewModeli:BildirimlerViewModel
 
 
@@ -64,14 +65,13 @@ class BildirimlerFragment : Fragment() {
 
 
 
+
         val layoutManager= LinearLayoutManager(activity)
         binding.recyclerBildirim.layoutManager=layoutManager
         recyclerviewadapter= BildirimlerRecyclerAdapter(tumBildirimler)
         binding.recyclerBildirim.adapter=recyclerviewadapter
 
         binding.refreshId.setOnRefreshListener {
-            tumBildirimler.clear()
-            recyclerviewadapter = BildirimlerRecyclerAdapter(tumBildirimler)
             bildirimlerViewModeli.refreshBildirimler()
 
             binding.refreshId.isRefreshing = false

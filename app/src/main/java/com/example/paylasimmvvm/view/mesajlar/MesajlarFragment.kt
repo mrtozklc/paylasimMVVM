@@ -6,9 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -33,14 +30,13 @@ class MesajlarFragment : Fragment() {
     var tumMesajlar=ArrayList<Mesajlar>()
 
 
-
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         binding= FragmentMesajlarBinding.inflate(layoutInflater,container,false)
         val view=binding.root
+
 
         auth= Firebase.auth
         mref = FirebaseDatabase.getInstance().reference
@@ -132,22 +128,30 @@ class MesajlarFragment : Fragment() {
 
     override fun onStop() {
         super.onStop()
+
         Log.e("hata","onstop")
+        Log.e("hata","onstopmesajlarsayisi"+tumMesajlar.size)
+
+
+
         auth.removeAuthStateListener(mauthLis)
     }
 
 
     override fun onPause() {
         super.onPause()
-
+        Log.e("hata","onpausemesajlarsayisi"+tumMesajlar.size)
         Log.e("hata","onpause")
-
 
     }
 
 
     override fun onResume() {
         super.onResume()
+
+
+        Log.e("hata","onresumemesajlarsayisi"+tumMesajlar.size)
+
 
         Log.e("hata","onresume")
 

@@ -1,5 +1,6 @@
 package com.example.paylasimmvvm.view.yorumlar
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
 import android.os.Bundle
@@ -141,9 +142,9 @@ class YorumlarFragment : Fragment() {
         fun setData(oanOlusturulanYorum:Yorumlar) {
 
 
-            yorumSure.setText(TimeAgo.getTimeAgoForComments(oanOlusturulanYorum!!.yorum_tarih!!))
-            yorumBegenmeSayisi.setText(oanOlusturulanYorum.yorum_begeni)
-            kullaniciAdiveYorum.setText(oanOlusturulanYorum.yorum)
+            yorumSure.text = TimeAgo.getTimeAgoForComments(oanOlusturulanYorum!!.yorum_tarih!!)
+            yorumBegenmeSayisi.text = oanOlusturulanYorum.yorum_begeni
+            kullaniciAdiveYorum.text = oanOlusturulanYorum.yorum
 
 
 
@@ -159,21 +160,21 @@ class YorumlarFragment : Fragment() {
 
         private fun kullaniciBilgileriniGetir(user_id: String?, yorum: String?) {
 
-            var mref= FirebaseDatabase.getInstance().reference
+            val mref= FirebaseDatabase.getInstance().reference
             mref.child("users").child("kullanicilar").child(user_id!!).addListenerForSingleValueEvent(object :
                 ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    if (snapshot!!.getValue()!=null){
-                        var userNameveYorum="<font color=#000>"+ snapshot!!.getValue(KullaniciBilgileri::class.java)!!.user_name!!.toString()+"</font>" + " " + yorum
-                        var sonuc: Spanned?=null
+                    if (snapshot.value !=null){
+                        val userNameveYorum="<font color=#000>"+ snapshot.getValue(KullaniciBilgileri::class.java)!!.user_name!!.toString()+"</font>" + " " + yorum
+                        val sonuc: Spanned?
                         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N){
                             sonuc= Html.fromHtml(userNameveYorum, Html.FROM_HTML_MODE_LEGACY)
                         }else {
                             sonuc= Html.fromHtml(userNameveYorum)
                         }
-                        kullaniciAdiveYorum.setText(sonuc)
+                        kullaniciAdiveYorum.text = sonuc
                       //  imageLoader.setImage(snapshot!!.getValue(KullaniciBilgileri::class.java)!!.user_detail!!.profile_picture!!.toString(),yorumYapanUserPhoto,null,"")
-                        Picasso.get().load(snapshot!!.getValue(KullaniciBilgileri::class.java)!!.user_detail!!.profile_picture!!.toString()).placeholder(R.drawable.ic_baseline_person).error(R.drawable.ic_baseline_person).into(yorumYapanUserPhoto)
+                        Picasso.get().load(snapshot.getValue(KullaniciBilgileri::class.java)!!.user_detail!!.profile_picture!!.toString()).placeholder(R.drawable.ic_baseline_person).error(R.drawable.ic_baseline_person).into(yorumYapanUserPhoto)
 
                     }else{
                         Log.e("yorumlar kullanicibilgileri","kullacilar tarafı çalıştı")
@@ -187,21 +188,20 @@ class YorumlarFragment : Fragment() {
             })
 
 
-            mref.child("users").child("isletmeler").child(user_id!!).addListenerForSingleValueEvent(object :
+            mref.child("users").child("isletmeler").child(user_id).addListenerForSingleValueEvent(object :
                 ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    if (snapshot!!.getValue()!=null){
-                        var userNameveYorum="<font color=#000>"+ snapshot!!.getValue(KullaniciBilgileri::class.java)!!.user_name!!.toString()+"</font>" + " " + yorum
-                        var sonuc: Spanned?=null
-                        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N){
-                            sonuc= Html.fromHtml(userNameveYorum, Html.FROM_HTML_MODE_LEGACY)
+                    if (snapshot.value !=null){
+                        val userNameveYorum="<font color=#000>"+ snapshot.getValue(KullaniciBilgileri::class.java)!!.user_name!!.toString()+"</font>" + " " + yorum
+                        val sonuc: Spanned? = if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N){
+                            Html.fromHtml(userNameveYorum, Html.FROM_HTML_MODE_LEGACY)
                         }else {
-                            sonuc= Html.fromHtml(userNameveYorum)
+                            Html.fromHtml(userNameveYorum)
                         }
-                        kullaniciAdiveYorum.setText(sonuc)
-                        if (!snapshot!!.getValue(KullaniciBilgileri::class.java)!!.user_detail!!.profile_picture!!.toString().isEmpty())
+                        kullaniciAdiveYorum.text = sonuc
+                        if (!snapshot.getValue(KullaniciBilgileri::class.java)!!.user_detail!!.profile_picture!!.toString().isEmpty())
                          {
-                             Picasso.get().load(snapshot!!.getValue(KullaniciBilgileri::class.java)!!.user_detail!!.profile_picture!!.toString()).placeholder(R.drawable.ic_baseline_person).error(R.drawable.ic_baseline_person).into(yorumYapanUserPhoto)
+                             Picasso.get().load(snapshot.getValue(KullaniciBilgileri::class.java)!!.user_detail!!.profile_picture!!.toString()).placeholder(R.drawable.ic_baseline_person).error(R.drawable.ic_baseline_person).into(yorumYapanUserPhoto)
 
 
 
@@ -227,7 +227,7 @@ class YorumlarFragment : Fragment() {
 
         fun begenme(yorumYapilacakGonderininID: String, begenilecekYorumId: String?) {
 
-            var mRef= FirebaseDatabase.getInstance().reference.child("yorumlar").child(yorumYapilacakGonderininID).child(begenilecekYorumId!!)
+            val mRef= FirebaseDatabase.getInstance().reference.child("yorumlar").child(yorumYapilacakGonderininID).child(begenilecekYorumId!!)
 
 
             yorumBegen.setOnClickListener {
@@ -237,7 +237,7 @@ class YorumlarFragment : Fragment() {
                     ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
 
-                        if (snapshot!!.hasChild(FirebaseAuth.getInstance().currentUser!!.uid)){
+                        if (snapshot.hasChild(FirebaseAuth.getInstance().currentUser!!.uid)){
                             mRef.child("begenenler").child(FirebaseAuth.getInstance().currentUser!!.uid).removeValue()
                              yorumBegen.setImageResource(R.drawable.ic_launcher_like_foreground)
 
@@ -268,15 +268,16 @@ class YorumlarFragment : Fragment() {
         }
 
         fun begenmeDurumu(yorumYapilacakGonderininID: String, begenilecekYorumId: String?) {
-            var mRef= FirebaseDatabase.getInstance().reference.child("yorumlar").child(yorumYapilacakGonderininID).child(begenilecekYorumId!!)
+            val mRef= FirebaseDatabase.getInstance().reference.child("yorumlar").child(yorumYapilacakGonderininID).child(begenilecekYorumId!!)
 
 
             mRef.child("begenenler").addListenerForSingleValueEvent(object : ValueEventListener {
+                @SuppressLint("SetTextI18n")
                 override fun onDataChange(snapshot: DataSnapshot) {
 
-                    if (snapshot!!.exists()){
+                    if (snapshot.exists()){
                         yorumBegenmeSayisi.visibility=View.VISIBLE
-                        yorumBegenmeSayisi.text=snapshot!!.childrenCount.toString()+" beğenme"
+                        yorumBegenmeSayisi.text= snapshot.childrenCount.toString()+" beğenme"
 
                     }else{
                         yorumBegenmeSayisi.visibility=View.INVISIBLE
@@ -284,7 +285,7 @@ class YorumlarFragment : Fragment() {
 
                     }
 
-                    if (snapshot!!.hasChild(FirebaseAuth.getInstance().currentUser!!.uid)){
+                    if (snapshot.hasChild(FirebaseAuth.getInstance().currentUser!!.uid)){
                      yorumBegen.setImageResource(R.drawable.ic_launcher_like_red_foreground)
 
 
@@ -312,7 +313,7 @@ class YorumlarFragment : Fragment() {
 
     @Subscribe(sticky = true)
     internal fun onYorumYapilacakGonderi(gonderi: EventbusData.YorumYapilacakGonderininIDsiniGonder) {
-        yorumYapilacakGonderininID = gonderi!!.gonderiID!!
+        yorumYapilacakGonderininID = gonderi.gonderiID!!
 
 
     }
@@ -326,7 +327,7 @@ class YorumlarFragment : Fragment() {
 
 
             override fun onDataChange(snapshot: DataSnapshot) {
-                var profilPictureURL=snapshot!!.child("profile_picture").getValue().toString()
+                val profilPictureURL= snapshot.child("profile_picture").value.toString()
                // imageLoader.setImage(profilPictureURL,binding.circleProfilPhoto,null,"")
             Picasso.get().load(profilPictureURL).placeholder(R.drawable.ic_baseline_person).error(R.drawable.ic_baseline_person).into(binding.circleProfilPhoto)}
 

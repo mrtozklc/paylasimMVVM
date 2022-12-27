@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.NavOptions
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.RecyclerView
 import com.example.paylasimmvvm.R
@@ -23,13 +24,12 @@ class BildirimlerRecyclerAdapter(private var tumBildirimler:ArrayList<BildirimMo
     RecyclerView.Adapter<BildirimlerRecyclerAdapter.mviewHolder>() {
 
     init {
-        Collections.sort(tumBildirimler, object : Comparator<BildirimModel> {
-            override fun compare(o1: BildirimModel?, o2: BildirimModel?): Int {
-                return if (o1!!.time!! > o2!!.time!!) {
-                    -1
-                } else 1
-            }
-        })}
+        tumBildirimler.sortWith { o1, o2 ->
+            if (o1!!.time!! > o2!!.time!!) {
+                -1
+            } else 1
+        }
+    }
 
 
 
@@ -53,7 +53,11 @@ class BildirimlerRecyclerAdapter(private var tumBildirimler:ArrayList<BildirimMo
 
             kampanya.setOnClickListener {
                 val action=BildirimlerFragmentDirections.actionBildirimlerFragmentToProfilFragment()
-                Navigation.findNavController(it).navigate(action)
+                val navOptions = NavOptions.Builder()
+                    .setPopUpTo(R.id.bildirimlerFragment, true)
+                    .build()
+
+                Navigation.findNavController(it).navigate(action,navOptions)
 
 
             }
@@ -78,28 +82,32 @@ class BildirimlerRecyclerAdapter(private var tumBildirimler:ArrayList<BildirimMo
 
         private fun idsiVerilenKullanicininBilgileriYorum(user_id: String?, gonderi_id: String?, bildirimZamani: Long) {
 
-            FirebaseDatabase.getInstance().getReference().child("users").child("kullanicilar").child(user_id!!).addListenerForSingleValueEvent(object :ValueEventListener{
+            FirebaseDatabase.getInstance().reference.child("users").child("kullanicilar").child(user_id!!).addListenerForSingleValueEvent(object :ValueEventListener{
                 @SuppressLint("SetTextI18n")
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    if (snapshot.getValue()!=null){
+                    if (snapshot.value !=null){
 
-                        if (user_id.equals(FirebaseAuth.getInstance().currentUser!!.uid)){
+                        if (user_id == FirebaseAuth.getInstance().currentUser!!.uid){
                             begenenPP.visibility=View.GONE
                             yorumYapildi.visibility=View.GONE
                             kampanya.visibility=View.GONE
 
                         }else{
-                            val userName = snapshot!!.child("user_name").getValue().toString()
-                            if (snapshot!!.child("user_name").getValue().toString().isNotEmpty())
+                            val userName = snapshot.child("user_name").value.toString()
+                            if (snapshot.child("user_name").value.toString().isNotEmpty())
 
-                                yorumYapildi.setText(userName + " gönderine yorum yaptı.  " + TimeAgo.getTimeAgoForComments(bildirimZamani))
-
-
+                                yorumYapildi.text = userName + " gönderine yorum yaptı.  " + TimeAgo.getTimeAgoForComments(bildirimZamani)
 
 
-                            if (!snapshot!!.child("user_detail").child("profile_picture").getValue().toString().isNullOrEmpty()) {
-                                val takipEdenPicURL = snapshot!!.child("user_detail").child("profile_picture").getValue().toString()
+
+
+                            if (snapshot.child("user_detail").child("profile_picture").value.toString().isNotEmpty()) {
+                                val takipEdenPicURL = snapshot.child("user_detail").child("profile_picture").value.toString()
                                 Picasso.get().load(takipEdenPicURL).placeholder(R.drawable.ic_baseline_person).error(R.drawable.ic_baseline_person).into(begenenPP)
+
+                            }else{
+                                begenenPP.setBackgroundResource(R.drawable.ic_baseline_person)
+
 
                             }
 
@@ -115,28 +123,36 @@ class BildirimlerRecyclerAdapter(private var tumBildirimler:ArrayList<BildirimMo
 
             })
 
-            FirebaseDatabase.getInstance().getReference().child("users").child("isletmeler").child(user_id!!).addListenerForSingleValueEvent(object :ValueEventListener{
+            FirebaseDatabase.getInstance().reference.child("users").child("isletmeler").child(
+                user_id
+            ).addListenerForSingleValueEvent(object :ValueEventListener{
                 @SuppressLint("SetTextI18n")
                 override fun onDataChange(snapshot: DataSnapshot)  {
                     if (snapshot.value !=null){
 
-                        if (user_id.equals(FirebaseAuth.getInstance().currentUser!!.uid)){
+                        if (user_id == FirebaseAuth.getInstance().currentUser!!.uid){
                             begenenPP.visibility=View.GONE
                             yorumYapildi.visibility=View.GONE
                             kampanya.visibility=View.GONE
 
                         }else{
-                            val userName = snapshot!!.child("user_name").getValue().toString()
-                            if (!snapshot!!.child("user_name").getValue().toString().isNullOrEmpty())
+                            val userName = snapshot.child("user_name").value.toString()
+                            if (snapshot.child("user_name").value.toString().isNotEmpty())
 
-                                yorumYapildi.setText(userName + " gönderine yorum yaptı.  " + TimeAgo.getTimeAgoForComments(bildirimZamani))
-
-
+                                yorumYapildi.text = userName + " gönderine yorum yaptı.  " + TimeAgo.getTimeAgoForComments(bildirimZamani)
 
 
-                            if (!snapshot!!.child("user_detail").child("profile_picture").getValue().toString().isNullOrEmpty()) {
-                                var takipEdenPicURL = snapshot!!.child("user_detail").child("profile_picture").getValue().toString()
+
+
+                            if (snapshot.child("user_detail").child("profile_picture").value.toString()
+                                    .isNotEmpty()) {
+                                val takipEdenPicURL = snapshot.child("user_detail").child("profile_picture").value.toString()
                                 Picasso.get().load(takipEdenPicURL).placeholder(R.drawable.ic_baseline_person).error(R.drawable.ic_baseline_person).into(begenenPP)
+                            }
+                            else{
+                                begenenPP.setBackgroundResource(R.drawable.ic_baseline_person)
+
+
                             }
 
                         }
@@ -149,19 +165,19 @@ class BildirimlerRecyclerAdapter(private var tumBildirimler:ArrayList<BildirimMo
             })
 
 
-            FirebaseDatabase.getInstance().getReference().child("kampanya").child(FirebaseAuth.getInstance().currentUser!!.uid)
+            FirebaseDatabase.getInstance().reference.child("kampanya").child(FirebaseAuth.getInstance().currentUser!!.uid)
                 .child(gonderi_id!!).addListenerForSingleValueEvent(object :ValueEventListener{
                     override fun onDataChange(snapshot: DataSnapshot) {
 
-                        if (snapshot.getValue()!=null){
-                            if (user_id.equals(FirebaseAuth.getInstance().currentUser!!.uid)){
+                        if (snapshot.value !=null){
+                            if (user_id == FirebaseAuth.getInstance().currentUser!!.uid){
                                 begenenPP.visibility=View.GONE
                                 yorumYapildi.visibility=View.GONE
                                 kampanya.visibility=View.GONE}
 
-                            else if (!snapshot!!.child("file_url").getValue().toString().isNullOrEmpty()) {
+                            else if (snapshot.child("file_url").value.toString().isNotEmpty()) {
                                 kampanya.visibility = View.VISIBLE
-                                var begenilenFotoURL = snapshot!!.child("file_url").getValue().toString()
+                                val begenilenFotoURL = snapshot.child("file_url").value.toString()
                                 Picasso.get().load(begenilenFotoURL).placeholder(R.drawable.ic_baseline_person).error(R.drawable.ic_baseline_person).into(kampanya)
 
                             } else {
@@ -184,28 +200,31 @@ class BildirimlerRecyclerAdapter(private var tumBildirimler:ArrayList<BildirimMo
 
         private fun idsiVerilenKullanicininBilgileriBegen(user_id: String?, gonderi_id: String?, bildirimZamani: Long) {
 
-            FirebaseDatabase.getInstance().getReference().child("users").child("kullanicilar").child(user_id!!).addListenerForSingleValueEvent(object :ValueEventListener{
+            FirebaseDatabase.getInstance().reference.child("users").child("kullanicilar").child(user_id!!).addListenerForSingleValueEvent(object :ValueEventListener{
+                @SuppressLint("SetTextI18n")
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    if (snapshot.getValue()!=null){
+                    if (snapshot.value !=null){
 
-                        if (user_id.equals(FirebaseAuth.getInstance().currentUser!!.uid)){
+                        if (user_id == FirebaseAuth.getInstance().currentUser!!.uid){
                             begenenPP.visibility=View.GONE
                             yorumYapildi.visibility=View.GONE
                             kampanya.visibility=View.GONE
 
                         }else{
-                            var userName = snapshot!!.child("user_name").getValue().toString()
-                            if (!snapshot!!.child("user_name").getValue().toString().isNullOrEmpty())
+                            val userName = snapshot.child("user_name").value.toString()
+                            if (snapshot.child("user_name").value.toString().isNotEmpty())
 
-                                gonderiBegenildi.setText(userName + " Kampanyani Beğendi .  " + TimeAgo.getTimeAgoForComments(bildirimZamani))
-
-
+                                gonderiBegenildi.text = userName + " Kampanyani Beğendi .  " + TimeAgo.getTimeAgoForComments(bildirimZamani)
 
 
-                            if (!snapshot!!.child("user_detail").child("profile_picture").getValue().toString().isNullOrEmpty()) {
-                                var takipEdenPicURL = snapshot!!.child("user_detail").child("profile_picture").getValue().toString()
+
+
+                            if (snapshot.child("user_detail").child("profile_picture").value.toString().isNotEmpty()) {
+                                val takipEdenPicURL = snapshot.child("user_detail").child("profile_picture").value.toString()
                                 Picasso.get().load(takipEdenPicURL).placeholder(R.drawable.ic_baseline_person).error(R.drawable.ic_baseline_person).into(begenenPP)
 
+                            }else{
+                                begenenPP.setBackgroundResource(R.drawable.ic_baseline_person)
                             }
 
                         }
@@ -217,28 +236,35 @@ class BildirimlerRecyclerAdapter(private var tumBildirimler:ArrayList<BildirimMo
 
             })
 
-            FirebaseDatabase.getInstance().getReference().child("users").child("isletmeler").child(user_id!!).addListenerForSingleValueEvent(object :ValueEventListener{
+            FirebaseDatabase.getInstance().reference.child("users").child("isletmeler").child(
+                user_id
+            ).addListenerForSingleValueEvent(object :ValueEventListener{
+                @SuppressLint("SetTextI18n")
                 override fun onDataChange(snapshot: DataSnapshot)  {
-                    if (snapshot.getValue()!=null){
+                    if (snapshot.value !=null){
 
-                        if (user_id.equals(FirebaseAuth.getInstance().currentUser!!.uid)){
+                        if (user_id == FirebaseAuth.getInstance().currentUser!!.uid){
                             begenenPP.visibility=View.GONE
                             yorumYapildi.visibility=View.GONE
                             kampanya.visibility=View.GONE
 
                         }else{
-                            var userName = snapshot!!.child("user_name").getValue().toString()
-                            if (!snapshot!!.child("user_name").getValue().toString().isNullOrEmpty())
+                            val userName = snapshot.child("user_name").value.toString()
+                            if (snapshot.child("user_name").value.toString().isNotEmpty())
 
-                                gonderiBegenildi.setText(userName + " Kampanyani Beğendi .  " + TimeAgo.getTimeAgoForComments(bildirimZamani))
-
-
+                                gonderiBegenildi.text = userName + " Kampanyani Beğendi .  " + TimeAgo.getTimeAgoForComments(bildirimZamani)
 
 
-                            if (!snapshot!!.child("user_detail").child("profile_picture").getValue().toString().isNullOrEmpty()) {
-                                var takipEdenPicURL = snapshot!!.child("user_detail").child("profile_picture").getValue().toString()
+
+
+                            if (snapshot.child("user_detail").child("profile_picture").value.toString()
+                                    .isNotEmpty()) {
+                                val takipEdenPicURL = snapshot.child("user_detail").child("profile_picture").value.toString()
                                 Picasso.get().load(takipEdenPicURL).placeholder(R.drawable.ic_baseline_person).error(R.drawable.ic_baseline_person).into(begenenPP)
 
+                            }else{
+                                begenenPP.setBackgroundResource(R.drawable.ic_baseline_person
+                                )
                             }
 
                         }
@@ -251,20 +277,20 @@ class BildirimlerRecyclerAdapter(private var tumBildirimler:ArrayList<BildirimMo
             })
 
 
-            FirebaseDatabase.getInstance().getReference().child("kampanya").child(FirebaseAuth.getInstance().currentUser!!.uid)
+            FirebaseDatabase.getInstance().reference.child("kampanya").child(FirebaseAuth.getInstance().currentUser!!.uid)
                 .child(gonderi_id!!).addListenerForSingleValueEvent(object :ValueEventListener{
                     override fun onDataChange(snapshot: DataSnapshot) {
 
-                        if (snapshot.getValue()!=null){
-                            if (user_id.equals(FirebaseAuth.getInstance().currentUser!!.uid)){  begenenPP.visibility=View.GONE
+                        if (snapshot.value !=null){
+                            if (user_id == FirebaseAuth.getInstance().currentUser!!.uid){  begenenPP.visibility=View.GONE
                                 yorumYapildi.visibility=View.GONE
                                 kampanya.visibility=View.GONE}
                             else
 
 
-                                if (!snapshot!!.child("file_url").getValue().toString().isNullOrEmpty()) {
+                                if (snapshot.child("file_url").value.toString().isNotEmpty()) {
                                     kampanya.visibility = View.VISIBLE
-                                    var begenilenFotoURL = snapshot!!.child("file_url").getValue().toString()
+                                    val begenilenFotoURL = snapshot.child("file_url").value.toString()
                                     Picasso.get().load(begenilenFotoURL).into(kampanya)
                                 } else {
                                     kampanya.visibility = View.INVISIBLE
@@ -288,22 +314,23 @@ class BildirimlerRecyclerAdapter(private var tumBildirimler:ArrayList<BildirimMo
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): mviewHolder {
 
-        var view=
+        val view=
 
             LayoutInflater.from(parent.context).inflate(R.layout.recycler_row_bildirimler,parent,false)
 
-        return BildirimlerRecyclerAdapter.mviewHolder(view)
+        return mviewHolder(view)
     }
 
     override fun onBindViewHolder(holder: mviewHolder, position: Int) {
 
-        holder.setdata(tumBildirimler.get(position))
+        holder.setdata(tumBildirimler[position])
 
     }
 
     override fun getItemCount(): Int {
         return tumBildirimler.size
     }
+    @SuppressLint("NotifyDataSetChanged")
     fun kampanyalariGuncelle(yeniKampanyaListesi:List<BildirimModel>){
         tumBildirimler.clear()
         tumBildirimler.addAll(yeniKampanyaListesi)

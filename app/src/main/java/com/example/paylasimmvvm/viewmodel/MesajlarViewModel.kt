@@ -1,5 +1,4 @@
 package com.example.paylasimmvvm.viewmodel
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.paylasimmvvm.model.Mesajlar
@@ -15,6 +14,7 @@ class MesajlarViewModel:ViewModel() {
     lateinit var mref: DatabaseReference
 
     fun refreshMesajlar(){
+        mesajlarArray.clear()
 
         auth=  FirebaseAuth.getInstance()
         mref = FirebaseDatabase.getInstance().reference
@@ -68,8 +68,6 @@ class MesajlarViewModel:ViewModel() {
                 mesajlarArray.add(0,guncellenecekKonusma)
                 mesajlarMutable.value=mesajlarArray
 
-
-
             }
 
         }
@@ -84,8 +82,6 @@ class MesajlarViewModel:ViewModel() {
 
                mesajlarArray.removeAt(kontrol)
                 mesajlarMutable.value=mesajlarArray
-
-
 
 
             }
@@ -115,5 +111,7 @@ class MesajlarViewModel:ViewModel() {
 
 
     }
+
+
 
 }

@@ -2,7 +2,6 @@ package com.example.paylasimmvvm.adapter
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.DialogInterface
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -12,14 +11,11 @@ import androidx.navigation.Navigation
 import androidx.recyclerview.widget.RecyclerView
 import com.example.paylasimmvvm.R
 import com.example.paylasimmvvm.databinding.RecyclerRowBinding
-import com.example.paylasimmvvm.model.KullaniciBilgileri
 import com.example.paylasimmvvm.model.KullaniciKampanya
 import com.example.paylasimmvvm.util.Bildirimler
 import com.example.paylasimmvvm.util.Bildirimler.mref
-import com.example.paylasimmvvm.util.Bildirimler.muser
 import com.example.paylasimmvvm.util.EventbusData
 import com.example.paylasimmvvm.util.TimeAgo
-import com.example.paylasimmvvm.view.home.HomeFragmentDirections
 import com.example.paylasimmvvm.view.profil.ProfilFragmentDirections
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
@@ -30,15 +26,15 @@ import com.squareup.picasso.Picasso
 import org.greenrobot.eventbus.EventBus
 import java.util.*
 
-class ProfilFragmentRecyclerAdapter (var context: Context, var tumKampanyalar: ArrayList<KullaniciKampanya>):
+class ProfilFragmentRecyclerAdapter (var context: Context, private var tumKampanyalar: ArrayList<KullaniciKampanya>):
     RecyclerView.Adapter<ProfilFragmentRecyclerAdapter.MyViewHolder>() {
 
     init {
         Collections.sort(tumKampanyalar,object : Comparator<KullaniciKampanya> {
             override fun compare(p0: KullaniciKampanya?, p1: KullaniciKampanya?): Int {
-                if (p0!!.postYuklenmeTarih!!>p1!!.postYuklenmeTarih!!){
-                    return -1
-                }else return 1
+                return if (p0!!.postYuklenmeTarih!!>p1!!.postYuklenmeTarih!!){
+                    -1
+                }else 1
             }
 
         })
@@ -52,26 +48,26 @@ class ProfilFragmentRecyclerAdapter (var context: Context, var tumKampanyalar: A
 
 
 
-        var profileImage =binding.profilImage
-        var userNameTitle = binding.kullaniciAdiTepe
-        var gonderi = binding.kampanyaPhoto
-        var userNameveAciklama = binding.textView21
-        var kampanyaTarihi = binding.kampanyaTarihiId
-        var yorumYap = binding.imgYorum
+        private var profileImage =binding.profilImage
+        private var userNameTitle = binding.kullaniciAdiTepe
+        private var gonderi = binding.kampanyaPhoto
+        private var userNameveAciklama = binding.textView21
+        private var kampanyaTarihi = binding.kampanyaTarihiId
+        private var yorumYap = binding.imgYorum
         var gonderiBegen = binding.imgBegen
         var begenmeSayisi=binding.begenmeSayisi
         var yorumlariGoster=binding.tvYorumGoster
-        var postMenu=binding.postMesaj
-        var delete=binding.delete
+        private var postMenu=binding.postMesaj
+        private var delete=binding.delete
 
 
-        var myprofilActivity =profil
+        private var myprofilActivity =profil
 
         @SuppressLint("SetTextI18n")
-        fun setData(position: Int, anlikGonderi: KullaniciKampanya) {
+        fun setData(anlikGonderi: KullaniciKampanya) {
 
-            userNameTitle.setText(anlikGonderi.userName)
-            if (!anlikGonderi.userPhotoURL!!.isEmpty()){
+            userNameTitle.text = anlikGonderi.userName
+            if (anlikGonderi.userPhotoURL!!.isNotEmpty()){
                 Picasso.get().load(anlikGonderi.userPhotoURL).placeholder(R.drawable.ic_baseline_person).error(R.drawable.ic_baseline_person).fit().centerCrop().into(profileImage)
 
 
@@ -81,13 +77,13 @@ class ProfilFragmentRecyclerAdapter (var context: Context, var tumKampanyalar: A
 
             }
 
-            userNameveAciklama.setText(anlikGonderi.userName.toString()+" "+anlikGonderi.postAciklama.toString())
+            userNameveAciklama.text = anlikGonderi.userName.toString()+" "+anlikGonderi.postAciklama.toString()
             Picasso.get().load(anlikGonderi.postURL).centerCrop().fit().into(gonderi)
 
-            kampanyaTarihi.setText(TimeAgo.getTimeAgo(anlikGonderi.postYuklenmeTarih!!))
+            kampanyaTarihi.text = TimeAgo.getTimeAgo(anlikGonderi.postYuklenmeTarih!!)
 
             begeniKontrolu(anlikGonderi)
-            yorumlariGoster(position,anlikGonderi)
+            yorumlariGoster(anlikGonderi)
 
 
 
@@ -104,56 +100,52 @@ class ProfilFragmentRecyclerAdapter (var context: Context, var tumKampanyalar: A
 
             delete.setOnClickListener {
 
-                var alert = AlertDialog.Builder(myprofilActivity, androidx.appcompat.R.style.Base_Theme_AppCompat_Dialog_Alert)
+                val alert = AlertDialog.Builder(myprofilActivity, androidx.appcompat.R.style.Base_Theme_AppCompat_Dialog_Alert)
                     .setTitle("KAMPANYAYI SİL ")
                     .setMessage("Emin misiniz?")
-                    .setPositiveButton("SİL", object : DialogInterface.OnClickListener {
-
-                        override fun onClick(p0: DialogInterface?, p1: Int) {
-
-
-                            var postID = anlikGonderi.postID
+                    .setPositiveButton("SİL"
+                    ) { p0, p1 ->
+                        val postID = anlikGonderi.postID
 
 
-                            mref.child("kampanya").child(FirebaseAuth.getInstance().currentUser!!.uid!!).child(postID!!).addListenerForSingleValueEvent(object :
-                                ValueEventListener {
-                                override fun onDataChange(snapshot: DataSnapshot) {
-                                    snapshot.ref.removeValue()
+                        mref.child("kampanya").child(FirebaseAuth.getInstance().currentUser!!.uid)
+                            .child(postID!!).addListenerForSingleValueEvent(object :
+                            ValueEventListener {
+                            override fun onDataChange(snapshot: DataSnapshot) {
+                                snapshot.ref.removeValue()
 
-                                }
+                            }
 
-                                override fun onCancelled(error: DatabaseError) {
-                                }
+                            override fun onCancelled(error: DatabaseError) {
+                            }
 
-                            })
+                        })
 
-                            mref.child("users").child("isletmeler").child(FirebaseAuth.getInstance().currentUser!!.uid).child("user_detail").addListenerForSingleValueEvent(object :
-                                ValueEventListener {
-                                override fun onDataChange(snapshot: DataSnapshot) {
-                                    var oankiGonderiSayisi=snapshot!!.child("post").getValue().toString().toInt()
-                                    oankiGonderiSayisi--
-                                    mref.child("users").child("isletmeler").child(FirebaseAuth.getInstance().currentUser!!.uid).child("user_detail").child("post").setValue(oankiGonderiSayisi.toString())
+                        mref.child("users").child("isletmeler")
+                            .child(FirebaseAuth.getInstance().currentUser!!.uid)
+                            .child("user_detail").addListenerForSingleValueEvent(object :
+                            ValueEventListener {
+                            override fun onDataChange(snapshot: DataSnapshot) {
+                                var oankiGonderiSayisi =
+                                    snapshot.child("post").value.toString().toInt()
+                                oankiGonderiSayisi--
+                                mref.child("users").child("isletmeler")
+                                    .child(FirebaseAuth.getInstance().currentUser!!.uid)
+                                    .child("user_detail").child("post")
+                                    .setValue(oankiGonderiSayisi.toString())
 
-                                 Navigation.findNavController(itemView).navigate(R.id.profilFragment)
-
-
-                                }
-
-                                override fun onCancelled(error: DatabaseError) {
-                                }
-
-                            })
+                                Navigation.findNavController(itemView).navigate(R.id.profilFragment)
 
 
-                        }
+                            }
 
-                    })
-                    .setNegativeButton("VAZGEÇ", object : DialogInterface.OnClickListener {
-                        override fun onClick(p0: DialogInterface?, p1: Int) {
-                            p0!!. dismiss()
-                        }
+                            override fun onCancelled(error: DatabaseError) {
+                            }
 
-                    })
+                        })
+                    }
+                    .setNegativeButton("VAZGEÇ"
+                    ) { p0, p1 -> p0!!.dismiss() }
                     .create()
 
                 alert.show()
@@ -167,13 +159,13 @@ class ProfilFragmentRecyclerAdapter (var context: Context, var tumKampanyalar: A
 
             gonderiBegen.setOnClickListener {
 
-                var ref = FirebaseDatabase.getInstance().reference
-                var currentID = FirebaseAuth.getInstance().currentUser!!.uid
+                val ref = FirebaseDatabase.getInstance().reference
+                val currentID = FirebaseAuth.getInstance().currentUser!!.uid
 
                 ref.child("begeniler").child(anlikGonderi.postID!!)
                     .addListenerForSingleValueEvent(object : ValueEventListener {
                         override fun onDataChange(snapshot: DataSnapshot) {
-                            if (snapshot!!.hasChild(currentID)) {
+                            if (snapshot.hasChild(currentID)) {
                                 ref.child("begeniler").child(anlikGonderi.postID!!).child(currentID)
                                     .removeValue()
                                 if (anlikGonderi.userID!= FirebaseAuth.getInstance().currentUser!!.uid){
@@ -189,13 +181,11 @@ class ProfilFragmentRecyclerAdapter (var context: Context, var tumKampanyalar: A
                                 Log.e("bildirim",""+anlikGonderi)
                                 if (anlikGonderi.userID!= FirebaseAuth.getInstance().currentUser!!.uid){
                                  Bildirimler.bildirimKaydet(anlikGonderi.userID!!,Bildirimler.KAMPANYA_BEGENILDI,anlikGonderi.postID!!)
-                                }else{
-
                                 }
 
                                 gonderiBegen.setImageResource(R.drawable.ic_launcher_like_red_foreground)
                                 begenmeSayisi.visibility= View.VISIBLE
-                                begenmeSayisi.setText(""+snapshot!!.childrenCount!!.toString()+" beğeni")
+                                begenmeSayisi.text = ""+ snapshot.childrenCount.toString()+" beğeni"
 
 
 
@@ -212,17 +202,12 @@ class ProfilFragmentRecyclerAdapter (var context: Context, var tumKampanyalar: A
 
         }
 
-        fun yorumlarFragmentiniBaslat(anlikGonderi: KullaniciKampanya) {
-
-            if (anlikGonderi.userID!= FirebaseAuth.getInstance().currentUser!!.uid){
+        private fun yorumlarFragmentiniBaslat(anlikGonderi: KullaniciKampanya) {
 
 
-
-
-            }
 
             EventBus.getDefault()
-                .postSticky(EventbusData.YorumYapilacakGonderininIDsiniGonder(anlikGonderi!!.postID))
+                .postSticky(EventbusData.YorumYapilacakGonderininIDsiniGonder(anlikGonderi.postID))
 
             val action=ProfilFragmentDirections.actionProfilFragmentToYorumlarFragment()
             Navigation.findNavController(itemView).navigate(action)
@@ -230,16 +215,17 @@ class ProfilFragmentRecyclerAdapter (var context: Context, var tumKampanyalar: A
         }
 
 
-        private fun yorumlariGoster(position: Int, anlikGonderi: KullaniciKampanya) {
-            var mref= FirebaseDatabase.getInstance().reference
+        private fun yorumlariGoster(anlikGonderi: KullaniciKampanya) {
+            val mref= FirebaseDatabase.getInstance().reference
             mref.child("yorumlar").child(anlikGonderi.postID!!).addListenerForSingleValueEvent(object :
                 ValueEventListener {
+                @SuppressLint("SetTextI18n")
                 override fun onDataChange(snapshot: DataSnapshot) {
 
                     var yorumSayisi=0
 
-                    for (ds in snapshot!!.children){
-                        if (!ds!!.key.toString().equals(anlikGonderi.postID)){
+                    for (ds in snapshot.children){
+                        if (ds!!.key.toString() != anlikGonderi.postID){
                             yorumSayisi++
                         }
 
@@ -248,7 +234,7 @@ class ProfilFragmentRecyclerAdapter (var context: Context, var tumKampanyalar: A
 
                     if (yorumSayisi>=1){
                         yorumlariGoster.visibility= View.VISIBLE
-                        yorumlariGoster.setText(yorumSayisi.toString()+"  yorum")
+                        yorumlariGoster.text = "$yorumSayisi  yorum"
 
 
                     }else{
@@ -264,9 +250,9 @@ class ProfilFragmentRecyclerAdapter (var context: Context, var tumKampanyalar: A
 
         }
 
-        fun begeniKontrolu(anlikGonderi: KullaniciKampanya) {
-            var mRef = FirebaseDatabase.getInstance().reference
-            var userID = FirebaseAuth.getInstance().currentUser!!.uid
+        private fun begeniKontrolu(anlikGonderi: KullaniciKampanya) {
+            val mRef = FirebaseDatabase.getInstance().reference
+            val userID = FirebaseAuth.getInstance().currentUser!!.uid
             mRef.child("begeniler").child(anlikGonderi.postID!!).addValueEventListener(object :
                 ValueEventListener {
 
@@ -274,15 +260,15 @@ class ProfilFragmentRecyclerAdapter (var context: Context, var tumKampanyalar: A
                 @SuppressLint("SetTextI18n")
                 override fun onDataChange(snapshot: DataSnapshot) {
 
-                    if(snapshot!!.getValue()!=null){
+                    if(snapshot.value !=null){
                         begenmeSayisi.visibility= View.VISIBLE
-                        begenmeSayisi.setText(""+snapshot!!.childrenCount!!.toString()+" beğeni")
+                        begenmeSayisi.text = ""+ snapshot.childrenCount.toString()+" beğeni"
 
                     }else {
                         begenmeSayisi.visibility= View.GONE
                     }
 
-                    if (snapshot!!.hasChild(userID)) {
+                    if (snapshot.hasChild(userID)) {
                         gonderiBegen.setImageResource(R.drawable.ic_launcher_like_red_foreground)
                     } else {
                         gonderiBegen.setImageResource(R.drawable.ic_launcher_like_foreground)
@@ -302,7 +288,7 @@ class ProfilFragmentRecyclerAdapter (var context: Context, var tumKampanyalar: A
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
-        var viewHolder = LayoutInflater.from(context).inflate(R.layout.recycler_row, parent, false)
+        val viewHolder = LayoutInflater.from(context).inflate(R.layout.recycler_row, parent, false)
 
         return MyViewHolder(viewHolder,context)
 
@@ -310,7 +296,7 @@ class ProfilFragmentRecyclerAdapter (var context: Context, var tumKampanyalar: A
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        holder.setData(position, tumKampanyalar.get(position))
+        holder.setData(tumKampanyalar[position])
 
 
     }
@@ -319,6 +305,7 @@ class ProfilFragmentRecyclerAdapter (var context: Context, var tumKampanyalar: A
         return tumKampanyalar.size
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     fun kampanyalariGuncelle(yeniKampanyaListesi:List<KullaniciKampanya>){
         tumKampanyalar.clear()
         tumKampanyalar.addAll(yeniKampanyaListesi)

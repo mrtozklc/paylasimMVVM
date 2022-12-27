@@ -9,8 +9,4 @@ package com.example.paylasimmvvm.model
                          var postURL:String?=null,
                          var postYuklenmeTarih:Long?=null,
                          var isletmeLatitude: Double? = 0.0,
-                         var isletmeLongitude: Double? = 0.0) {
-
-
-
-}
+                         var isletmeLongitude: Double? = 0.0)

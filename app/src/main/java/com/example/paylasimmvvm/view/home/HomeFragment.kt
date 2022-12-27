@@ -6,8 +6,10 @@ import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.paylasimmvvm.R
 import com.example.paylasimmvvm.databinding.FragmentHomeBinding
 import com.example.paylasimmvvm.adapter.HomeFragmentRecyclerAdapter
@@ -32,9 +34,8 @@ class HomeFragment : Fragment() {
     private lateinit var kampanyalarViewModeli:kampanyalarViewModel
     private lateinit var badgeViewModeli: BadgeViewModel
     private lateinit var recyclerviewadapter:HomeFragmentRecyclerAdapter
-    var tumGonderiler=ArrayList<KullaniciKampanya>()
-    var sayfaBasiGonderiler=ArrayList<KullaniciKampanya>()
-    var tumPostlar=ArrayList<String>()
+    private var tumGonderiler=ArrayList<KullaniciKampanya>()
+    private var sayfaBasiGonderiler=ArrayList<KullaniciKampanya>()
     private val SAYFA_BASI_GONDERI=10
     private var sayfaSayisi=1
     var sayfaninSonunaGelindi = false
@@ -67,6 +68,8 @@ class HomeFragment : Fragment() {
         kampanyalarViewModeli.refreshKampanyalar()
 
         badgeViewModeli= ViewModelProvider(this)[BadgeViewModel::class.java]
+        Log.e("loggggg","homepncrate")
+
         badgeViewModeli.refreshBadge()
 
         observeLiveDataBadge()
@@ -76,6 +79,25 @@ class HomeFragment : Fragment() {
 
         observeliveData()
         setUpRecyclerview()
+
+
+        binding.refreshMainId.setOnRefreshListener(object : SwipeRefreshLayout.OnRefreshListener{
+            override fun onRefresh() {
+
+
+                tumGonderiler.clear()
+                sayfaBasiGonderiler.clear()
+                sayfaninSonunaGelindi=false
+
+                kampanyalarViewModeli.refreshKampanyalar()
+
+                binding.refreshMainId.isRefreshing = false
+
+            }
+
+
+        })
+
 
 
 

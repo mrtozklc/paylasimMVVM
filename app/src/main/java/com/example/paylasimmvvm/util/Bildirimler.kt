@@ -6,12 +6,12 @@ import com.google.firebase.database.*
 object Bildirimler {
 
     var mref= FirebaseDatabase.getInstance().reference
-    var mauth= FirebaseAuth.getInstance()
-    var muser= mauth.currentUser!!.uid
+    private var mauth= FirebaseAuth.getInstance()
+    private var muser= mauth.currentUser!!.uid
 
-    val KAMPANYA_BEGENILDI=1
-    val YORUM_YAPILDI=2
-    val KAMPANYA_BEGENILDI_GERI=3
+    const val KAMPANYA_BEGENILDI=1
+    const val YORUM_YAPILDI=2
+    const val KAMPANYA_BEGENILDI_GERI=3
 
     fun bildirimKaydet(bildirimYapanUserID:String,bildirimTuru:Int,gonderiID:String){
 
@@ -19,12 +19,12 @@ object Bildirimler {
 
             KAMPANYA_BEGENILDI->{
 
-                var yeniBildirimID=mref.child("bildirimler").child(bildirimYapanUserID).push().key
-                var yeniBildirim=HashMap<String,Any>()
-                yeniBildirim.put("bildirim_tur", KAMPANYA_BEGENILDI)
-                yeniBildirim.put("user_id", muser)
-                yeniBildirim.put("gonderi_id",gonderiID)
-                yeniBildirim.put("time", ServerValue.TIMESTAMP)
+                val yeniBildirimID=mref.child("bildirimler").child(bildirimYapanUserID).push().key
+                val yeniBildirim=HashMap<String,Any>()
+                yeniBildirim["bildirim_tur"] = KAMPANYA_BEGENILDI
+                yeniBildirim["user_id"] = muser
+                yeniBildirim["gonderi_id"] = gonderiID
+                yeniBildirim["time"] = ServerValue.TIMESTAMP
                 mref.child("bildirimler").child(bildirimYapanUserID).child(yeniBildirimID!!).setValue(yeniBildirim)
 
 
@@ -32,12 +32,12 @@ object Bildirimler {
 
 
             YORUM_YAPILDI->{
-                var yeniBildirimID=mref.child("bildirimler").child(bildirimYapanUserID).push().key
-                var yeniBildirim=HashMap<String,Any>()
-                yeniBildirim.put("bildirim_tur", YORUM_YAPILDI)
-                yeniBildirim.put("user_id", muser)
-                yeniBildirim.put("gonderi_id",gonderiID)
-                yeniBildirim.put("time", ServerValue.TIMESTAMP)
+                val yeniBildirimID=mref.child("bildirimler").child(bildirimYapanUserID).push().key
+                val yeniBildirim=HashMap<String,Any>()
+                yeniBildirim["bildirim_tur"] = YORUM_YAPILDI
+                yeniBildirim["user_id"] = muser
+                yeniBildirim["gonderi_id"] = gonderiID
+                yeniBildirim["time"] = ServerValue.TIMESTAMP
                 mref.child("bildirimler").child(bildirimYapanUserID).child(yeniBildirimID!!).setValue(yeniBildirim)
             }
 
@@ -47,11 +47,11 @@ object Bildirimler {
                     ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
 
-                        for (bildirim in snapshot!!.children){
+                        for (bildirim in snapshot.children){
 
-                            var okunanBildirimKey=bildirim!!.key
+                            val okunanBildirimKey=bildirim!!.key
 
-                            if(bildirim.child("bildirim_tur").getValue().toString().toInt() == KAMPANYA_BEGENILDI && bildirim.child("gonderi_id").getValue()!!.equals(gonderiID)){
+                            if(bildirim.child("bildirim_tur").value.toString().toInt() == KAMPANYA_BEGENILDI && bildirim.child("gonderi_id").value!! == gonderiID){
                                 mref.child("bildirimler").child(bildirimYapanUserID).child(okunanBildirimKey!!).removeValue()
                                 break
                             }

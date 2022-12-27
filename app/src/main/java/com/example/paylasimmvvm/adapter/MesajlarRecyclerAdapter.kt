@@ -1,20 +1,18 @@
 package com.example.paylasimmvvm.adapter
 
-import android.content.DialogInterface
-import android.content.Intent
+import android.annotation.SuppressLint
 import android.graphics.Typeface
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.navigation.NavOptions
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.RecyclerView
 import com.example.paylasimmvvm.R
 import com.example.paylasimmvvm.databinding.RecyclerRowMesajlarBinding
 import com.example.paylasimmvvm.model.Mesajlar
 import com.example.paylasimmvvm.util.TimeAgo
-import com.example.paylasimmvvm.view.mesajlar.ChatFragment
 import com.example.paylasimmvvm.view.mesajlar.MesajlarFragmentDirections
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
@@ -23,19 +21,20 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.squareup.picasso.Picasso
 
-class MesajlarRecyclerAdapter(var tumMesajlar:ArrayList<Mesajlar>):RecyclerView.Adapter<MesajlarRecyclerAdapter.ViewHolder>() {
+class MesajlarRecyclerAdapter(private var tumMesajlar:ArrayList<Mesajlar>):RecyclerView.Adapter<MesajlarRecyclerAdapter.ViewHolder>() {
 
     class ViewHolder(itemView: View):RecyclerView.ViewHolder(itemView){
         val binding=RecyclerRowMesajlarBinding.bind(itemView)
-        var sonAtilanmesaj=binding.sonMesajId
-        var gonderilmeZamani=binding.zamanOnceId
+        private var sonAtilanmesaj=binding.sonMesajId
+        private var gonderilmeZamani=binding.zamanOnceId
         var userpp=binding.imgKonusmalarpp
         var userName=binding.tvUsername
-        var okunduBilgisi=binding.okunduBilgisi
+        private var okunduBilgisi=binding.okunduBilgisi
 
         var mref= FirebaseDatabase.getInstance().reference
 
 
+        @SuppressLint("SetTextI18n")
         fun setData(oankiKonusmalar: Mesajlar) {
 
             var sonAtilanmesajText=oankiKonusmalar.son_mesaj.toString()
@@ -80,16 +79,17 @@ class MesajlarRecyclerAdapter(var tumMesajlar:ArrayList<Mesajlar>):RecyclerView.
             binding. tumLayout.setOnClickListener {
                 val action= MesajlarFragmentDirections.actionMesajlarFragmentToChatFragment(oankiKonusmalar.user_id!!)
 
-                var intent= Intent(itemView.context,ChatFragment::class.java).addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
-                intent.putExtra("konusulacakKisi",oankiKonusmalar.user_id.toString())
 
-                FirebaseDatabase.getInstance().getReference()
+                FirebaseDatabase.getInstance().reference
                     .child("konusmalar")
                     .child(FirebaseAuth.getInstance().currentUser!!.uid)
                     .child(oankiKonusmalar.user_id.toString())
                     .child("goruldu").setValue(true)
                     .addOnCompleteListener {
-                        Navigation.findNavController(binding.tumLayout).navigate(action)
+                        val navOptions = NavOptions.Builder()
+                            .setPopUpTo(R.id.mesajlarFragment, true)
+                            .build()
+                        Navigation.findNavController(binding.tumLayout).navigate(action, navOptions)
 
                     }
 
@@ -98,30 +98,18 @@ class MesajlarRecyclerAdapter(var tumMesajlar:ArrayList<Mesajlar>):RecyclerView.
 
             binding.tumLayout.setOnLongClickListener(View.OnLongClickListener {
 
-                var alert = androidx.appcompat.app.AlertDialog.Builder(itemView.context, androidx.appcompat.R.style.Base_Theme_AppCompat_Dialog_Alert)
+                val alert = androidx.appcompat.app.AlertDialog.Builder(itemView.context, androidx.appcompat.R.style.Base_Theme_AppCompat_Dialog_Alert)
                     .setTitle("MESAJI SİL ")
-                    .setPositiveButton("SİL", object : DialogInterface.OnClickListener {
-
-                        override fun onClick(p0: DialogInterface?, p1: Int) {
-                            var silinicekKonusma=oankiKonusmalar.user_id
+                    .setPositiveButton("SİL") { p0, p1 ->
+                        val silinicekKonusma = oankiKonusmalar.user_id
 
 
-                            mref.child("mesajlar").child(FirebaseAuth.getInstance().currentUser!!.uid!!).child(silinicekKonusma!!).addListenerForSingleValueEvent(object :ValueEventListener{
+                        mref.child("mesajlar").child(FirebaseAuth.getInstance().currentUser!!.uid)
+                            .child(silinicekKonusma!!)
+                            .addListenerForSingleValueEvent(object : ValueEventListener {
                                 override fun onDataChange(snapshot: DataSnapshot) {
 
                                     snapshot.ref.removeValue()
-
-                                }
-                                override fun onCancelled(error: DatabaseError) {
-                                }
-
-                            })
-
-                            mref.child("konusmalar").child(FirebaseAuth.getInstance().currentUser!!.uid!!).child(silinicekKonusma!!).addListenerForSingleValueEvent(object :ValueEventListener{
-                                override fun onDataChange(snapshot: DataSnapshot) {
-                                    snapshot.ref.removeValue()
-
-
 
                                 }
 
@@ -130,16 +118,23 @@ class MesajlarRecyclerAdapter(var tumMesajlar:ArrayList<Mesajlar>):RecyclerView.
 
                             })
 
-                        }
+                        mref.child("konusmalar")
+                            .child(FirebaseAuth.getInstance().currentUser!!.uid)
+                            .child(silinicekKonusma)
+                            .addListenerForSingleValueEvent(object : ValueEventListener {
+                                override fun onDataChange(snapshot: DataSnapshot) {
+                                    snapshot.ref.removeValue()
 
 
-                    })
-                    .setNegativeButton("VAZGEÇ", object : DialogInterface.OnClickListener {
-                        override fun onClick(p0: DialogInterface?, p1: Int) {
-                            p0!!. dismiss()
-                        }
+                                }
 
-                    })
+                                override fun onCancelled(error: DatabaseError) {
+                                }
+
+                            })
+                    }
+                    .setNegativeButton("VAZGEÇ"
+                    ) { p0, p1 -> p0!!.dismiss() }
                     .create()
 
                 alert.show()
@@ -157,7 +152,7 @@ class MesajlarRecyclerAdapter(var tumMesajlar:ArrayList<Mesajlar>):RecyclerView.
 
         private fun konusulanKisininBilgilerinigetir(userID: String) {
 
-            var mref= FirebaseDatabase.getInstance().reference
+            val mref= FirebaseDatabase.getInstance().reference
 
             mref.child("users").child("kullanicilar").child(userID).addListenerForSingleValueEvent(object :ValueEventListener{
                 override fun onDataChange(snapshot: DataSnapshot) {
@@ -165,9 +160,9 @@ class MesajlarRecyclerAdapter(var tumMesajlar:ArrayList<Mesajlar>):RecyclerView.
 
 
 
-                        userName.text=snapshot.child("user_name").getValue().toString()
+                        userName.text=snapshot.child("user_name").value.toString()
 
-                        Picasso.get().load(snapshot.child("user_detail").child("profile_picture").getValue().toString()).error(R.drawable.ic_baseline_person).placeholder(R.drawable.ic_baseline_person).into(userpp)
+                        Picasso.get().load(snapshot.child("user_detail").child("profile_picture").value.toString()).error(R.drawable.ic_baseline_person).placeholder(R.drawable.ic_baseline_person).into(userpp)
 
                     }
                 }
@@ -180,9 +175,9 @@ class MesajlarRecyclerAdapter(var tumMesajlar:ArrayList<Mesajlar>):RecyclerView.
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if (snapshot.value !=null){
 
-                        userName.text=snapshot.child("user_name").getValue().toString()
-                        if (!snapshot.child("user_detail").child("profile_picture").getValue().toString().isEmpty()){
-                            Picasso.get().load(snapshot.child("user_detail").child("profile_picture").getValue().toString()).error(R.drawable.ic_baseline_person).placeholder(R.drawable.ic_baseline_person).into(userpp)
+                        userName.text=snapshot.child("user_name").value.toString()
+                        if (snapshot.child("user_detail").child("profile_picture").value.toString().isNotEmpty()){
+                            Picasso.get().load(snapshot.child("user_detail").child("profile_picture").value.toString()).error(R.drawable.ic_baseline_person).placeholder(R.drawable.ic_baseline_person).into(userpp)
 
                         }else{
                             Picasso.get().load(R.drawable.ic_baseline_person).error(R.drawable.ic_baseline_person).placeholder(R.drawable.ic_baseline_person).into(userpp)
@@ -208,7 +203,7 @@ class MesajlarRecyclerAdapter(var tumMesajlar:ArrayList<Mesajlar>):RecyclerView.
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.setData(tumMesajlar.get(position))
+        holder.setData(tumMesajlar[position])
     }
 
     override fun getItemCount(): Int {
@@ -216,6 +211,7 @@ class MesajlarRecyclerAdapter(var tumMesajlar:ArrayList<Mesajlar>):RecyclerView.
     }
 
 
+    @SuppressLint("NotifyDataSetChanged")
     fun mesajlariGuncelle(yeniMesajListesi:List<Mesajlar>){
         tumMesajlar.clear()
         tumMesajlar.addAll(yeniMesajListesi)

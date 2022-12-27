@@ -1,30 +1,25 @@
 package com.example.paylasimmvvm.view.login
 
 import android.content.Context
-import android.content.Intent
 import android.location.Address
 import android.location.Geocoder
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import androidx.navigation.Navigation
-import androidx.navigation.fragment.findNavController
 import com.example.paylasimmvvm.R
 import com.example.paylasimmvvm.databinding.FragmentIsletmeKayitBilgileriBinding
 import com.example.paylasimmvvm.model.KullaniciBilgiDetaylari
 import com.example.paylasimmvvm.model.KullaniciBilgileri
 import com.example.paylasimmvvm.util.EventbusData
-import com.google.android.gms.tasks.OnCompleteListener
-import com.google.android.gms.tasks.Task
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.*
@@ -37,26 +32,19 @@ import java.util.*
 class IsletmeKayitBilgileriFragment : Fragment() {
     private lateinit var binding:FragmentIsletmeKayitBilgileriBinding
     var gelenEmail = ""
-    var telNo = ""
-    var verificationID = ""
-    var sifre = ""
-    var adress=""
+
     lateinit var auth: FirebaseAuth
     lateinit var mref: DatabaseReference
     var emailleKayit = true
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
 
         binding= FragmentIsletmeKayitBilgileriBinding.inflate(layoutInflater,container,false)
-        var view= binding.root
+        val view= binding.root
 
 
 
@@ -81,7 +69,8 @@ class IsletmeKayitBilgileriFragment : Fragment() {
 
 
         binding.btnGirisISletme.setOnClickListener{
-            if( binding.etKullaniciAdiISletme.text.toString().trim().length>5 &&  binding.etSifreIsletme.text.toString().trim().length>5 && ! binding.etAdSoyadISletme.text.toString().trim().isNullOrEmpty()){
+            if( binding.etKullaniciAdiISletme.text.toString().trim().length>5 &&  binding.etSifreIsletme.text.toString().trim().length>5 && binding.etAdSoyadISletme.text.toString().trim()
+                    .isNotEmpty()){
                 if ( binding.etTelefonIsletme.text.toString().trim().length==10){
                     var userNameKullanimdaMi = false
                     mref.child("users").child("isletmeler").addListenerForSingleValueEvent(object :
@@ -92,11 +81,11 @@ class IsletmeKayitBilgileriFragment : Fragment() {
 
                         override fun onDataChange(snapshot: DataSnapshot) {
 
-                            if (snapshot!!.getValue() != null) {
+                            if (snapshot.value != null) {
 
-                                for (user in snapshot!!.children) {
-                                    var okunanKullanici = user.getValue(KullaniciBilgileri::class.java)
-                                    if (okunanKullanici!!.user_name!!.equals( binding.etKullaniciAdiISletme.text.toString())) {
+                                for (user in snapshot.children) {
+                                    val okunanKullanici = user.getValue(KullaniciBilgileri::class.java)
+                                    if (okunanKullanici!!.user_name!! == binding.etKullaniciAdiISletme.text.toString()) {
                                         Toast.makeText(activity, "Kullanıcı adı Kullanımda", Toast.LENGTH_SHORT).show()
                                         userNameKullanimdaMi = true
                                         break
@@ -104,13 +93,15 @@ class IsletmeKayitBilgileriFragment : Fragment() {
                                     mref.child("users").child("kullanicilar").addListenerForSingleValueEvent(object :
                                         ValueEventListener {
                                         override fun onDataChange(snapshot: DataSnapshot) {
-                                            if (snapshot!!.getValue()!=null){
-                                                for (user in snapshot!!.children ){
-                                                    var okunanKullanici = user.getValue(KullaniciBilgileri::class.java)
-                                                    if (okunanKullanici!!.user_name!!.equals( binding.etKullaniciAdiISletme.text.toString())) {
-                                                        Toast.makeText(activity, "Kullanıcı adı Kullanımda", Toast.LENGTH_SHORT).show()
-                                                        userNameKullanimdaMi = true
-                                                        break
+                                            if (snapshot.value !=null){
+                                                for (userr in snapshot.children ){
+                                                    val okunanKullanici= user.getValue(KullaniciBilgileri::class.java)
+                                                    if (okunanKullanici != null) {
+                                                        if (okunanKullanici.user_name!!.equals( binding.etKullaniciAdiISletme.text.toString())) {
+                                                            Toast.makeText(activity, "Kullanıcı adı Kullanımda", Toast.LENGTH_SHORT).show()
+                                                            userNameKullanimdaMi = true
+                                                            break
+                                                        }
                                                     }
 
                                                 }
@@ -119,170 +110,95 @@ class IsletmeKayitBilgileriFragment : Fragment() {
 
                                                 if (emailleKayit) {
 
-                                                    var sifre =  binding.etSifreIsletme.text.toString()
-                                                    var adSoyad =  binding.etAdSoyadISletme.text.toString()
-                                                    var userName =  binding.etKullaniciAdiISletme.text.toString()
-                                                    var adres= binding.etAdresIsletme.text.toString()
-                                                    var telefon= binding.etTelefonIsletme.text.toString()
-
-
-
+                                                    val sifre =  binding.etSifreIsletme.text.toString()
+                                                    val adSoyad =  binding.etAdSoyadISletme.text.toString()
+                                                    val userName =  binding.etKullaniciAdiISletme.text.toString()
+                                                    val adres= binding.etAdresIsletme.text.toString()
+                                                    val telefon= binding.etTelefonIsletme.text.toString()
 
                                                     auth.createUserWithEmailAndPassword(gelenEmail, sifre)
-                                                        .addOnCompleteListener(object :
-                                                            OnCompleteListener<AuthResult> {
-                                                            override fun onComplete(p0: Task<AuthResult>) {
+                                                        .addOnCompleteListener { p0 ->
+                                                            if (p0.isSuccessful) {
+                                                                val userID = auth.currentUser!!.uid
+                                                                getAddressFromLocation(adres, context, userID)
 
-                                                                if (p0!!.isSuccessful) {
+                                                                val kaydedilecekKullaniciDetaylari = KullaniciBilgiDetaylari("0", "", "", "", adres, null, null)
 
-                                                                    var userID = auth.currentUser!!.uid.toString()
+                                                                val kaydedilecekKullanici = KullaniciBilgileri(gelenEmail, sifre, userName, adSoyad, telefon, userID, "", kaydedilecekKullaniciDetaylari)
 
-                                                                    getAddressFromLocation(adres,context,userID)
+                                                                mref.child("users")
+                                                                    .child("isletmeler")
+                                                                    .child(userID)
+                                                                    .setValue(kaydedilecekKullanici)
+                                                                    .addOnCompleteListener { p0 ->
+                                                                        if (p0.isSuccessful) { Toast.makeText(activity, "Hoşgeldiniz $userName", Toast.LENGTH_SHORT).show()
+                                                                            val action = IsletmeKayitBilgileriFragmentDirections.actionIsletmeKayitBilgileriFragmentToHomeFragment()
+                                                                            Navigation.findNavController(it).navigate(action)
+                                                                            val bottomNav = requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView)
+                                                                            bottomNav.visibility = View.VISIBLE
 
-
-                                                                    var kaydedilecekKullaniciDetaylari=
-                                                                        KullaniciBilgiDetaylari("0","","","",adres,null,null)
-
-                                                                    var kaydedilecekKullanici = KullaniciBilgileri(gelenEmail, sifre, userName, adSoyad, telefon,userID,"",kaydedilecekKullaniciDetaylari)
-
-
-                                                                    mref.child("users").child("isletmeler").child(userID).setValue(kaydedilecekKullanici)
-                                                                        .addOnCompleteListener(object :
-                                                                            OnCompleteListener<Void> {
-                                                                            override fun onComplete(p0: Task<Void>) {
-                                                                                if (p0!!.isSuccessful) {
-                                                                                    Toast.makeText(activity, "Hoşgeldiniz ${userName}", Toast.LENGTH_SHORT).show()
-                                                                                    val action=IsletmeKayitBilgileriFragmentDirections.actionIsletmeKayitBilgileriFragmentToHomeFragment()
-                                                                                    Navigation.findNavController(it).navigate(action)
-                                                                                  //  findNavController().navigate(R.id.homeFragment)
-                                                                                    val bottomNav = requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView)
-                                                                                    bottomNav.visibility=View.VISIBLE
-
-                                                                                } else {
-
-                                                                                    auth.currentUser!!.delete()
-                                                                                        .addOnCompleteListener(object :
-                                                                                            OnCompleteListener<Void> {
-                                                                                            override fun onComplete(p0: Task<Void>) {
-                                                                                                if (p0!!.isSuccessful) {
-                                                                                                    Toast.makeText(activity, "Kullanıcı kaydedilemedi, Tekrar deneyin", Toast.LENGTH_SHORT).show()
-                                                                                                }
-                                                                                            }
-
-                                                                                        })
+                                                                        } else {
+                                                                            auth.currentUser!!.delete().addOnCompleteListener { p0 ->
+                                                                                    if (p0.isSuccessful) { Toast.makeText(activity, "Kullanıcı kaydedilemedi, Tekrar deneyin", Toast.LENGTH_SHORT).show()
+                                                                                    }
                                                                                 }
-                                                                            }
-
-
-                                                                        })
-
-
-                                                                }
-
+                                                                        }
+                                                                    }
                                                             }
-
-                                                        })
-
+                                                        }
                                                 }
-
-
-
-
                                             }
                                         }
-
                                         override fun onCancelled(error: DatabaseError) {
                                         }
-
                                     })
                                 }
-
-
-
                             }
                             //veritabanında kullanıcı yok, aynen kaydet
                             else{
                                 if (emailleKayit) {
-                                    var sifre =  binding.etSifreIsletme.text.toString()
-                                    var adSoyad =  binding.etAdSoyadISletme.text.toString()
-                                    var userName =  binding.etKullaniciAdiISletme.text.toString()
-                                    var adres= binding.etAdresIsletme.text.toString()
-                                    var telefon= binding.etTelefonIsletme.text.toString()
-
-
-
-
-
+                                    val sifre =  binding.etSifreIsletme.text.toString()
+                                    val adSoyad =  binding.etAdSoyadISletme.text.toString()
+                                    val userName =  binding.etKullaniciAdiISletme.text.toString()
+                                    val adres= binding.etAdresIsletme.text.toString()
+                                    val telefon= binding.etTelefonIsletme.text.toString()
 
                                     auth.createUserWithEmailAndPassword(gelenEmail, sifre)
-                                        .addOnCompleteListener(object :
-                                            OnCompleteListener<AuthResult> {
-                                            override fun onComplete(p0: Task<AuthResult>) {
+                                        .addOnCompleteListener { p0 ->
+                                            if (p0.isSuccessful) {
+                                                val userID = auth.currentUser!!.uid
 
-                                                if (p0!!.isSuccessful) {
+                                                getAddressFromLocation(adres, context, userID)
 
-                                                    var userID = auth.currentUser!!.uid.toString()
+                                                //oturum açan kullanıcın verilerini databaseye kaydet
 
-                                                    getAddressFromLocation(
-                                                        adres,
-                                                        context,userID)
+                                                val kaydedilecekKullaniciDetaylari =
+                                                    KullaniciBilgiDetaylari("0", "", "", "", adres, null, null)
 
-                                                    //oturum açan kullanıcın verilerini databaseye kaydet
+                                                val kaydedilecekKullanici = KullaniciBilgileri(gelenEmail, sifre, userName, adSoyad, telefon, userID, "", kaydedilecekKullaniciDetaylari)
 
-                                                    var kaydedilecekKullaniciDetaylari=
-                                                        KullaniciBilgiDetaylari("0","","","",adres,null,null)
-
-                                                    var kaydedilecekKullanici = KullaniciBilgileri(gelenEmail, sifre, userName, adSoyad, telefon,userID,"",kaydedilecekKullaniciDetaylari)
-
-                                                    mref.child("users").child("isletmeler").child(userID).setValue(kaydedilecekKullanici)
-                                                        .addOnCompleteListener(object :
-                                                            OnCompleteListener<Void> {
-                                                            override fun onComplete(p0: Task<Void>) {
-                                                                if (p0!!.isSuccessful) {
-                                                                    Toast.makeText(activity, "Hoşgeldiniz ${userName}", Toast.LENGTH_SHORT).show()
-                                                                    val action=IsletmeKayitBilgileriFragmentDirections.actionIsletmeKayitBilgileriFragmentToHomeFragment()
-                                                                    Navigation.findNavController(it).navigate(action)
-                                                                   // findNavController().navigate(R.id.homeFragment)
-                                                                    val bottomNav = requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView)
-                                                                    bottomNav.visibility=View.VISIBLE
-
-                                                                } else {
-
-                                                                    auth.currentUser!!.delete()
-                                                                        .addOnCompleteListener(object :
-                                                                            OnCompleteListener<Void> {
-                                                                            override fun onComplete(p0: Task<Void>) {
-                                                                                if (p0!!.isSuccessful) {
-                                                                                    Toast.makeText(activity, "Kullanıcı kaydedilemedi, Tekrar deneyin", Toast.LENGTH_SHORT).show()
-                                                                                }
-                                                                            }
-
-                                                                        })
+                                                mref.child("users").child("isletmeler")
+                                                    .child(userID).setValue(kaydedilecekKullanici)
+                                                    .addOnCompleteListener { p0->
+                                                        if (p0.isSuccessful) {
+                                                            Toast.makeText(activity, "Hoşgeldiniz $userName", Toast.LENGTH_SHORT).show()
+                                                            val action = IsletmeKayitBilgileriFragmentDirections.actionIsletmeKayitBilgileriFragmentToHomeFragment()
+                                                            Navigation.findNavController(it).navigate(action)
+                                                            val bottomNav = requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView)
+                                                            bottomNav.visibility = View.VISIBLE
+                                                        } else {
+                                                            auth.currentUser!!.delete().addOnCompleteListener { p0 ->
+                                                                    if (p0.isSuccessful) {
+                                                                        Toast.makeText(activity, "Kullanıcı kaydedilemedi, Tekrar deneyin", Toast.LENGTH_SHORT).show()
+                                                                    }
                                                                 }
-                                                            }
-
-
-                                                        })
-
-
-                                                }
-
+                                                        }
+                                                    }
                                             }
-
-                                        })
-
+                                        }
                                 }
-
-
-
-
-
                             }
-
-
                         }
-
-
                     })
 
                 }else{
@@ -295,7 +211,6 @@ class IsletmeKayitBilgileriFragment : Fragment() {
             }
         }
 
-
         return view
     }
 
@@ -305,55 +220,35 @@ class IsletmeKayitBilgileriFragment : Fragment() {
 
         override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
 
-            if ( binding.etAdSoyadISletme.text.toString().length >=1 &&  binding.etKullaniciAdiISletme.text.toString().length >=1 &&  binding.etSifreIsletme.text.toString().length >=1&& binding.etAdresIsletme.text.toString().length>=1&&binding.etTelefonIsletme.text.toString().length>=1) {
+            if ( binding.etAdSoyadISletme.text.toString().isNotEmpty() && binding.etKullaniciAdiISletme.text.toString()
+                    .isNotEmpty() && binding.etSifreIsletme.text.toString().isNotEmpty() && binding.etAdresIsletme.text.toString()
+                    .isNotEmpty() && binding.etTelefonIsletme.text.toString().isNotEmpty()
+            ) {
                 binding. btnGirisISletme.isEnabled = true
                 binding.btnGirisISletme.setTextColor(ContextCompat.getColor(activity!!, R.color.white))
                 binding.btnGirisISletme.setBackgroundColor(
-                    ContextCompat.getColor(
-                        activity!!,
-                      R.color.teal_700
-                    )
-                )
-
+                    ContextCompat.getColor(activity!!, R.color.teal_700))
             } else {
-
                 binding.btnGirisISletme.setBackgroundColor(ContextCompat.getColor(activity!!, R.color.white))
                 binding. btnGirisISletme.setTextColor(ContextCompat.getColor(activity!!,R.color.black))
-
-
             }
-
-
-
         }
 
         override fun afterTextChanged(p0: Editable?) {
-
         }
-
-
     }
-
 
     @Subscribe(sticky = true)
 
     internal fun onKayitEvent(kayitbilgileri: EventbusData.kayitBilgileriniGonder) {
 
-        if (kayitbilgileri.emailkayit == true) {
+        if (kayitbilgileri.emailkayit) {
             emailleKayit = true
             gelenEmail = kayitbilgileri.email!!
 
-            // Toast.makeText(activity, "Gelen email : " + gelenEmail, Toast.LENGTH_SHORT).show()
-            Log.e("murat", "Gelen email : " + gelenEmail)
+            Log.e("murat", "Gelen email : $gelenEmail")
         }
-
-
-
-
-
     }
-
-
 
     fun getAddressFromLocation(
         locationAddress: String,
@@ -363,33 +258,21 @@ class IsletmeKayitBilgileriFragment : Fragment() {
         val thread: Thread = object : Thread() {
             override fun run() {
                 val geocoder = Geocoder(context, Locale.getDefault())
-                var result: String? = null
                 try {
                     val addressList: List<*>? = geocoder.getFromLocationName(locationAddress, 1)
-                    if (addressList != null && addressList.size > 0) {
+                    if (addressList != null && addressList.isNotEmpty()) {
                         val address = addressList[0] as Address
 
                         Log.e("adres","gelen"+address)
 
-                        var latitude=address.latitude
-                        var longitude=address.longitude
+                        val latitude=address.latitude
+                        val longitude=address.longitude
 
                         mref.child("users").child("isletmeler").child(userID).child("user_detail").child("latitude").setValue(latitude)
                         mref.child("users").child("isletmeler").child(userID).child("user_detail").child("longitude").setValue(longitude)
-
-
-
-
-
                     }
-                } catch (e: IOException) {
+                } catch (_: IOException) {
                 } finally {
-
-                    if (result != null) {
-
-                    } else {
-
-                    }
 
                 }
             }

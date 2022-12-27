@@ -1,5 +1,6 @@
-package com.example.paylasimmvvm.adapter;
+package com.example.paylasimmvvm.adapter
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,11 +11,11 @@ import com.example.paylasimmvvm.model.ChatModel
 import com.google.firebase.auth.FirebaseAuth
 
 
-class ChatFragmentRecyclerAdapter(var tumMesajlar:ArrayList<ChatModel>): RecyclerView.Adapter<ChatFragmentRecyclerAdapter.ViewHolder>(){
+class ChatFragmentRecyclerAdapter(private var tumMesajlar:ArrayList<ChatModel>): RecyclerView.Adapter<ChatFragmentRecyclerAdapter.ViewHolder>(){
 
     class ViewHolder(itemView: View):RecyclerView.ViewHolder(itemView){
         val binding=RecyclerRowMesajAlanBinding.bind(itemView)
-        var tvmesajGonderen=binding.tvMesaj
+        private var tvmesajGonderen=binding.tvMesaj
 
         fun setData(anlikMesaj: ChatModel) {
             tvmesajGonderen.text=anlikMesaj.mesaj
@@ -24,30 +25,31 @@ class ChatFragmentRecyclerAdapter(var tumMesajlar:ArrayList<ChatModel>): Recycle
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        var myView:View?=null
+        val myView: View?
 
-        if(viewType==1){
+        return if(viewType==1){
             myView=LayoutInflater.from(parent.context).inflate(R.layout.recycler_row_mesaj_gonderen,parent,false)
-            return ViewHolder(myView)
+            ViewHolder(myView)
 
         }else  {
             myView=LayoutInflater.from(parent.context).inflate(R.layout.recycler_row_mesaj_alan,parent,false)
-            return ViewHolder(myView)
+            ViewHolder(myView)
         }
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.setData(tumMesajlar.get(position))
+        holder.setData(tumMesajlar[position])
     }
 
     override fun getItemCount(): Int {
      return tumMesajlar.size
     }
     override fun getItemViewType(position: Int): Int {
-        if(tumMesajlar.get(position).user_id!!.equals(FirebaseAuth.getInstance().currentUser!!.uid)){
-            return 1
-        }else return 2
+        return if(tumMesajlar[position].user_id!! == FirebaseAuth.getInstance().currentUser!!.uid){
+            1
+        }else 2
     }
+    @SuppressLint("NotifyDataSetChanged")
     fun mesajlariGuncelle(yeniMesajListesi:List<ChatModel>){
         tumMesajlar.clear()
         tumMesajlar.addAll(yeniMesajListesi)

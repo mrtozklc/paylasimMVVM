@@ -2,6 +2,7 @@ package com.example.paylasimmvvm.viewmodel
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.paylasimmvvm.model.BildirimModel
 import com.example.paylasimmvvm.model.Mesajlar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
@@ -10,6 +11,8 @@ class BadgeViewModel:ViewModel() {
 
     val badgeLive= MutableLiveData<List<Mesajlar>>()
     val badgeArray=ArrayList<Mesajlar>()
+    val bildirimlerBadgeLive=MutableLiveData<List<BildirimModel>>()
+    val bildirimlerBadgArray=ArrayList<BildirimModel>()
     var mref: DatabaseReference=FirebaseDatabase.getInstance().reference
     var mauth: FirebaseAuth= FirebaseAuth.getInstance()
 
@@ -45,6 +48,9 @@ class BadgeViewModel:ViewModel() {
 
         })
 
+
+    }
+    fun refreshBildirimlerBadge(){
 
     }
 }

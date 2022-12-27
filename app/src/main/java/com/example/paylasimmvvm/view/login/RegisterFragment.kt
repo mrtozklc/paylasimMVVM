@@ -1,27 +1,22 @@
 package com.example.paylasimmvvm.view.login
 
-import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.InputType
 import android.text.TextWatcher
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.Fragment
 import androidx.navigation.Navigation
-import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import com.example.paylasimmvvm.R
-import com.example.paylasimmvvm.databinding.FragmentKullaniciKayitBilgileriBinding
 import com.example.paylasimmvvm.databinding.FragmentRegisterBinding
 import com.example.paylasimmvvm.model.KullaniciBilgileri
 import com.example.paylasimmvvm.util.EventbusData
-import com.example.paylasimmvvm.view.home.HomeFragmentDirections
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import org.greenrobot.eventbus.EventBus
@@ -30,25 +25,19 @@ import org.greenrobot.eventbus.EventBus
 class RegisterFragment : Fragment() {
     private lateinit var binding: FragmentRegisterBinding
 
-    lateinit var mmanager: FragmentManager
     lateinit var mref: DatabaseReference
     lateinit var auth: FirebaseAuth
-    lateinit var mauthLis: FirebaseAuth.AuthStateListener
+    private lateinit var mauthLis: FirebaseAuth.AuthStateListener
 
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
         binding= FragmentRegisterBinding.inflate(layoutInflater,container,false)
 
-        var view=binding.root
+        val view=binding.root
 
         mref = FirebaseDatabase.getInstance().reference
         auth= FirebaseAuth.getInstance()
@@ -58,24 +47,21 @@ class RegisterFragment : Fragment() {
         return view
     }
 
-    fun checkMail(kontrolEdilenMail: String): Boolean {
+    private fun checkMail(kontrolEdilenMail: String): Boolean {
 
         return android.util.Patterns.EMAIL_ADDRESS.matcher(kontrolEdilenMail).matches()
 
     }
     private fun setupAuthLis(view:View) {
 
-        mauthLis=object :FirebaseAuth.AuthStateListener{
-            override fun onAuthStateChanged(p0: FirebaseAuth) {
-                var user=FirebaseAuth.getInstance().currentUser
+        mauthLis= FirebaseAuth.AuthStateListener {
+            val user=FirebaseAuth.getInstance().currentUser
 
-                if (user!=null){
-                    val action=RegisterFragmentDirections.actionRegisterFragmentToHomeFragment()
-                    Navigation.findNavController(view).navigate(action)
+            if (user!=null){
+                val action=RegisterFragmentDirections.actionRegisterFragmentToHomeFragment()
+                Navigation.findNavController(view).navigate(action)
 
-                }
             }
-
         }
 
     }
@@ -87,10 +73,7 @@ class RegisterFragment : Fragment() {
 
     override fun onStop() {
         super.onStop()
-        if (mauthLis!=null){
-            auth.removeAuthStateListener(mauthLis)
-
-        }
+        auth.removeAuthStateListener(mauthLis)
     }
 
 
@@ -100,24 +83,24 @@ class RegisterFragment : Fragment() {
 
 
 
-        binding.textViewTelefon.setOnClickListener() {
+        binding.textViewTelefon.setOnClickListener {
             binding.view2.visibility = View.VISIBLE
             binding. viewEposta.visibility = View.INVISIBLE
             binding. editTextTextPersonName.setText("")
             binding.editTextTextPersonName.inputType = InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
-            binding. editTextTextPersonName.setHint("e-posta")
+            binding. editTextTextPersonName.hint = "e-posta"
             binding. btnKayit.isEnabled = false
 
 
         }
 
-        binding.textViewEposta.setOnClickListener() {
+        binding.textViewEposta.setOnClickListener {
 
             binding. view2.visibility = View.INVISIBLE
             binding.viewEposta.visibility = View.VISIBLE
             binding. editTextTextPersonName.setText("")
             binding.editTextTextPersonName.inputType = InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
-            binding.editTextTextPersonName.setHint("E-POSTA")
+            binding.editTextTextPersonName.hint = "E-POSTA"
             binding. btnKayit.isEnabled = false
 
 
@@ -162,7 +145,7 @@ class RegisterFragment : Fragment() {
 
         binding.btnKayit.setOnClickListener {
 
-            if( binding.editTextTextPersonName.hint.toString().equals("e-posta")){
+            if(binding.editTextTextPersonName.hint.toString() == "e-posta"){
 
 
                 if (checkMail( binding.editTextTextPersonName.text.toString())) {
@@ -178,16 +161,16 @@ class RegisterFragment : Fragment() {
 
                             override fun onDataChange(snapshot: DataSnapshot) {
 
-                                if (snapshot!!.getValue() != null) {
+                                if (snapshot.value != null) {
 
-                                    for (user in snapshot!!.children) {
-
-
-                                        var okunanKullanici = user.getValue(KullaniciBilgileri::class.java)
-                                        if (okunanKullanici!!.email!!.equals( binding.editTextTextPersonName.text.toString())) {
+                                    for (user in snapshot.children) {
 
 
-                                            Log.e("kullaniciların","işletmebölümü"+okunanKullanici)
+                                        val okunanKullanici = user.getValue(KullaniciBilgileri::class.java)
+                                        if (okunanKullanici!!.email!! == binding.editTextTextPersonName.text.toString()) {
+
+
+                                            Log.e("kullaniciların", "işletmebölümü$okunanKullanici")
 
 
 
@@ -206,14 +189,16 @@ class RegisterFragment : Fragment() {
                                     mref.child("users").child("kullanicilar").addListenerForSingleValueEvent(object :
                                         ValueEventListener {
                                         override fun onDataChange(snapshot: DataSnapshot) {
-                                            if (snapshot!!.getValue()!=null){
+                                            if (snapshot.value !=null){
                                                 for (user in snapshot.children){
 
-                                                    var okunanKullanici = user.getValue(KullaniciBilgileri::class.java)
+                                                    val okunanKullanici = user.getValue(KullaniciBilgileri::class.java)
 
-                                                    if (okunanKullanici!!.email!!.equals( binding.editTextTextPersonName.text.toString())) {
+                                                    if (okunanKullanici!!.email!! == binding.editTextTextPersonName.text.toString()) {
 
-                                                        Log.e("kullaniciların","kullanicibölümü"+okunanKullanici)
+                                                        Log.e("kullaniciların",
+                                                            "kullanicibölümü$okunanKullanici"
+                                                        )
 
 
                                                         Toast.makeText(  activity!!, "E-mail Kullanımda", Toast.LENGTH_SHORT).show()
@@ -287,14 +272,16 @@ class RegisterFragment : Fragment() {
                                         ValueEventListener {
                                         override fun onDataChange(snapshot: DataSnapshot) {
 
-                                            if (snapshot!!.getValue()!=null){
-                                                for (user in snapshot!!.children){
+                                            if (snapshot.value !=null){
+                                                for (user in snapshot.children){
 
 
-                                                    var okunanKullanici = user.getValue(KullaniciBilgileri::class.java)
-                                                    if (okunanKullanici!!.email!!.equals( binding.editTextTextPersonName.text.toString())) {
+                                                    val okunanKullanici = user.getValue(KullaniciBilgileri::class.java)
+                                                    if (okunanKullanici!!.email!! == binding.editTextTextPersonName.text.toString()) {
 
-                                                        Log.e("işletme yok","kullanici var,bulunan kullanici"+okunanKullanici)
+                                                        Log.e("işletme yok",
+                                                            "kullanici var,bulunan kullanici$okunanKullanici"
+                                                        )
                                                         Toast.makeText(activity!!, "E-mail Kullanımda", Toast.LENGTH_SHORT).show()
 
                                                         emailKullanimdaMi = true
@@ -391,16 +378,16 @@ class RegisterFragment : Fragment() {
 
                             override fun onDataChange(snapshot: DataSnapshot) {
 
-                                if (snapshot!!.getValue() != null) {
+                                if (snapshot.value != null) {
 
-                                    for (user in snapshot!!.children) {
-
-
-                                        var okunanKullanici = user.getValue(KullaniciBilgileri::class.java)
-                                        if (okunanKullanici!!.email!!.equals( binding.editTextTextPersonName.text.toString())) {
+                                    for (user in snapshot.children) {
 
 
-                                            Log.e("kullaniciların","işletmebölümü"+okunanKullanici)
+                                        val okunanKullanici = user.getValue(KullaniciBilgileri::class.java)
+                                        if (okunanKullanici!!.email!! == binding.editTextTextPersonName.text.toString()) {
+
+
+                                            Log.e("kullaniciların", "işletmebölümü$okunanKullanici")
 
 
 
@@ -419,14 +406,15 @@ class RegisterFragment : Fragment() {
                                     mref.child("users").child("kullanicilar").addListenerForSingleValueEvent(object :
                                         ValueEventListener {
                                         override fun onDataChange(snapshot: DataSnapshot) {
-                                            if (snapshot!!.getValue()!=null){
+                                            if (snapshot.value !=null){
                                                 for (user in snapshot.children){
 
-                                                    var okunanKullanici = user.getValue(KullaniciBilgileri::class.java)
+                                                    val okunanKullanici = user.getValue(KullaniciBilgileri::class.java)
 
-                                                    if (okunanKullanici!!.email!!.equals( binding.editTextTextPersonName.text.toString())) {
+                                                    if (okunanKullanici!!.email!! == binding.editTextTextPersonName.text.toString()) {
 
-                                                        Log.e("kullaniciların","kullanicibölümü"+okunanKullanici)
+                                                        Log.e("kullaniciların", "kullanicibölümü$okunanKullanici"
+                                                        )
 
 
                                                         Toast.makeText(activity!!, "E-mail Kullanımda", Toast.LENGTH_SHORT).show()
@@ -498,14 +486,16 @@ class RegisterFragment : Fragment() {
                                         ValueEventListener {
                                         override fun onDataChange(snapshot: DataSnapshot) {
 
-                                            if (snapshot!!.getValue()!=null){
-                                                for (user in snapshot!!.children){
+                                            if (snapshot.value !=null){
+                                                for (user in snapshot.children){
 
 
-                                                    var okunanKullanici = user.getValue(KullaniciBilgileri::class.java)
-                                                    if (okunanKullanici!!.email!!.equals( binding.editTextTextPersonName.text.toString())) {
+                                                    val okunanKullanici = user.getValue(KullaniciBilgileri::class.java)
+                                                    if (okunanKullanici!!.email!! == binding.editTextTextPersonName.text.toString()) {
 
-                                                        Log.e("işletme yok","kullanici var,bulunan kullanici"+okunanKullanici)
+                                                        Log.e("işletme yok",
+                                                            "kullanici var,bulunan kullanici$okunanKullanici"
+                                                        )
                                                         Toast.makeText(activity!!, "E-mail Kullanımda", Toast.LENGTH_SHORT).show()
 
                                                         emailKullanimdaMi = true

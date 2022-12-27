@@ -77,7 +77,8 @@ class LoginFragment : Fragment() {
             Log.e("auth", "loginmauth çalıstı$user")
 
             if (user!=null){
-                findNavController().popBackStack()
+                Log.e("auth", "loginmauth çalıstıboş değil")
+
 
                 findNavController().navigate(R.id.homeFragment)
 
@@ -87,14 +88,53 @@ class LoginFragment : Fragment() {
 
 
             }else{
+                Log.e("auth", "loginmauth çalıstıboş ")
                 val bottomNav = requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView)
                 bottomNav.visibility=View.GONE
+
 
             }
         }
 
     }
 
+
+
+    private fun oturumAc(okunanKullanici: KullaniciBilgileri, sifre: String) {
+
+
+        val girisYapacakEmail: String = okunanKullanici.email.toString()
+
+
+        auth.signInWithEmailAndPassword(girisYapacakEmail, sifre)
+            .addOnCompleteListener { p0 ->
+                if (p0.isSuccessful) {
+                    val navController = findNavController()
+
+                    // fcmTokenAl()
+
+                    Toast.makeText(
+                        requireContext(),
+                        "Hoşgeldiniz:" + okunanKullanici.user_name,
+                        Toast.LENGTH_LONG
+                    ).show()
+                    navController.navigate(R.id.homeFragment)
+                    Log.e("bulunanKullanici", "" + okunanKullanici.user_name)
+                    val bottomNav =
+                        requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView)
+                    bottomNav.visibility = View.VISIBLE
+
+
+                } else {
+
+                    Toast.makeText(
+                        activity, "Kullanıcı Adı/Şifre hatalı", Toast.LENGTH_LONG
+                    ).show()
+
+                }
+            }
+
+    }
     private fun girisYapacakKullanici(emailPhoneNumberUserName: String, sifre: String) {
 
         var kullaniciBulundu=false
@@ -157,45 +197,6 @@ class LoginFragment : Fragment() {
                 })
             }
         })
-    }
-
-    private fun oturumAc(okunanKullanici: KullaniciBilgileri, sifre: String) {
-
-
-        val girisYapacakEmail: String = okunanKullanici.email.toString()
-
-
-        auth.signInWithEmailAndPassword(girisYapacakEmail, sifre)
-            .addOnCompleteListener { p0 ->
-                if (p0.isSuccessful) {
-                    val navController = NavHostFragment.findNavController(this@LoginFragment)
-                    navController.navigate(R.id.registerFragment)
-
-
-                    // fcmTokenAl()
-
-                    Toast.makeText(
-                        requireContext(),
-                        "Hoşgeldiniz:" + okunanKullanici.user_name,
-                        Toast.LENGTH_LONG
-                    ).show()
-                    findNavController().popBackStack(R.id.loginFragment, true)
-                    findNavController().navigate(R.id.homeFragment)
-                    Log.e("bulunanKullanici", "" + okunanKullanici.user_name)
-                    val bottomNav =
-                        requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView)
-                    bottomNav.visibility = View.VISIBLE
-
-
-                } else {
-
-                    Toast.makeText(
-                        activity, "Kullanıcı Adı/Şifre hatalı", Toast.LENGTH_LONG
-                    ).show()
-
-                }
-            }
-
     }
 
 
@@ -324,6 +325,7 @@ class LoginFragment : Fragment() {
         super.onStop()
         auth.removeAuthStateListener(mauthLis)
     }
+
 
 
 

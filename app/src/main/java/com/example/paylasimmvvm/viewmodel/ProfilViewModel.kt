@@ -35,10 +35,11 @@ class ProfilViewModel:ViewModel() {
             mref.child("users").child("isletmeler").child(secilenUser).addListenerForSingleValueEvent(object :
                 ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    var userID=snapshot.getValue(KullaniciBilgileri::class.java)!!.user_id
+
 
 
                     if (snapshot.getValue()!=null){
+                        var userID=snapshot.getValue(KullaniciBilgileri::class.java)!!.user_id
                         //   var userID=kullanicid
                         var kullaniciadi=snapshot.getValue(KullaniciBilgileri::class.java)!!.user_name
                         var photoURL=snapshot.getValue(KullaniciBilgileri::class.java)!!.user_detail!!.profile_picture

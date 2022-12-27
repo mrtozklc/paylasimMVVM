@@ -20,7 +20,6 @@ import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import com.example.paylasimmvvm.R
 import com.example.paylasimmvvm.databinding.FragmentKampanyaOlusturBinding
@@ -36,28 +35,24 @@ import java.util.*
 
 class KampanyaOlusturFragment : Fragment() {
     private lateinit var binding:FragmentKampanyaOlusturBinding
-    var secilenbitmap: Bitmap? = null
+    private var secilenbitmap: Bitmap? = null
     var secilenSure:String?=null
-    var secilengorsel: Uri? = null
+    private var secilengorsel: Uri? = null
     private lateinit var storage: FirebaseStorage
     private lateinit var db:DatabaseReference
     private lateinit var auth: FirebaseAuth
-    lateinit var mauthLis: FirebaseAuth.AuthStateListener
-
-
-
+    private lateinit var mauthLis: FirebaseAuth.AuthStateListener
 
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        binding= FragmentKampanyaOlusturBinding.inflate(layoutInflater,container,false)
-        val view=binding.root
+    ): View {
+        binding = FragmentKampanyaOlusturBinding.inflate(layoutInflater, container, false)
 
 
 
-        return view
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -80,20 +75,20 @@ class KampanyaOlusturFragment : Fragment() {
 
 
         val spinnerAdapter = ArrayAdapter(requireActivity(), android.R.layout.simple_list_item_1, timer)
-        binding.spinner!!.setAdapter(spinnerAdapter)
+        binding.spinner.adapter = spinnerAdapter
 
 
-        binding.spinner!!.setOnItemSelectedListener(object : AdapterView.OnItemSelectedListener{
+        binding.spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
 
-                secilenSure = binding.spinner!!.selectedItem.toString()
+                secilenSure = binding.spinner.selectedItem.toString()
 
             }
 
             override fun onNothingSelected(p0: AdapterView<*>?) {
             }
 
-        })
+        }
 
         binding.gorselSec.setOnClickListener {
             if(ContextCompat.checkSelfPermission(requireActivity(),
@@ -112,7 +107,7 @@ class KampanyaOlusturFragment : Fragment() {
             binding. aciklamaId.visibility=View.GONE
             binding. spinner.visibility=View.GONE
             binding.btnPaylas.visibility=View.GONE
-            secilenSure = binding.spinner!!.selectedItem.toString()
+            secilenSure = binding.spinner.selectedItem.toString()
 
             val intent=Intent(requireActivity(), HomeFragmentRecyclerAdapter::class.java)
             intent.putExtra("time", secilenSure)
@@ -127,7 +122,7 @@ class KampanyaOlusturFragment : Fragment() {
 
 
             if (secilengorsel!=null){
-                gorselreference.putFile(secilengorsel!!).addOnSuccessListener { taskSnapshot->
+                gorselreference.putFile(secilengorsel!!).addOnSuccessListener {
                     val yuklenengorselreference=
                         FirebaseStorage.getInstance().reference.child("kampanyalar").child(gorselismi)
                     yuklenengorselreference.downloadUrl.addOnSuccessListener { uri->
@@ -160,25 +155,18 @@ class KampanyaOlusturFragment : Fragment() {
     private fun setupAuthLis() {
 
 
-        mauthLis=object :FirebaseAuth.AuthStateListener{
-            override fun onAuthStateChanged(p0: FirebaseAuth) {
+        mauthLis= FirebaseAuth.AuthStateListener {
+            val user=FirebaseAuth.getInstance().currentUser
+            Log.e("auth", "auth çalıstı$user")
+
+            if (user==null){
+                findNavController().popBackStack(R.id.kampanyaOlusturFragment,true)
 
 
+                findNavController().navigate(R.id.loginFragment)
 
-                var user=FirebaseAuth.getInstance().currentUser
-                Log.e("auth","auth çalıstı"+user)
-
-                if (user==null){
-                    findNavController().popBackStack(R.id.kampanyaOlusturFragment,true)
-
-
-                    findNavController().navigate(R.id.loginFragment)
-
-
-                }
 
             }
-
         }
 
     }
@@ -202,8 +190,8 @@ class KampanyaOlusturFragment : Fragment() {
 
 
 
-        var postID = db.child("kampanya").child(auth.uid!!).push().key
-        var yuklenenPost = KampanyaOlustur(auth.uid, postID, 0,binding.aciklamaId.text.toString(),secilenSure, downloadurl)
+        val postID = db.child("kampanya").child(auth.uid!!).push().key
+        val yuklenenPost = KampanyaOlustur(auth.uid, postID, 0,binding.aciklamaId.text.toString(),secilenSure, downloadurl)
 
 
 
@@ -213,7 +201,7 @@ class KampanyaOlusturFragment : Fragment() {
         Toast.makeText(requireActivity(),"Kampanya Oluşturuldu", Toast.LENGTH_LONG).show()
 
 
-        if(!binding.aciklamaId.text.toString().isNullOrEmpty()){
+        if(binding.aciklamaId.text.toString().isNotEmpty()){
 
             db.child("yorumlar").child(postID).child(postID).child("user_id").setValue(auth.uid)
             db.child("yorumlar").child(postID).child(postID).child("yorum_tarih").setValue(
@@ -240,7 +228,7 @@ class KampanyaOlusturFragment : Fragment() {
         db.child("users").child("isletmeler").child(auth.uid!!).child("user_detail").addListenerForSingleValueEvent(object :
             ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                var oankiGonderiSayisi=snapshot!!.child("post").getValue().toString().toInt()
+                var oankiGonderiSayisi= snapshot.child("post").value.toString().toInt()
                 oankiGonderiSayisi++
                 db.child("users").child("isletmeler").child(auth.uid!!).child("user_detail").child("post").setValue(oankiGonderiSayisi.toString())
             }
@@ -254,13 +242,14 @@ class KampanyaOlusturFragment : Fragment() {
 
 
 
+    @Deprecated("Deprecated in Java")
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
         grantResults: IntArray
     ) {
         if(requestCode==1){
-            if(grantResults.size>0 && grantResults[0]== PackageManager.PERMISSION_GRANTED){
+            if(grantResults.isNotEmpty() && grantResults[0]== PackageManager.PERMISSION_GRANTED){
                 val galeriintent= Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
                 startActivityForResult(galeriintent,2)
             }
@@ -269,6 +258,7 @@ class KampanyaOlusturFragment : Fragment() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if(requestCode==2&& resultCode== Activity.RESULT_OK&& data!=null){
             secilengorsel= data.data
