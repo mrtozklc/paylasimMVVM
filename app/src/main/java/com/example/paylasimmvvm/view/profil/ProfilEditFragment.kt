@@ -3,7 +3,6 @@ package com.example.paylasimmvvm.view.profil
 import android.content.Context
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -11,6 +10,8 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.navigation.NavOptions
+import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import com.example.paylasimmvvm.R
 import com.example.paylasimmvvm.databinding.FragmentProfilEditBinding
@@ -41,10 +42,9 @@ class ProfilEditFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding=FragmentProfilEditBinding.inflate(layoutInflater,container,false)
-        val view= binding.root
+        binding = FragmentProfilEditBinding.inflate(layoutInflater, container, false)
 
-        return view
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -63,21 +63,32 @@ class ProfilEditFragment : Fragment() {
 
         setUpprofilePhoto()
 
-      binding.imgBack.setOnClickListener {
-            requireActivity().onBackPressed()
+      binding.backButton.setOnClickListener {
+
+          findNavController().navigateUp()
 
         }
+
 
 
         val getImage=registerForActivityResult(
             ActivityResultContracts.GetContent(),
             ActivityResultCallback {
+                it.let {
+                    secilengorsel=it
+                    if (secilengorsel!=null){
 
-                secilengorsel=it
+                        binding. profileImage.setImageURI(secilengorsel!!)
 
 
-                binding. profileImage.setImageURI(secilengorsel!!)
+                    }
+
+
+                }
+
+
             })
+
 
         binding.fotoDegis.setOnClickListener {
 
@@ -85,9 +96,14 @@ class ProfilEditFragment : Fragment() {
 
 
         }
+        binding.sifreDegistir.setOnClickListener {
+            findNavController().navigate(R.id.sifreDegistirFragment)
+
+        }
 
 
-        binding.imageViewKayit.setOnClickListener {
+
+        binding.kayitButon.setOnClickListener {
             if (secilengorsel!=null){
                 binding.progressBar4.visibility=View.VISIBLE
 
@@ -104,7 +120,11 @@ class ProfilEditFragment : Fragment() {
                                 .setValue(downloadUrl).addOnCompleteListener { itTask ->
                                     if (itTask.isSuccessful) {
                                         binding.progressBar4.visibility=View.GONE
-                                        findNavController().navigate(R.id.profilFragment)
+                                        val navOptions = NavOptions.Builder()
+                                            .setPopUpTo(R.id.profilFragment, true)
+                                            .build()
+                                        val action=ProfilEditFragmentDirections.actionProfilEditFragmentToProfilFragment()
+                                       Navigation.findNavController(binding.kayitButon).navigate(action,navOptions)
 
                                         kullaniciAdiGuncelle(view,true)
                                     } else {

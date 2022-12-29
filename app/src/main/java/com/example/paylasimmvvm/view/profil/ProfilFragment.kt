@@ -8,6 +8,7 @@ import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.NavOptions
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -228,9 +229,12 @@ class ProfilFragment : Fragment() {
 
     private fun profilDuzenle(){
         binding.tvMesaj.setOnClickListener {
-          Navigation.findNavController(it).navigate(R.id.profilEditFragment)
+            val navOptions = NavOptions.Builder().setPopUpTo(R.id.profilFragment, true).build()
+            Navigation.findNavController(it).navigate(R.id.profilEditFragment, null, navOptions)
         }
-    }
+
+        }
+
 
 
 }

@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.paylasimmvvm.adapter.ChatFragmentRecyclerAdapter
@@ -115,6 +116,7 @@ class ChatFragment : Fragment() {
 
 
             }
+
             binding.refreshId.setOnRefreshListener {
                 mref.child("mesajlar").child(mesajGonderenId).child(sohbetEdilcekKisi)
                     .addListenerForSingleValueEvent(object : ValueEventListener {
@@ -141,6 +143,11 @@ class ChatFragment : Fragment() {
 
 
                 binding.refreshId.isRefreshing = false
+            }
+
+            binding.imageViewBack.setOnClickListener {
+
+                findNavController().navigateUp()
             }
 
 

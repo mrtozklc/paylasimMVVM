@@ -78,18 +78,6 @@
             android:defaultValue="userId" />
     </fragment>
     <fragment
-        android:id="@+id/profilAyarlarFragment"
-        android:name="com.example.paylasimmvvm.view.profil.ProfilAyarlarFragment"
-        android:label="fragment_profil_ayarlar"
-        tools:layout="@layout/fragment_profil_ayarlar" >
-        <action
-            android:id="@+id/action_profilAyarlarFragment_to_profilEditFragment"
-            app:destination="@id/profilEditFragment" />
-        <action
-            android:id="@+id/action_profilAyarlarFragment_to_sifreDegistirFragment"
-            app:destination="@id/sifreDegistirFragment" />
-    </fragment>
-    <fragment
         android:id="@+id/profilEditFragment"
         android:name="com.example.paylasimmvvm.view.profil.ProfilEditFragment"
         android:label="fragment_profil_edit"
@@ -97,6 +85,12 @@
         <action
             android:id="@+id/action_profilEditFragment_to_profilFragment"
             app:destination="@id/profilFragment" />
+        <action
+            android:id="@+id/action_profilEditFragment_to_profilFragment2"
+            app:destination="@id/profilFragment" />
+        <action
+            android:id="@+id/action_profilEditFragment_to_sifreDegistirFragment"
+            app:destination="@id/sifreDegistirFragment" />
     </fragment>
     <fragment
         android:id="@+id/sifreDegistirFragment"
@@ -134,9 +128,6 @@
         <action
             android:id="@+id/action_profilFragment_to_homeFragment"
             app:destination="@id/homeFragment" />
-        <action
-            android:id="@+id/action_profilFragment_to_profilAyarlarFragment"
-            app:destination="@id/profilAyarlarFragment" />
 
         <action
             android:id="@+id/action_profilFragment_to_yorumlarFragment"

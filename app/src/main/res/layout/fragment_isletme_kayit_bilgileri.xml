@@ -7,6 +7,8 @@
     tools:context=".view.login.IsletmeKayitBilgileriFragment">
 
 
+
+
     <EditText
         android:id="@+id/et_telefonIsletme"
         android:layout_width="0dp"
@@ -70,6 +72,7 @@
         android:layout_marginTop="8dp"
         android:ems="10"
         android:hint="Şifre"
+
         android:inputType="textPassword"
         android:padding="16dp"
         app:layout_constraintEnd_toEndOf="parent"
