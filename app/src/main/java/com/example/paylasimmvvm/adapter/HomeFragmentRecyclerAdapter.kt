@@ -325,6 +325,7 @@ class HomeFragmentRecyclerAdapter (var context: Context, private var tumKampanya
                 postMenu.visibility=View.GONE
             }
         }
+
         private fun begeniKontrolu(anlikGonderi: KullaniciKampanya) {
 
             val mRef = FirebaseDatabase.getInstance().reference
@@ -354,6 +355,7 @@ class HomeFragmentRecyclerAdapter (var context: Context, private var tumKampanya
                 }
             })
         }
+
         private fun yorumlarFragmentiniBaslat(anlikGonderi: KullaniciKampanya) {
 
             if (anlikGonderi.userID!=FirebaseAuth.getInstance().currentUser!!.uid){
@@ -366,6 +368,7 @@ class HomeFragmentRecyclerAdapter (var context: Context, private var tumKampanya
             Navigation.findNavController(itemView).navigate(action)
 
         }
+
         private fun yorumlariGoster(anlikGonderi: KullaniciKampanya) {
             val mref=FirebaseDatabase.getInstance().reference
             mref.child("yorumlar").child(anlikGonderi.postID!!).addListenerForSingleValueEvent(object :ValueEventListener{

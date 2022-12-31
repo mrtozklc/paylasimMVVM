@@ -132,6 +132,9 @@
         <action
             android:id="@+id/action_profilFragment_to_yorumlarFragment"
             app:destination="@id/yorumlarFragment" />
+        <action
+            android:id="@+id/action_profilFragment_to_kokteyllerFragment"
+            app:destination="@id/kokteyllerFragment" />
     </fragment>
     <fragment
         android:id="@+id/loginFragment"
@@ -225,4 +228,23 @@
         android:name="com.example.paylasimmvvm.view.yorumlar.YorumlarFragment"
         android:label="fragment_yorumlar"
         tools:layout="@layout/fragment_yorumlar" />
+    <fragment
+        android:id="@+id/kokteyllerFragment"
+        android:name="com.example.paylasimmvvm.view.kokteyller.KokteyllerFragment"
+        android:label="fragment_kokteyller"
+        tools:layout="@layout/fragment_kokteyller" >
+
+        <action
+            android:id="@+id/action_kokteyllerFragment_to_kokteylDetayiFragment"
+            app:destination="@id/kokteylDetayiFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/kokteylDetayiFragment"
+        android:name="com.example.paylasimmvvm.view.kokteyller.KokteylDetayiFragment"
+        android:label="fragment_kokteyl_detayi"
+        tools:layout="@layout/fragment_kokteyl_detayi" >
+        <argument
+            android:name="kokteyl_id"
+            app:argType="string" />
+    </fragment>
 </navigation>

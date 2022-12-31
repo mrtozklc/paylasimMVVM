@@ -1,5 +1,6 @@
 package com.example.paylasimmvvm.view.profil
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.*
@@ -18,6 +19,7 @@ import com.example.paylasimmvvm.databinding.FragmentProfilBinding
 import com.example.paylasimmvvm.model.KullaniciBilgileri
 import com.example.paylasimmvvm.model.KullaniciKampanya
 import com.example.paylasimmvvm.util.EventbusData
+import com.example.paylasimmvvm.view.kokteyller.KokteyllerFragment
 import com.example.paylasimmvvm.view.login.SignOutFragment
 import com.example.paylasimmvvm.viewmodel.ProfilViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -72,6 +74,14 @@ class ProfilFragment : Fragment() {
                 if (menuItem.itemId== R.id.cikisYap){
                     val dialog=SignOutFragment()
                     dialog.show(parentFragmentManager,"Çıkış yap")
+                }
+                else if(menuItem.itemId==R.id.kampanyaOlustur_id){
+
+
+                  val action=ProfilFragmentDirections.actionProfilFragmentToKokteyllerFragment()
+
+                    Navigation.findNavController(view).navigate(action)
+
                 }
                 return true
             }
