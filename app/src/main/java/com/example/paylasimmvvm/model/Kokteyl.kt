@@ -18,5 +18,11 @@ data class Drink(
      val kokteylKategori:String?,
 
      @SerializedName("strDrinkThumb")
-     val kokteylGorsel:String?
+     val kokteylGorsel:String?,
+
+     @SerializedName("strIngredient1")
+     val kokteylicerik:String?,
+
+     @SerializedName("strGlass")
+      val kokteyGlass:String?
 )

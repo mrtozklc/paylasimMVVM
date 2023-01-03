@@ -1,12 +1,10 @@
 package com.example.paylasimmvvm.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.paylasimmvvm.model.KampanyaOlustur
 import com.example.paylasimmvvm.model.KullaniciBilgileri
 import com.example.paylasimmvvm.model.KullaniciKampanya
-
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.*
 import com.google.firebase.ktx.Firebase
@@ -14,7 +12,7 @@ import com.google.firebase.ktx.Firebase
 
 class kampanyalarViewModel: ViewModel() {
     lateinit var mref: DatabaseReference
-    var tumPostlar=ArrayList<String>()
+    var tumKullaniciIDleri=ArrayList<String>()
     var tumGonderiler=ArrayList<KullaniciKampanya>()
 
     val kampanyalar=MutableLiveData<List<KullaniciKampanya>>()
@@ -25,6 +23,7 @@ class kampanyalarViewModel: ViewModel() {
 
 
     fun refreshKampanyalar(){
+
         yukleniyor.value=true
 
         mref=FirebaseDatabase.getInstance().reference
@@ -32,7 +31,7 @@ class kampanyalarViewModel: ViewModel() {
         val user = Firebase.auth.currentUser
         if (user != null) {
             tumGonderiler.clear()
-            tumPostlar.clear()
+            tumKullaniciIDleri.clear()
 
 
             mref.child("kampanya").addListenerForSingleValueEvent(object :ValueEventListener{
@@ -41,9 +40,9 @@ class kampanyalarViewModel: ViewModel() {
                 }
 
                 override fun onDataChange(p0: DataSnapshot) {
-                    if(p0.getValue()!=null){
+                    if(p0.value !=null){
                         for(ds in p0.children){
-                            tumPostlar.add(ds.key!!)
+                            tumKullaniciIDleri.add(ds.key!!)
                         }
 
 
@@ -56,9 +55,29 @@ class kampanyalarViewModel: ViewModel() {
 
             })
             if (tumGonderiler.size==0){
-                kampanyalar.value= tumGonderiler
-                kampanyaYok.value=true
-                yukleniyor.value=false
+
+                mref.child("kampanya").addListenerForSingleValueEvent(object :ValueEventListener{
+                    override fun onCancelled(p0: DatabaseError) {
+
+                    }
+
+                    override fun onDataChange(p0: DataSnapshot) {
+                        if(p0.value ==null){
+                            kampanyaYok.value=true
+
+                        }else{
+                            kampanyalar.value=tumGonderiler
+                            kampanyaYok.value=false
+
+
+
+                        }
+                    }
+
+
+                })
+
+
             }
 
 
@@ -76,21 +95,20 @@ class kampanyalarViewModel: ViewModel() {
 
         mref=FirebaseDatabase.getInstance().reference
 
-        for(i in 0 until tumPostlar.size){
+        for(i in 0 until tumKullaniciIDleri.size){
 
-            var kullaniciID = tumPostlar.get(i)
+            val kullaniciID = tumKullaniciIDleri.get(i)
 
 
-            Log.e("kullaniciID", "kullaniciID:" +tumPostlar.get(i))
 
             mref.child("users").child("isletmeler").child(kullaniciID).addListenerForSingleValueEvent(object :ValueEventListener{
                 override fun onDataChange(snapshot: DataSnapshot) {
 
-                    var userID=snapshot.getValue(KullaniciBilgileri::class.java)!!.user_id
-                    var kullaniciadi=snapshot.getValue(KullaniciBilgileri::class.java)!!.user_name
-                    var photoURL=snapshot.getValue(KullaniciBilgileri::class.java)!!.user_detail!!.profile_picture
-                    var isletmeLati=snapshot.getValue(KullaniciBilgileri::class.java)!!.user_detail!!.latitude
-                    var isletmeLongi=snapshot.getValue(KullaniciBilgileri::class.java)!!.user_detail!!.longitude
+                    val userID=snapshot.getValue(KullaniciBilgileri::class.java)!!.user_id
+                    val kullaniciadi=snapshot.getValue(KullaniciBilgileri::class.java)!!.user_name
+                    val photoURL=snapshot.getValue(KullaniciBilgileri::class.java)!!.user_detail!!.profile_picture
+                    val isletmeLati=snapshot.getValue(KullaniciBilgileri::class.java)!!.user_detail!!.latitude
+                    val isletmeLongi=snapshot.getValue(KullaniciBilgileri::class.java)!!.user_detail!!.longitude
 
 
 
@@ -98,14 +116,14 @@ class kampanyalarViewModel: ViewModel() {
                     mref.child("kampanya").child(kullaniciID).addListenerForSingleValueEvent(object :ValueEventListener{
                         override fun onDataChange(snapshot: DataSnapshot) {
 
-                            if (snapshot.getValue()!=null) {
+                            if (snapshot.value !=null) {
 
-                                if (snapshot!!.hasChildren()) {
+                                if (snapshot.hasChildren()) {
 
 
-                                    for (ds in snapshot!!.children) {
+                                    for (ds in snapshot.children) {
 
-                                        var eklenecekUserPost = KullaniciKampanya()
+                                        val eklenecekUserPost = KullaniciKampanya()
 
                                         eklenecekUserPost.userID = userID
                                         eklenecekUserPost.userName = kullaniciadi
@@ -119,7 +137,11 @@ class kampanyalarViewModel: ViewModel() {
                                         eklenecekUserPost.isletmeLongitude = isletmeLongi
 
                                         tumGonderiler.add(eklenecekUserPost)
-                                        Log.e("tumgoderilerlistesi","saddasd"+tumGonderiler)
+                                        kampanyaYok.value=false
+                                        yukleniyor.value=true
+                                        kampanyalar.value= tumGonderiler
+                                        yukleniyor.value=false
+
 
                                     }
 
@@ -127,9 +149,9 @@ class kampanyalarViewModel: ViewModel() {
                             }
 
 
-                            if(i>=tumPostlar.size-1){
+                            if(i>=tumKullaniciIDleri.size-1){
 
-                                if (tumPostlar.size>0){
+                                if (tumKullaniciIDleri.size>0){
                                     kampanyalar.value= tumGonderiler
                                     kampanyaYok.value=false
                                     yukleniyor.value=false

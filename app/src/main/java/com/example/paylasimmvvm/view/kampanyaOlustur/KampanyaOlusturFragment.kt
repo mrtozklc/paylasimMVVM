@@ -83,6 +83,7 @@ class KampanyaOlusturFragment : Fragment() {
 
                 secilenSure = binding.spinner.selectedItem.toString()
 
+
             }
 
             override fun onNothingSelected(p0: AdapterView<*>?) {

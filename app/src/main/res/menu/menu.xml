@@ -22,9 +22,9 @@
         app:showAsAction="always" />
 
     <item
-        android:id="@+id/kampanyaOlusturFragment"
+        android:id="@+id/kokteyllerFragment"
         android:title=""
-        android:icon="@drawable/ic_baseline_ios_share"
+        android:icon="@drawable/ic_baseline_nightlife"
         app:showAsAction="always" />
 
     <item

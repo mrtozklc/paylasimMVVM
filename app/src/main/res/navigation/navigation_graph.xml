@@ -135,6 +135,12 @@
         <action
             android:id="@+id/action_profilFragment_to_kokteyllerFragment"
             app:destination="@id/kokteyllerFragment" />
+        <action
+            android:id="@+id/action_profilFragment_to_kampanyaOlusturFragment"
+            app:destination="@id/kampanyaOlusturFragment" />
+        <action
+            android:id="@+id/action_profilFragment_to_biralarFragment"
+            app:destination="@id/biralarFragment" />
     </fragment>
     <fragment
         android:id="@+id/loginFragment"
@@ -183,6 +189,10 @@
         <action
             android:id="@+id/action_homeFragment_to_yorumlarFragment"
             app:destination="@id/yorumlarFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_kokteyllerFragment"
+            app:destination="@id/kokteyllerFragment" />
+
     </fragment>
     <fragment
         android:id="@+id/bildirimlerFragment"
@@ -219,9 +229,7 @@
         <action
             android:id="@+id/action_kampanyaOlusturFragment_to_homeFragment"
             app:destination="@id/homeFragment" />
-        <argument
-            android:name="sipnner"
-            app:argType="string" />
+
     </fragment>
     <fragment
         android:id="@+id/yorumlarFragment"
@@ -230,21 +238,41 @@
         tools:layout="@layout/fragment_yorumlar" />
     <fragment
         android:id="@+id/kokteyllerFragment"
-        android:name="com.example.paylasimmvvm.view.kokteyller.KokteyllerFragment"
+        android:name="com.example.paylasimmvvm.view.icecekler.KokteyllerFragment"
         android:label="fragment_kokteyller"
         tools:layout="@layout/fragment_kokteyller" >
 
         <action
             android:id="@+id/action_kokteyllerFragment_to_kokteylDetayiFragment"
             app:destination="@id/kokteylDetayiFragment" />
+        <action
+            android:id="@+id/action_kokteyllerFragment_to_kokteyllerFragment2"
+            app:destination="@id/kokteyllerFragment2" />
     </fragment>
     <fragment
         android:id="@+id/kokteylDetayiFragment"
-        android:name="com.example.paylasimmvvm.view.kokteyller.KokteylDetayiFragment"
+        android:name="com.example.paylasimmvvm.view.icecekler.KokteylDetayiFragment"
         android:label="fragment_kokteyl_detayi"
         tools:layout="@layout/fragment_kokteyl_detayi" >
         <argument
             android:name="kokteyl_id"
+            app:argType="string" />
+    </fragment>
+    <fragment
+        android:id="@+id/biralarFragment"
+        android:name="com.example.paylasimmvvm.view.icecekler.BiralarFragment"
+        android:label="fragment_biralar"
+        tools:layout="@layout/fragment_biralar" />
+    <fragment
+        android:id="@+id/kokteyllerFragment2"
+        android:name="com.example.paylasimmvvm.view.icecekler.KokteyllerFragment2"
+        android:label="fragment_kokteyller2"
+        tools:layout="@layout/fragment_kokteyller2" >
+        <action
+            android:id="@+id/action_kokteyllerFragment2_to_kokteylDetayiFragment"
+            app:destination="@id/kokteylDetayiFragment" />
+        <argument
+            android:name="icecekOzellik"
             app:argType="string" />
     </fragment>
 </navigation>

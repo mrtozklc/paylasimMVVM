@@ -17,6 +17,7 @@ class KokteylDetayiViewModel:ViewModel() {
 
     val kokteyller= MutableLiveData<List<DrinkDetay>>()
     val kokteylYukleniyor= MutableLiveData<Boolean>()
+    val kokteylHataMesaji=MutableLiveData<Boolean>()
 
     val disposable= CompositeDisposable()
     val kokteylApiServis= KokteylApiServis()
@@ -24,7 +25,7 @@ class KokteylDetayiViewModel:ViewModel() {
 
 
    fun verileriInternettenAl(kokteylId: String){
-        kokteylYukleniyor.value=true
+
 
         disposable.add(
             kokteylApiServis.getKokteylDetayi(kokteylId)

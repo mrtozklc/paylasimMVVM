@@ -9,10 +9,8 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 
 class KokteylApiServis {
-    //https://raw.githubusercontent.com/atilsamancioglu/BTK20-JSONVeriSeti/master/besinler.json
-    //https://www.thecocktaildb.com/api/json/v1/1/search.php?f=a
-
     private val BASE_URL = "https://www.thecocktaildb.com/"
+
 
     private val api = Retrofit.Builder()
         .baseUrl(BASE_URL)
@@ -20,6 +18,24 @@ class KokteylApiServis {
         .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
         .build()
         .create(KokteylApi::class.java)
+
+    fun getCategoryList(category: String):Single<Kokteyl>{
+        return api.getCategories(category)
+    }
+    fun getGlassList(glass: String) = api.getGlasses(glass)
+
+    fun getIngredientList(ingredient: String) = api.getIngredients(ingredient)
+
+    fun getCategoriesItem(c:String)=api.getCategoriesItem(c)
+
+    fun getGlassItem(g:String)=api.getGlassItem(g)
+
+    fun getIngredientsItem(i:String)=api.getIngredientsItem(i)
+
+
+
+
+
 
     private val apiDetay = Retrofit.Builder()
         .baseUrl(BASE_URL)
@@ -29,12 +45,10 @@ class KokteylApiServis {
         .create(KokteylDetayi ::class.java)
 
 
-    fun getData() : Single<Kokteyl> {
-        return api.getKokteyl()
 
-    }
 
-    fun getKokteylDetayi(kokteylId: String):Single<KokteylDetay>{
-        return apiDetay.getKokteylDetayi(kokteylId)
-    }
+   // fun getDataList(List:String)=api.getDataList(List)
+
+    fun getKokteylDetayi(kokteylId: String) = apiDetay.getKokteylDetayi(kokteylId)
+
 }

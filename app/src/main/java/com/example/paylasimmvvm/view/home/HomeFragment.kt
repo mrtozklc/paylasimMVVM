@@ -6,7 +6,6 @@ import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -68,14 +67,9 @@ class HomeFragment : Fragment() {
         kampanyalarViewModeli.refreshKampanyalar()
 
         badgeViewModeli= ViewModelProvider(this)[BadgeViewModel::class.java]
-        Log.e("loggggg","homepncrate")
-
         badgeViewModeli.refreshBadge()
 
         observeLiveDataBadge()
-
-
-
 
         observeliveData()
         setUpRecyclerview()
@@ -83,11 +77,18 @@ class HomeFragment : Fragment() {
 
         binding.refreshMainId.setOnRefreshListener(object : SwipeRefreshLayout.OnRefreshListener{
             override fun onRefresh() {
+                binding.progressBar8.visibility=View.VISIBLE
+                binding.recyclerAnaSayfa.visibility=View.GONE
+                binding.kampanyaYok.visibility=View.GONE
 
-
+                binding.recyclerAnaSayfa.visibility=View.GONE
                 tumGonderiler.clear()
                 sayfaBasiGonderiler.clear()
                 sayfaninSonunaGelindi=false
+
+
+
+
 
                 kampanyalarViewModeli.refreshKampanyalar()
 
@@ -132,7 +133,7 @@ class HomeFragment : Fragment() {
                 }
 
                 binding.recyclerAnaSayfa.visibility = View.VISIBLE
-                binding.kampanyaYok.visibility=View.VISIBLE
+
                 recyclerviewadapter.kampanyalariGuncelle(kampanyalar)
             }
 

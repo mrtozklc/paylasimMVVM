@@ -87,7 +87,7 @@ class MesajlarRecyclerAdapter(private var tumMesajlar:ArrayList<Mesajlar>):Recyc
                     .child("goruldu").setValue(true)
                     .addOnCompleteListener {
                         val navOptions = NavOptions.Builder()
-                            .setPopUpTo(R.id.mesajlarFragment, true)
+                            .setPopUpTo(R.id.chatFragment, true)
                             .build()
                         Navigation.findNavController(binding.tumLayout).navigate(action, navOptions)
 

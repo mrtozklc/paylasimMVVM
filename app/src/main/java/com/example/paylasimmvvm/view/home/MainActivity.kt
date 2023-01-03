@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.MenuItem
 
 import androidx.navigation.NavController
+import androidx.navigation.Navigation
 
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
@@ -74,10 +75,10 @@ class MainActivity : AppCompatActivity() {
                 }
                 return true
             }
-            R.id.kampanyaOlusturFragment -> {
-                if (currentDestination != null && currentDestination.id != R.id.kampanyaOlusturFragment) {
-                    navController.popBackStack(R.id.kampanyaOlusturFragment, true)
-                    navController.navigate(R.id.kampanyaOlusturFragment)
+            R.id.kokteyllerFragment -> {
+                if (currentDestination == null || currentDestination.id != R.id.kokteyllerFragment) {
+                    navController.popBackStack(R.id.kokteyllerFragment, true)
+                    navController.navigate(R.id.kokteyllerFragment)
                 }
                 return true
             }
@@ -100,24 +101,28 @@ class MainActivity : AppCompatActivity() {
             finish()
 
         }else if(currentDestination != null && currentDestination.id == R.id.bildirimlerFragment){
+            navController.popBackStack(R.id.bildirimlerFragment, true)
+
 
             navController.navigate(R.id.homeFragment)
 
 
         }
         else if(currentDestination != null && currentDestination.id == R.id.mesajlarFragment){
+            navController.popBackStack(R.id.mesajlarFragment, true)
+
             navController.navigate(R.id.homeFragment)
 
 
         }
-        else if(currentDestination != null && currentDestination.id == R.id.kampanyaOlusturFragment){
-            navController.popBackStack(R.id.homeFragment, true)
+        else if(currentDestination != null && currentDestination.id == R.id.kokteyllerFragment){
+            navController.popBackStack(R.id.kokteyllerFragment, true)
             navController.navigate(R.id.homeFragment)
 
 
         }
         else if(currentDestination != null && currentDestination.id == R.id.profilFragment){
-            navController.popBackStack(R.id.homeFragment, true)
+            navController.popBackStack(R.id.profilFragment, true)
             navController.navigate(R.id.homeFragment)
 
 

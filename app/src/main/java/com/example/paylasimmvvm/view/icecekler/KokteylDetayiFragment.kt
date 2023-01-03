@@ -1,7 +1,6 @@
-package com.example.paylasimmvvm.view.kokteyller
+package com.example.paylasimmvvm.view.icecekler
 
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -9,9 +8,7 @@ import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.paylasimmvvm.adapter.KokteylDetayRecyclerAdapter
-import com.example.paylasimmvvm.adapter.KokteyllerRecyclerAdapter
 import com.example.paylasimmvvm.databinding.FragmentKokteylDetayiBinding
-import com.example.paylasimmvvm.model.Drink
 import com.example.paylasimmvvm.model.DrinkDetay
 import com.example.paylasimmvvm.viewmodel.KokteylDetayiViewModel
 
@@ -36,9 +33,6 @@ class KokteylDetayiFragment : Fragment() {
         arguments?.let {
 
           val  kokteylID = KokteylDetayiFragmentArgs.fromBundle(it).kokteylId
-
-            Log.e("gelenid","$kokteylID")
-
 
             kokteylViewModeli= ViewModelProvider(this)[KokteylDetayiViewModel::class.java]
 
@@ -71,6 +65,36 @@ class KokteylDetayiFragment : Fragment() {
 
             }
 
+        }
+
+
+        kokteylViewModeli.kokteylHataMesaji.observe(viewLifecycleOwner){
+            it.let {
+                if(it){
+                    binding.hataMesaji.visibility=View.VISIBLE
+                    binding.recyclerKokteyl.visibility=View.GONE
+
+                }else{
+                    binding.hataMesaji.visibility=View.GONE
+
+
+                }
+            }
+
+        }
+
+        kokteylViewModeli.kokteylYukleniyor.observe(viewLifecycleOwner){
+            it.let {
+                if(it){
+                    binding.hataMesaji.visibility=View.GONE
+                    binding.recyclerKokteyl.visibility=View.GONE
+                    binding.progresBarKokteyl.visibility=View.VISIBLE
+
+                }else{
+                    binding.progresBarKokteyl.visibility=View.GONE
+
+                }
+            }
         }
 
     }
