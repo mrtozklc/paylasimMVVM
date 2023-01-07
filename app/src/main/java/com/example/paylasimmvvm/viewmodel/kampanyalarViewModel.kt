@@ -1,5 +1,6 @@
 package com.example.paylasimmvvm.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.paylasimmvvm.model.KampanyaOlustur
@@ -7,6 +8,7 @@ import com.example.paylasimmvvm.model.KullaniciBilgileri
 import com.example.paylasimmvvm.model.KullaniciKampanya
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.*
+import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 
 
@@ -84,14 +86,11 @@ class kampanyalarViewModel: ViewModel() {
         }
 
 
-
-
     }
 
     private fun verileriGetir() {
 
         yukleniyor.value=true
-
 
         mref=FirebaseDatabase.getInstance().reference
 
@@ -109,6 +108,8 @@ class kampanyalarViewModel: ViewModel() {
                     val photoURL=snapshot.getValue(KullaniciBilgileri::class.java)!!.user_detail!!.profile_picture
                     val isletmeLati=snapshot.getValue(KullaniciBilgileri::class.java)!!.user_detail!!.latitude
                     val isletmeLongi=snapshot.getValue(KullaniciBilgileri::class.java)!!.user_detail!!.longitude
+                    val isletmeTuru=snapshot.getValue(KullaniciBilgileri::class.java)!!.user_detail!!.isletme_turu
+                    val muzikTuru=snapshot.getValue(KullaniciBilgileri::class.java)!!.user_detail!!.muzik_turu
 
 
 
@@ -119,7 +120,6 @@ class kampanyalarViewModel: ViewModel() {
                             if (snapshot.value !=null) {
 
                                 if (snapshot.hasChildren()) {
-
 
                                     for (ds in snapshot.children) {
 
@@ -135,19 +135,19 @@ class kampanyalarViewModel: ViewModel() {
                                         eklenecekUserPost.geri_sayim = ds.getValue(KampanyaOlustur::class.java)!!.geri_sayim
                                         eklenecekUserPost.isletmeLatitude = isletmeLati
                                         eklenecekUserPost.isletmeLongitude = isletmeLongi
+                                        eklenecekUserPost.isletme_turu=isletmeTuru
+                                        eklenecekUserPost.muzik_turu=muzikTuru
 
                                         tumGonderiler.add(eklenecekUserPost)
+
+
                                         kampanyaYok.value=false
                                         yukleniyor.value=true
                                         kampanyalar.value= tumGonderiler
                                         yukleniyor.value=false
-
-
                                     }
-
                                 }
                             }
-
 
                             if(i>=tumKullaniciIDleri.size-1){
 
@@ -156,34 +156,73 @@ class kampanyalarViewModel: ViewModel() {
                                     kampanyaYok.value=false
                                     yukleniyor.value=false
                                 }
-
-
                             }
-
-
-
                         }
-
-
-
-
-
                         override fun onCancelled(error: DatabaseError) {
                         }
-
                     })
 
+                }
+                override fun onCancelled(error: DatabaseError) {}
+            })
+        }
+    }
+
+    fun getIsletmeList(){
+
+        yukleniyor.value=true
 
 
+        mref=FirebaseDatabase.getInstance().reference
+        mref.child("users").child("isletmeler").addListenerForSingleValueEvent(object :ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
 
+                if (snapshot.value !=null) {
+
+                    if (snapshot.hasChildren()) {
+
+                        for (ds in snapshot.children) {
+                            Log.e("dfor","$ds")
+                            val userID=ds.getValue(KullaniciBilgileri::class.java)!!.user_id
+                            val kullaniciadi=ds.getValue(KullaniciBilgileri::class.java)!!.user_name
+                            val photoURL=ds.getValue(KullaniciBilgileri::class.java)!!.user_detail!!.profile_picture
+                            val isletmeLati=ds.getValue(KullaniciBilgileri::class.java)!!.user_detail!!.latitude
+                            val isletmeLongi=ds.getValue(KullaniciBilgileri::class.java)!!.user_detail!!.longitude
+                            val isletmeTuru=ds.getValue(KullaniciBilgileri::class.java)!!.user_detail!!.isletme_turu
+                            val muzikTuru=ds.getValue(KullaniciBilgileri::class.java)!!.user_detail!!.muzik_turu
+
+
+                            val eklenecekUserPost = KullaniciKampanya()
+
+                            eklenecekUserPost.userID = userID
+                            eklenecekUserPost.userName = kullaniciadi
+                           eklenecekUserPost.userPhotoURL = photoURL
+                            eklenecekUserPost.isletmeLatitude = isletmeLati
+                            eklenecekUserPost.isletmeLongitude = isletmeLongi
+                            eklenecekUserPost.isletme_turu=isletmeTuru
+                            eklenecekUserPost.muzik_turu=muzikTuru
+
+                            tumGonderiler.add(eklenecekUserPost)
+
+                            Log.e("gelenisletmeler","$tumGonderiler")
+                            kampanyaYok.value=false
+                            yukleniyor.value=true
+                            kampanyalar.value= tumGonderiler
+                            yukleniyor.value=false
+
+
+                        }
+
+                    }
                 }
 
-                override fun onCancelled(error: DatabaseError) {}
-
-            })
 
 
-        }
+            }
+            override fun onCancelled(error: DatabaseError) {}
+
+        })
+
 
     }
 

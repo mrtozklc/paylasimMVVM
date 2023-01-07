@@ -104,7 +104,7 @@ class HomeFragmentRecyclerAdapter (var context: Context, private var tumKampanya
 
             userNameveAciklama.text = anlikGonderi.userName.toString()+" "+anlikGonderi.postAciklama.toString()
 
-          Picasso.get().load(anlikGonderi.postURL).into(gonderi)
+            Picasso.get().load(anlikGonderi.postURL).into(gonderi)
 
             kampanyaTarihi.text = TimeAgo.getTimeAgo(anlikGonderi.postYuklenmeTarih!!)
 
@@ -117,8 +117,7 @@ class HomeFragmentRecyclerAdapter (var context: Context, private var tumKampanya
                         // if timestamp given in seconds, convert to millis
                         time *= 1000
                     }
-                    Log.e("gelentimecarpilmis", "dsa$time")
-                    Log.e("gelentimecarpilmis","dsa"+ System.currentTimeMillis())
+
                 }
                 val now = System.currentTimeMillis()
                 if (time != null) {
@@ -289,7 +288,7 @@ class HomeFragmentRecyclerAdapter (var context: Context, private var tumKampanya
                                         Bildirimler.KAMPANYA_BEGENILDI_GERI,
                                         anlikGonderi.postID!!)
                                 }
-                        gonderiBegen.setImageResource(R.drawable.ic_launcher_like_foreground)
+                                gonderiBegen.setImageResource(R.drawable.ic_launcher_like_foreground)
                             } else {
                                 ref.child("begeniler").child(anlikGonderi.postID!!).child(currentID)
                                     .setValue(currentID)
@@ -300,7 +299,7 @@ class HomeFragmentRecyclerAdapter (var context: Context, private var tumKampanya
                                         anlikGonderi.postID!!
                                     )
                                 }
-                             gonderiBegen.setImageResource(R.drawable.ic_launcher_like_red_foreground)
+                                gonderiBegen.setImageResource(R.drawable.ic_launcher_like_red_foreground)
                                 begenmeSayisi.visibility=View.VISIBLE
                                 begenmeSayisi.text = ""+ snapshot.childrenCount.toString()+" beğeni"
                             }
@@ -345,9 +344,9 @@ class HomeFragmentRecyclerAdapter (var context: Context, private var tumKampanya
                     }
 
                     if (snapshot.hasChild(userID)) {
-                    gonderiBegen.setImageResource(R.drawable.ic_launcher_like_red_foreground)
+                        gonderiBegen.setImageResource(R.drawable.ic_launcher_like_red_foreground)
                     } else {
-                      gonderiBegen.setImageResource(R.drawable.ic_launcher_like_foreground)
+                        gonderiBegen.setImageResource(R.drawable.ic_launcher_like_foreground)
 
                     }
                 }
@@ -395,9 +394,9 @@ class HomeFragmentRecyclerAdapter (var context: Context, private var tumKampanya
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
 
 
-            val viewHolder = LayoutInflater.from(context).inflate(R.layout.recycler_row, parent, false)
+        val viewHolder = LayoutInflater.from(context).inflate(R.layout.recycler_row, parent, false)
 
-            return ViewHolder(viewHolder)
+        return ViewHolder(viewHolder)
     }
     override fun getItemCount(): Int {
         return tumKampanyalar.size
@@ -413,4 +412,3 @@ class HomeFragmentRecyclerAdapter (var context: Context, private var tumKampanya
         notifyDataSetChanged()
     }
 }
-

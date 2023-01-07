@@ -8,5 +8,5 @@ data class KullaniciBilgileri (
     var phone_number: String? = null,
     var user_id: String? = null,
     var FCM:String?=null,
-    var user_detail:KullaniciBilgiDetaylari?=null){
+    var user_detail: KullaniciBilgiDetaylari?=null){
 }

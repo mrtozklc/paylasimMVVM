@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.view.MenuItem
 
 import androidx.navigation.NavController
-import androidx.navigation.Navigation
 
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
@@ -21,8 +20,6 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 
 
 class MainActivity : AppCompatActivity() {
-
-
     private lateinit var binding: ActivityMainBinding
 
 
@@ -61,10 +58,10 @@ class MainActivity : AppCompatActivity() {
                 }
                 return true
             }
-            R.id.bildirimlerFragment -> {
-                if (currentDestination != null && currentDestination.id != R.id.bildirimlerFragment) {
-                    navController.popBackStack(R.id.bildirimlerFragment, true)
-                    navController.navigate(R.id.bildirimlerFragment)
+            R.id.isletmeListFragment -> {
+                if (currentDestination != null && currentDestination.id != R.id.isletmeListFragment) {
+                    navController.popBackStack(R.id.isletmeListFragment, true)
+                    navController.navigate(R.id.isletmeListFragment)
                 }
                 return true
             }
@@ -100,8 +97,8 @@ class MainActivity : AppCompatActivity() {
         if (currentDestination != null && currentDestination.id == R.id.homeFragment) {
             finish()
 
-        }else if(currentDestination != null && currentDestination.id == R.id.bildirimlerFragment){
-            navController.popBackStack(R.id.bildirimlerFragment, true)
+        }else if(currentDestination != null && currentDestination.id == R.id.isletmeListFragment){
+            navController.popBackStack(R.id.isletmeListFragment, true)
 
 
             navController.navigate(R.id.homeFragment)

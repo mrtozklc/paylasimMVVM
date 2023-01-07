@@ -1,8 +1,11 @@
 package com.example.paylasimmvvm.view.profil
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import android.widget.FrameLayout
+import android.widget.GridView
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
@@ -13,10 +16,12 @@ import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.paylasimmvvm.R
+import com.example.paylasimmvvm.adapter.MenulerGridAdapter
 import com.example.paylasimmvvm.adapter.ProfilFragmentRecyclerAdapter
 import com.example.paylasimmvvm.databinding.FragmentProfilBinding
 import com.example.paylasimmvvm.model.KullaniciBilgileri
 import com.example.paylasimmvvm.model.KullaniciKampanya
+import com.example.paylasimmvvm.model.Menuler
 import com.example.paylasimmvvm.util.EventbusData
 import com.example.paylasimmvvm.view.login.SignOutFragment
 import com.example.paylasimmvvm.viewmodel.ProfilViewModel
@@ -28,6 +33,7 @@ import com.google.firebase.ktx.Firebase
 import com.squareup.picasso.Picasso
 import org.greenrobot.eventbus.EventBus
 import java.util.*
+import kotlin.collections.ArrayList
 
 
 class ProfilFragment : Fragment() {
@@ -35,14 +41,19 @@ class ProfilFragment : Fragment() {
     private lateinit var auth : FirebaseAuth
     private lateinit var mauthLis: FirebaseAuth.AuthStateListener
     lateinit var mref: DatabaseReference
+    var tumMenuler=ArrayList<Menuler>()
     private var tumGonderiler=ArrayList<KullaniciKampanya>()
     private lateinit var profilKampanyalarViewModeli:ProfilViewModel
     private lateinit var recyclerviewadapter:ProfilFragmentRecyclerAdapter
+    lateinit var gridView: GridView
+
+
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         mref= FirebaseDatabase.getInstance().reference
+
 
 
         setupAuthLis()
@@ -60,7 +71,46 @@ class ProfilFragment : Fragment() {
         recyclerviewadapter= ProfilFragmentRecyclerAdapter(requireActivity(),tumGonderiler)
         binding.recyclerProfil.adapter=recyclerviewadapter
 
+        binding.paylasimlar.setOnClickListener {
+
+
+        }
+
+        binding.menu.setOnClickListener {
+
+
+            val gridView = requireActivity().findViewById<GridView>(R.id.grid_id) as GridView
+
+
+
+            val customAdapter = MenulerGridAdapter(tumMenuler)
+
+            gridView.adapter = customAdapter
+
+            profilKampanyalarViewModeli.getMenus(auth.currentUser!!.uid)
+
+
+            profilKampanyalarViewModeli.profilMenu.observe(viewLifecycleOwner) { profilMenu ->
+                profilMenu.let {
+
+
+
+                    binding.gridId.visibility = View.VISIBLE
+                    customAdapter.menuleriGuncelle(profilMenu)
+                    binding.recyclerProfil.visibility=View.GONE
+
+                }
+            }
+
+
+        }
+
+        binding.yorumlar.setOnClickListener {
+
+        }
+
         val menuHost: MenuHost = requireActivity()
+
 
 
         menuHost.addMenuProvider(object : MenuProvider {
@@ -68,6 +118,8 @@ class ProfilFragment : Fragment() {
                 menuInflater.inflate(R.menu.menu2, menu)
             }
 
+
+            @SuppressLint("SuspiciousIndentation")
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
                 if (menuItem.itemId== R.id.cikisYap){
                     val dialog=SignOutFragment()
@@ -77,6 +129,7 @@ class ProfilFragment : Fragment() {
 
 
                   val action=ProfilFragmentDirections.actionProfilFragmentToKampanyaOlusturFragment()
+
 
                     Navigation.findNavController(view).navigate(action)
 
@@ -124,6 +177,8 @@ class ProfilFragment : Fragment() {
         mref = FirebaseDatabase.getInstance().reference
 
 
+
+
         return view
     }
 
@@ -145,7 +200,7 @@ class ProfilFragment : Fragment() {
 
                         Log.e("post", "sayisi$okunanKullanici")
                         if (!okunanKullanici.user_detail!!.biography.isNullOrEmpty()){
-                            binding.tvBio.text = okunanKullanici.user_detail!!.biography
+                         //   binding.tvBio.text = okunanKullanici.user_detail!!.biography
 
 
                         }
@@ -179,7 +234,7 @@ class ProfilFragment : Fragment() {
                         binding.tvPost.text = okunanKullanici.user_detail!!.post
 
                         if (!okunanKullanici.user_detail!!.biography.isNullOrEmpty()){
-                            binding.tvBio.text = okunanKullanici.user_detail!!.biography
+                         //   binding.tvBio.text = okunanKullanici.user_detail!!.biography
 
 
                         }
@@ -213,8 +268,6 @@ class ProfilFragment : Fragment() {
 
     private fun setupAuthLis() {
         val user=FirebaseAuth.getInstance().currentUser
-
-
 
 
         mauthLis= FirebaseAuth.AuthStateListener {

@@ -4,7 +4,6 @@ import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -90,7 +89,8 @@ class KullaniciKayitBilgileriFragment : Fragment() {
                                         override fun onDataChange(snapshot: DataSnapshot) {
                                             if (snapshot.value !=null){
                                                 for (userr in snapshot.children){
-                                                    val okunanKullanici = user.getValue(KullaniciBilgileri::class.java)
+                                                    val okunanKullanici = user.getValue(
+                                                        KullaniciBilgileri::class.java)
                                                     if (okunanKullanici!!.user_name!! == binding.etKullaniciAdi.text.toString()) {
                                                         Toast.makeText(activity, "Kullanıcı adı Kullanımda", Toast.LENGTH_SHORT).show()
                                                         userNameKullanimdaMi = true
@@ -110,7 +110,7 @@ class KullaniciKayitBilgileriFragment : Fragment() {
                                                             if (p0.isSuccessful) {
                                                                 val userID = auth.currentUser!!.uid
                                                                 val kaydedilecekKullaniciDetaylari =
-                                                                    KullaniciBilgiDetaylari("0", "", "", "", "", null, null)
+                                                                    KullaniciBilgiDetaylari("0", "", "", "", "", null, null,null)
                                                                 val kaydedilecekKullanici = KullaniciBilgileri(gelenEmail, sifre, userName, adSoyad, "", userID, "", kaydedilecekKullaniciDetaylari)
 
                                                                 mref.child("users")
@@ -166,7 +166,7 @@ class KullaniciKayitBilgileriFragment : Fragment() {
 
                                                 //oturum açan kullanıcın verilerini databaseye kaydedelim...
                                                 val kaydedilecekKullaniciDetaylari =
-                                                    KullaniciBilgiDetaylari("0", "", "", "", "", null, null)
+                                                    KullaniciBilgiDetaylari("0", "", "", "", "", null, null,null)
 
                                                 val kaydedilecekKullanici = KullaniciBilgileri(gelenEmail, sifre, userName, adSoyad, "", userID, "", kaydedilecekKullaniciDetaylari)
 
@@ -199,7 +199,7 @@ class KullaniciKayitBilgileriFragment : Fragment() {
                 }
             }
             else{
-                Toast.makeText(activity,"Ad ve soyad boş bırakılamaz.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(activity,"Ad ve Soyad boş bırakılamaz.", Toast.LENGTH_SHORT).show()
             }
         }
         return view
@@ -241,14 +241,13 @@ class KullaniciKayitBilgileriFragment : Fragment() {
             emailleKayit = true
             gelenEmail = kayitbilgileri.email!!
 
-            // Toast.makeText(activity, "Gelen email : " + gelenEmail, Toast.LENGTH_SHORT).show()
-            Log.e("murat", "Gelen email : $gelenEmail")
+
+
         } else {
             emailleKayit = false
             telNo = kayitbilgileri.telNo!!
             verificationID = kayitbilgileri.verificationID!!
 
-            Log.e("murat", "Gelen telefon : " + telNo)
 
         }
     }

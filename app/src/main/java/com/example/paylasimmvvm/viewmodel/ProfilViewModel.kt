@@ -4,9 +4,7 @@ import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.paylasimmvvm.model.KampanyaOlustur
-import com.example.paylasimmvvm.model.KullaniciBilgileri
-import com.example.paylasimmvvm.model.KullaniciKampanya
+import com.example.paylasimmvvm.model.*
 import com.example.paylasimmvvm.util.EventbusData
 import com.example.paylasimmvvm.view.profil.ProfilFragment
 import com.google.firebase.auth.FirebaseAuth
@@ -20,6 +18,8 @@ class ProfilViewModel:ViewModel() {
     val profilKampanya=MutableLiveData<List<KullaniciKampanya>>()
     val kampanyalarArray=ArrayList<KullaniciKampanya>()
     lateinit var mref: DatabaseReference
+    val profilMenu=MutableLiveData<List<Menuler>>()
+    val menuArray=ArrayList<Menuler>()
 
     fun refreshProfilKampanya(secilenUser:String){
         mref= FirebaseDatabase.getInstance().reference
@@ -29,7 +29,6 @@ class ProfilViewModel:ViewModel() {
         if (user != null) {
 
             kampanyalarArray.clear()
-
 
 
             mref.child("users").child("isletmeler").child(secilenUser).addListenerForSingleValueEvent(object :
@@ -57,8 +56,10 @@ class ProfilViewModel:ViewModel() {
                                             eklenecekUserPost.userPhotoURL=photoURL
                                             eklenecekUserPost.postID=ds.getValue(KampanyaOlustur::class.java)!!.post_id
                                             eklenecekUserPost.postURL=ds.getValue(KampanyaOlustur::class.java)!!.file_url
-                                            eklenecekUserPost.postAciklama=ds.getValue(KampanyaOlustur::class.java)!!.aciklama
-                                            eklenecekUserPost.postYuklenmeTarih=ds.getValue(KampanyaOlustur::class.java)!!.yuklenme_tarih
+                                            eklenecekUserPost.postAciklama=ds.getValue(
+                                                KampanyaOlustur::class.java)!!.aciklama
+                                            eklenecekUserPost.postYuklenmeTarih=ds.getValue(
+                                                KampanyaOlustur::class.java)!!.yuklenme_tarih
 
                                             kampanyalarArray.add(eklenecekUserPost)
 
@@ -117,14 +118,10 @@ class ProfilViewModel:ViewModel() {
                                         eklenecekUserPost.postID=ds.getValue(KampanyaOlustur::class.java)!!.post_id
                                         eklenecekUserPost.postURL=ds.getValue(KampanyaOlustur::class.java)!!.file_url
                                         eklenecekUserPost.postAciklama=ds.getValue(KampanyaOlustur::class.java)!!.aciklama
-                                        eklenecekUserPost.postYuklenmeTarih=ds.getValue(KampanyaOlustur::class.java)!!.yuklenme_tarih
+                                        eklenecekUserPost.postYuklenmeTarih=ds.getValue(
+                                            KampanyaOlustur::class.java)!!.yuklenme_tarih
 
                                         kampanyalarArray.add(eklenecekUserPost)
-
-
-
-
-
 
 
                                     }
@@ -155,6 +152,54 @@ class ProfilViewModel:ViewModel() {
 
 
         }
+
+    }
+
+    fun getMenus(secilenUser:String){
+        menuArray.clear()
+
+        mref.child("menuler").child(secilenUser) .addListenerForSingleValueEvent(object :
+            ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+
+
+
+                if (snapshot.getValue()!=null){
+
+                    for (ds in snapshot.children){
+
+
+
+                       var menus=ds.getValue(Menuler::class.java)!!.menuler
+
+                         var eklenecekMenu=Menuler()
+
+                         eklenecekMenu.menuler=menus
+                        menuArray.add(eklenecekMenu)
+
+
+                        profilMenu.value=menuArray
+                        Log.e("gelen array","${menuArray.size}")
+
+
+
+
+                    }
+
+                    profilMenu.value=menuArray
+
+                }
+
+
+
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+            }
+
+        })
+
+
 
     }
 }

@@ -29,7 +29,7 @@ import org.greenrobot.eventbus.Subscribe
 class ProfilEditFragment : Fragment() {
     lateinit var binding:FragmentProfilEditBinding
     lateinit var profileImage:CircleImageView
-    var gelenKullaniciBilgileri=KullaniciBilgileri()
+    var gelenKullaniciBilgileri= KullaniciBilgileri()
 
     lateinit var mDataRef:DatabaseReference
     lateinit var mStorage:StorageReference
@@ -63,6 +63,11 @@ class ProfilEditFragment : Fragment() {
 
         setUpprofilePhoto()
 
+        binding.twMenuEkle.setOnClickListener {
+            val action=ProfilEditFragmentDirections.actionProfilEditFragmentToIsletmeMenuFragment()
+            Navigation.findNavController(it).navigate(action)
+        }
+
       binding.backButton.setOnClickListener {
 
           findNavController().navigateUp()
@@ -86,7 +91,6 @@ class ProfilEditFragment : Fragment() {
 
                 }
 
-
             })
 
 
@@ -96,10 +100,7 @@ class ProfilEditFragment : Fragment() {
 
 
         }
-        binding.sifreDegistir.setOnClickListener {
-            findNavController().navigate(R.id.sifreDegistirFragment)
 
-        }
 
 
 
@@ -148,11 +149,10 @@ class ProfilEditFragment : Fragment() {
             }
 
 
+        }
 
-
-
-
-
+        binding.sifreDegistir.setOnClickListener {
+            findNavController().navigate(R.id.sifreDegistirFragment)
 
         }
 

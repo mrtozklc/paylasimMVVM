@@ -24,7 +24,7 @@ class KokteyllerFragment2 : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding= FragmentKokteyller2Binding.inflate(layoutInflater,container,false)
         // Inflate the layout for this fragment
         return binding.root
@@ -43,7 +43,7 @@ class KokteyllerFragment2 : Fragment() {
 
             kokteylViewModeli.getCategoriesItem(icecekOzellik)
 
-             kokteylViewModeli.getGlassItem(icecekOzellik)
+            kokteylViewModeli.getGlassItem(icecekOzellik)
 
             kokteylViewModeli.getIngredientsItem(icecekOzellik)
 
@@ -82,10 +82,11 @@ class KokteyllerFragment2 : Fragment() {
         kokteylViewModeli.kokteylHataMesaji.observe(viewLifecycleOwner){
             it.let {
                 if(it){
-
+                    binding.hataMesaji.visibility=View.VISIBLE
                     binding.recyclerKokteyl2.visibility=View.GONE
 
                 }else{
+                    binding.hataMesaji.visibility=View.GONE
 
 
                 }
@@ -96,16 +97,17 @@ class KokteyllerFragment2 : Fragment() {
         kokteylViewModeli.kokteylYukleniyor.observe(viewLifecycleOwner){
             it.let {
                 if(it){
-
+                    binding.hataMesaji.visibility=View.GONE
                     binding.recyclerKokteyl2.visibility=View.GONE
-
+                    binding.progresBarKokteyl.visibility=View.VISIBLE
 
                 }else{
-
+                    binding.progresBarKokteyl.visibility=View.GONE
 
                 }
             }
         }
+
 
     }
 

@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/tumLayout"
+ >
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/profil_image"
+        android:layout_width="69dp"
+        android:layout_height="80dp"
+        android:layout_marginStart="8dp"
+        app:layout_constraintBottom_toBottomOf="@+id/geri_sayim_id"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/kullaniciAdiTepe" />
+
+    <TextView
+        android:id="@+id/kampanyaTarihi_id"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text=".. kişi burdaydı"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/geri_sayim_id" />
+
+    <TextView
+        android:id="@+id/kullaniciAdiTepe"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="kullanici adı"
+        android:textAlignment="center"
+        android:textColor="@color/mavi"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@+id/img_begen"
+        app:layout_constraintStart_toEndOf="@+id/profil_image"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/geri_sayim_id"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:layout_margin="10dp"
+        android:layout_marginTop="12dp"
+        android:text="muzik türü"
+        app:layout_constraintEnd_toStartOf="@+id/tw_mesafe"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/profil_image"
+        app:layout_constraintTop_toBottomOf="@+id/textView21" />
+
+    <TextView
+        android:id="@+id/tw_mesafe"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="2dp"
+        android:text="mesafe"
+        app:layout_constraintBottom_toBottomOf="@+id/kampanyaTarihi_id"
+        app:layout_constraintEnd_toStartOf="@+id/img_yorum"
+        app:layout_constraintTop_toTopOf="@+id/kampanyaTarihi_id" />
+
+    <ImageView
+        android:id="@+id/img_begen"
+        android:layout_width="69dp"
+        android:layout_height="30dp"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/profil_image"
+        app:srcCompat="@drawable/ic_launcher_like_foreground" />
+
+    <ImageView
+        android:id="@+id/img_yorum"
+        android:layout_width="69dp"
+        android:layout_height="30dp"
+
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintBottom_toBottomOf="@+id/profil_image"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/img_begen"
+        app:srcCompat="@drawable/ic_launcher_yorum_foreground" />
+
+    <TextView
+        android:id="@+id/textView21"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:text="isletme türü"
+        android:textSize="18sp"
+        android:textStyle="normal"
+        app:layout_constraintEnd_toStartOf="@+id/img_yorum"
+        app:layout_constraintStart_toEndOf="@+id/profil_image"
+        app:layout_constraintTop_toBottomOf="@+id/kullaniciAdiTepe" />
+
+    <View
+        android:id="@+id/cizgi"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_marginTop="2dp"
+        android:background="@color/cardview_dark_background"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/kampanyaTarihi_id" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

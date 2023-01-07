@@ -1,7 +1,6 @@
 package com.example.paylasimmvvm.service
 
 import com.example.paylasimmvvm.model.Kokteyl
-import com.example.paylasimmvvm.model.KokteylDetay
 import io.reactivex.Single
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
@@ -9,6 +8,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 
 class KokteylApiServis {
+
     private val BASE_URL = "https://www.thecocktaildb.com/"
 
 

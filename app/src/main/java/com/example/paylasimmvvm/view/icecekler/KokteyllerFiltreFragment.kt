@@ -1,7 +1,9 @@
 package com.example.paylasimmvvm.view.icecekler
 
 import android.R
+import android.os.Build
 import android.os.Bundle
+import android.util.Log
 
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -9,16 +11,17 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.paylasimmvvm.adapter.KokteyllerRecyclerAdapter
-import com.example.paylasimmvvm.databinding.FragmentKokteyllerBinding
+import com.example.paylasimmvvm.databinding.FragmentKokteyllerFiltreBinding
 import com.example.paylasimmvvm.model.Drink
 import com.example.paylasimmvvm.viewmodel.KokteylViewModel
 
 
-class KokteyllerFragment : Fragment() {
-    private lateinit var binding:FragmentKokteyllerBinding
+class KokteyllerFiltreFragment : Fragment() {
+    private lateinit var binding:FragmentKokteyllerFiltreBinding
 
     private lateinit var recyclerAdapter: KokteyllerRecyclerAdapter
     private lateinit var kokteylViewModeli: KokteylViewModel
@@ -29,7 +32,7 @@ class KokteyllerFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View{
-        binding=FragmentKokteyllerBinding.inflate(layoutInflater,container,false)
+        binding=FragmentKokteyllerFiltreBinding.inflate(layoutInflater,container,false)
 
         // Inflate the layout for this fragment
         return binding.root
@@ -60,6 +63,7 @@ class KokteyllerFragment : Fragment() {
 
 
         binding.spinner2.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
+            @RequiresApi(Build.VERSION_CODES.N)
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
 
                 secilenFiltre = binding.spinner2.selectedItem.toString()
@@ -76,6 +80,8 @@ class KokteyllerFragment : Fragment() {
                 }else{
                     kokteylViewModeli.getIngredientList("list")
 
+
+
                 }
 
             }
@@ -84,8 +90,6 @@ class KokteyllerFragment : Fragment() {
             }
 
         }
-
-
 
     }
 

@@ -10,7 +10,7 @@
         app:showAsAction="always" />
 
     <item
-        android:id="@+id/bildirimlerFragment"
+        android:id="@+id/isletmeListFragment"
         android:title=""
         android:icon="@drawable/ic_baseline_circle_notifications"
         app:showAsAction="always" />

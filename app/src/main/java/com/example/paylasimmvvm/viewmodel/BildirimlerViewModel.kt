@@ -39,13 +39,11 @@ class BildirimlerViewModel:ViewModel() {
 
                         bildirimlerArray.add(okunanBildirim!!)
                     }
-                   // recyclerAdapter()
                     tumBildirimlerLive.value=bildirimlerArray
 
 
                 }else{
-                  // binding. progressBarBildirim.visibility= View.GONE
-                   // binding.recyclerBildirim.visibility= View.VISIBLE
+
                     tumBildirimlerLive.value=bildirimlerArray
                     yukleniyor.value=false
 

@@ -10,7 +10,6 @@ import com.example.paylasimmvvm.R
 import com.example.paylasimmvvm.databinding.RecyclerRowKokteylBinding
 import com.example.paylasimmvvm.model.Drink
 import com.example.paylasimmvvm.view.icecekler.KokteyllerFragment2Directions
-import com.example.paylasimmvvm.view.icecekler.KokteyllerFragmentDirections
 import com.squareup.picasso.Picasso
 
 class KokteyllerRecyclerAdapter2 (private val tumKokteyller: ArrayList<Drink>): RecyclerView.Adapter<KokteyllerRecyclerAdapter2.MViewHolder>() {
@@ -19,7 +18,7 @@ class KokteyllerRecyclerAdapter2 (private val tumKokteyller: ArrayList<Drink>): 
 
         fun setData(gelenKokteyl: Drink) {
             val binding= RecyclerRowKokteylBinding.bind(itemView)
-            Log.e("gelenkokteyll",""+gelenKokteyl)
+            Log.e("TAG","gelenkokteyll :: "+gelenKokteyl)
 
             binding.isim.text=gelenKokteyl.kokteylIsim
 
@@ -32,6 +31,7 @@ class KokteyllerRecyclerAdapter2 (private val tumKokteyller: ArrayList<Drink>): 
             }
 
             Picasso.get().load(gelenKokteyl.kokteylGorsel).into(binding.imageKokteyl)
+
 
 
         }

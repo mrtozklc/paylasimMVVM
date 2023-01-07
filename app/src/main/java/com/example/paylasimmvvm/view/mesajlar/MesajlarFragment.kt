@@ -42,6 +42,8 @@ class MesajlarFragment : Fragment() {
         mref = FirebaseDatabase.getInstance().reference
 
         setupAuthLis()
+
+
         return view
     }
 

@@ -139,7 +139,7 @@ class YorumlarFragment : Fragment() {
         var yorumSure=binding.tvYorumZamani
         var yorumBegenmeSayisi=binding.tvBegeni
 
-        fun setData(oanOlusturulanYorum:Yorumlar) {
+        fun setData(oanOlusturulanYorum: Yorumlar) {
 
 
             yorumSure.text = TimeAgo.getTimeAgoForComments(oanOlusturulanYorum!!.yorum_tarih!!)
@@ -165,7 +165,8 @@ class YorumlarFragment : Fragment() {
                 ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if (snapshot.value !=null){
-                        val userNameveYorum="<font color=#000>"+ snapshot.getValue(KullaniciBilgileri::class.java)!!.user_name!!.toString()+"</font>" + " " + yorum
+                        val userNameveYorum="<font color=#000>"+ snapshot.getValue(
+                            KullaniciBilgileri::class.java)!!.user_name!!.toString()+"</font>" + " " + yorum
                         val sonuc: Spanned?
                         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N){
                             sonuc= Html.fromHtml(userNameveYorum, Html.FROM_HTML_MODE_LEGACY)
@@ -192,7 +193,8 @@ class YorumlarFragment : Fragment() {
                 ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if (snapshot.value !=null){
-                        val userNameveYorum="<font color=#000>"+ snapshot.getValue(KullaniciBilgileri::class.java)!!.user_name!!.toString()+"</font>" + " " + yorum
+                        val userNameveYorum="<font color=#000>"+ snapshot.getValue(
+                            KullaniciBilgileri::class.java)!!.user_name!!.toString()+"</font>" + " " + yorum
                         val sonuc: Spanned? = if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N){
                             Html.fromHtml(userNameveYorum, Html.FROM_HTML_MODE_LEGACY)
                         }else {

@@ -10,6 +10,8 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -36,6 +38,8 @@ class IsletmeKayitBilgileriFragment : Fragment() {
     lateinit var auth: FirebaseAuth
     lateinit var mref: DatabaseReference
     var emailleKayit = true
+    var secilenMuzik:String?=null
+    var secilenIsletmeTuru:String?=null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -50,6 +54,57 @@ class IsletmeKayitBilgileriFragment : Fragment() {
 
         auth = Firebase.auth
         mref = FirebaseDatabase.getInstance().reference
+
+        val muzikTuru = java.util.ArrayList<String>()
+        muzikTuru.add("Pop")
+        muzikTuru.add("Rock & Blues")
+        muzikTuru.add("Rap")
+        muzikTuru.add("Jazz")
+        muzikTuru.add("Electronic")
+        muzikTuru.add("Country")
+        muzikTuru.add("Funk,Disco,Soul")
+        muzikTuru.add("Hafif Dinleti")
+
+
+
+        val isletmeTuru = java.util.ArrayList<String>()
+        isletmeTuru.add("Cafe-Bar")
+        isletmeTuru.add("Kokteyl Bar")
+        isletmeTuru.add("Pub")
+        isletmeTuru.add("Club")
+        isletmeTuru.add("Restoran Bar")
+        isletmeTuru.add("Şarap Evi")
+        isletmeTuru.add("Meyhane")
+
+
+
+        val spinnerAdapter = ArrayAdapter(requireActivity(), android.R.layout.simple_list_item_1, muzikTuru)
+        binding.spinner3.adapter = spinnerAdapter
+
+
+        val spinnerAdapter2 = ArrayAdapter(requireActivity(), android.R.layout.simple_list_item_1, isletmeTuru)
+        binding.spinner4.adapter = spinnerAdapter2
+
+        binding.spinner4.onItemSelectedListener=object :AdapterView.OnItemSelectedListener{
+            override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+              secilenIsletmeTuru=binding.spinner4.selectedItem.toString()
+            }
+
+            override fun onNothingSelected(p0: AdapterView<*>?) {
+
+            }
+
+        }
+
+
+        binding.spinner3.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
+            override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+                secilenMuzik = binding.spinner3.selectedItem.toString()
+            }
+
+            override fun onNothingSelected(p0: AdapterView<*>?) {
+            }
+        }
 
 
         if (auth.currentUser != null) {
@@ -95,7 +150,8 @@ class IsletmeKayitBilgileriFragment : Fragment() {
                                         override fun onDataChange(snapshot: DataSnapshot) {
                                             if (snapshot.value !=null){
                                                 for (userr in snapshot.children ){
-                                                    val okunanKullanici= user.getValue(KullaniciBilgileri::class.java)
+                                                    val okunanKullanici= user.getValue(
+                                                        KullaniciBilgileri::class.java)
                                                     if (okunanKullanici != null) {
                                                         if (okunanKullanici.user_name!!.equals( binding.etKullaniciAdiISletme.text.toString())) {
                                                             Toast.makeText(activity, "Kullanıcı adı Kullanımda", Toast.LENGTH_SHORT).show()
@@ -122,7 +178,7 @@ class IsletmeKayitBilgileriFragment : Fragment() {
                                                                 val userID = auth.currentUser!!.uid
                                                                 getAddressFromLocation(adres, context, userID)
 
-                                                                val kaydedilecekKullaniciDetaylari = KullaniciBilgiDetaylari("0", "", "", "", adres, null, null)
+                                                                val kaydedilecekKullaniciDetaylari = KullaniciBilgiDetaylari("0", "", "", secilenMuzik, secilenIsletmeTuru, adres, null,null)
 
                                                                 val kaydedilecekKullanici = KullaniciBilgileri(gelenEmail, sifre, userName, adSoyad, telefon, userID, "", kaydedilecekKullaniciDetaylari)
 
@@ -173,7 +229,7 @@ class IsletmeKayitBilgileriFragment : Fragment() {
                                                 //oturum açan kullanıcın verilerini databaseye kaydet
 
                                                 val kaydedilecekKullaniciDetaylari =
-                                                    KullaniciBilgiDetaylari("0", "", "", "", adres, null, null)
+                                                    KullaniciBilgiDetaylari("0", "", "", secilenMuzik, secilenIsletmeTuru, adres, null,null)
 
                                                 val kaydedilecekKullanici = KullaniciBilgileri(gelenEmail, sifre, userName, adSoyad, telefon, userID, "", kaydedilecekKullaniciDetaylari)
 
@@ -246,7 +302,8 @@ class IsletmeKayitBilgileriFragment : Fragment() {
             emailleKayit = true
             gelenEmail = kayitbilgileri.email!!
 
-            Log.e("murat", "Gelen email : $gelenEmail")
+
+
         }
     }
 
@@ -263,7 +320,7 @@ class IsletmeKayitBilgileriFragment : Fragment() {
                     if (addressList != null && addressList.isNotEmpty()) {
                         val address = addressList[0] as Address
 
-                        Log.e("adres","gelen"+address)
+
 
                         val latitude=address.latitude
                         val longitude=address.longitude

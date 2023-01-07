@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.paylasimmvvm.model.Drink
+import com.example.paylasimmvvm.model.DrinkDetay
 import com.example.paylasimmvvm.model.Kokteyl
 import com.example.paylasimmvvm.service.KokteylApiServis
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -35,7 +36,7 @@ class KokteylViewModel:ViewModel() {
                     override fun onSuccess(t: Kokteyl) {
                         kokteyller.value= t.drinks
                         kokteylYukleniyor.value=false
-
+                        Log.e("TAG","category ${t.drinks} ")
                     }
 
                 })
@@ -58,6 +59,11 @@ class KokteylViewModel:ViewModel() {
                         kokteyller.value= t.drinks
                         kokteylYukleniyor.value=false
 
+                        Log.e("TAG","kjahskda1 ${t.drinks} -- koktyl = ${t.drinks.size}")
+                        Log.e("TAG","kjahskda2 ${t.drinks.size} ")
+
+
+
                     }
 
                 })
@@ -79,7 +85,8 @@ class KokteylViewModel:ViewModel() {
                     override fun onSuccess(t: Kokteyl) {
                         kokteyller.value= t.drinks
                         kokteylYukleniyor.value=false
-
+                        Log.e("TAG","ingredient ${t.drinks.equals("kokteylicerik")} ")
+                        Log.e("TAG","ingredient2 ${t.drinks.listIterator()} ")
                     }
 
                 })
@@ -104,6 +111,8 @@ class KokteylViewModel:ViewModel() {
 
                     }
 
+
+
                 })
         )
     }
@@ -123,7 +132,7 @@ class KokteylViewModel:ViewModel() {
                     override fun onSuccess(t: Kokteyl) {
                         kokteyller.value= t.drinks
                         kokteylYukleniyor.value=false
-
+                        Log.e("TAG","g ${t.drinks} ")
                     }
 
                 })

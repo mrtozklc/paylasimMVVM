@@ -192,7 +192,8 @@ class RegisterFragment : Fragment() {
                                             if (snapshot.value !=null){
                                                 for (user in snapshot.children){
 
-                                                    val okunanKullanici = user.getValue(KullaniciBilgileri::class.java)
+                                                    val okunanKullanici = user.getValue(
+                                                        KullaniciBilgileri::class.java)
 
                                                     if (okunanKullanici!!.email!! == binding.editTextTextPersonName.text.toString()) {
 
@@ -276,7 +277,8 @@ class RegisterFragment : Fragment() {
                                                 for (user in snapshot.children){
 
 
-                                                    val okunanKullanici = user.getValue(KullaniciBilgileri::class.java)
+                                                    val okunanKullanici = user.getValue(
+                                                        KullaniciBilgileri::class.java)
                                                     if (okunanKullanici!!.email!! == binding.editTextTextPersonName.text.toString()) {
 
                                                         Log.e("işletme yok",
@@ -409,7 +411,8 @@ class RegisterFragment : Fragment() {
                                             if (snapshot.value !=null){
                                                 for (user in snapshot.children){
 
-                                                    val okunanKullanici = user.getValue(KullaniciBilgileri::class.java)
+                                                    val okunanKullanici = user.getValue(
+                                                        KullaniciBilgileri::class.java)
 
                                                     if (okunanKullanici!!.email!! == binding.editTextTextPersonName.text.toString()) {
 
@@ -490,7 +493,8 @@ class RegisterFragment : Fragment() {
                                                 for (user in snapshot.children){
 
 
-                                                    val okunanKullanici = user.getValue(KullaniciBilgileri::class.java)
+                                                    val okunanKullanici = user.getValue(
+                                                        KullaniciBilgileri::class.java)
                                                     if (okunanKullanici!!.email!! == binding.editTextTextPersonName.text.toString()) {
 
                                                         Log.e("işletme yok",

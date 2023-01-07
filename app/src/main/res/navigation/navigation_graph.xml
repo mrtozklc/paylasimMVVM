@@ -91,6 +91,9 @@
         <action
             android:id="@+id/action_profilEditFragment_to_sifreDegistirFragment"
             app:destination="@id/sifreDegistirFragment" />
+        <action
+            android:id="@+id/action_profilEditFragment_to_isletmeMenuFragment"
+            app:destination="@id/isletmeMenuFragment" />
     </fragment>
     <fragment
         android:id="@+id/sifreDegistirFragment"
@@ -192,6 +195,9 @@
         <action
             android:id="@+id/action_homeFragment_to_kokteyllerFragment"
             app:destination="@id/kokteyllerFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_isletmeListFragment"
+            app:destination="@id/isletmeListFragment" />
 
     </fragment>
     <fragment
@@ -230,6 +236,7 @@
             android:id="@+id/action_kampanyaOlusturFragment_to_homeFragment"
             app:destination="@id/homeFragment" />
 
+
     </fragment>
     <fragment
         android:id="@+id/yorumlarFragment"
@@ -238,9 +245,9 @@
         tools:layout="@layout/fragment_yorumlar" />
     <fragment
         android:id="@+id/kokteyllerFragment"
-        android:name="com.example.paylasimmvvm.view.icecekler.KokteyllerFragment"
+        android:name="com.example.paylasimmvvm.view.icecekler.KokteyllerFiltreFragment"
         android:label="fragment_kokteyller"
-        tools:layout="@layout/fragment_kokteyller" >
+        tools:layout="@layout/fragment_kokteyller_filtre" >
 
         <action
             android:id="@+id/action_kokteyllerFragment_to_kokteylDetayiFragment"
@@ -274,5 +281,26 @@
         <argument
             android:name="icecekOzellik"
             app:argType="string" />
+    </fragment>
+    <fragment
+        android:id="@+id/isletmeListFragment"
+        android:name="com.example.paylasimmvvm.view.home.IsletmeListFragment"
+        android:label="fragment_isletme_list"
+        tools:layout="@layout/fragment_isletme_list" >
+        <action
+            android:id="@+id/action_isletmeListFragment_to_profilFragment"
+            app:destination="@id/profilFragment" />
+        <action
+            android:id="@+id/action_isletmeListFragment_to_userProfilFragment"
+            app:destination="@id/userProfilFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/isletmeMenuFragment"
+        android:name="com.example.paylasimmvvm.view.profil.IsletmeMenuFragment"
+        android:label="fragment_isletme_menu"
+        tools:layout="@layout/fragment_isletme_menu" >
+        <action
+            android:id="@+id/action_isletmeMenuFragment_to_profilFragment"
+            app:destination="@id/profilFragment" />
     </fragment>
 </navigation>

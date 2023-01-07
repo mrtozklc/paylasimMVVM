@@ -3,6 +3,7 @@ package com.example.paylasimmvvm.view.home
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
+
 import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -41,6 +42,8 @@ class HomeFragment : Fragment() {
 
 
 
+
+
     override fun onCreateView(
 
         inflater: LayoutInflater, container: ViewGroup?,
@@ -51,6 +54,9 @@ class HomeFragment : Fragment() {
         val view =binding.root
         auth= Firebase.auth
         mref = FirebaseDatabase.getInstance().reference
+
+
+
 
       //  setupAuthLis()
 
@@ -63,6 +69,7 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
 
+        // NOTLA G
        kampanyalarViewModeli= ViewModelProvider(this)[kampanyalarViewModel::class.java]
         kampanyalarViewModeli.refreshKampanyalar()
 
@@ -103,6 +110,11 @@ class HomeFragment : Fragment() {
 
 
 
+    }
+
+    override fun onResume() {
+        observeliveData()
+        super.onResume()
     }
     private fun observeliveData(){
 

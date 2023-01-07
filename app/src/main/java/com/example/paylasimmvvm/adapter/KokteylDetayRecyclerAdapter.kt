@@ -16,7 +16,7 @@ class KokteylDetayRecyclerAdapter(var tumKokteyller:ArrayList<DrinkDetay>):Recyc
     class MviewHolder(itemView: View):RecyclerView.ViewHolder(itemView) {
 
 
-        fun setData(gelenKokteylDetay:DrinkDetay){
+        fun setData(gelenKokteylDetay: DrinkDetay){
             val binding= RecyclerRowKokteylDetaylariBinding.bind(itemView)
 
 

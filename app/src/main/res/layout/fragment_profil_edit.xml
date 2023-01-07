@@ -36,7 +36,13 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:text="Fotoğraf değiştir"
-        android:textSize="20sp"
+        android:textSize="18sp"
+        android:paddingLeft="20dp"
+        android:background="@drawable/textview_bg"
+        android:paddingTop="8dp"
+        android:textStyle="bold"
+        android:paddingRight="20dp"
+        android:paddingBottom="8dp"
         app:layout_constraintEnd_toEndOf="@+id/profile_image"
         app:layout_constraintHorizontal_bias="0.512"
         app:layout_constraintStart_toStartOf="@+id/profile_image"
@@ -53,6 +59,23 @@
         app:layout_constraintTop_toTopOf="parent"
     />
 
+
+    <TextView
+        android:id="@+id/tw_menuEkle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/textview_bg"
+        android:paddingLeft="20dp"
+        android:paddingTop="8dp"
+        android:paddingRight="20dp"
+        android:paddingBottom="8dp"
+        android:text="Menü Ekle"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/sifre_degistir"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/sifre_degistir"
+        app:layout_constraintTop_toTopOf="@+id/sifre_degistir" />
 
     <ImageView
         android:id="@+id/kayitButon"
@@ -177,8 +200,13 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="28dp"
+        android:paddingLeft="20dp"
+        android:background="@drawable/textview_bg"
+        android:paddingTop="8dp"
+        android:paddingRight="20dp"
+        android:paddingBottom="8dp"
         android:text="Şifre Değiştir"
-        android:textSize="16sp"
+        android:textSize="18sp"
 
 
         android:textStyle="bold"
