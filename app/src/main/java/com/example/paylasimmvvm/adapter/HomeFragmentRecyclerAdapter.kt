@@ -1,13 +1,18 @@
 package com.example.paylasimmvvm.adapter
 
 import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.content.Context
 import android.location.Location
+import android.os.Bundle
 import android.os.CountDownTimer
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.ScaleGestureDetector.OnScaleGestureListener
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.LinearLayout
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.RecyclerView
 import com.example.paylasimmvvm.R
@@ -17,6 +22,7 @@ import com.example.paylasimmvvm.util.Bildirimler
 import com.example.paylasimmvvm.util.EventbusData
 import com.example.paylasimmvvm.util.TimeAgo
 import com.example.paylasimmvvm.view.home.HomeFragmentDirections
+import com.github.chrisbanes.photoview.PhotoView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -105,6 +111,31 @@ class HomeFragmentRecyclerAdapter (var context: Context, private var tumKampanya
             userNameveAciklama.text = anlikGonderi.userName.toString()+" "+anlikGonderi.postAciklama.toString()
 
             Picasso.get().load(anlikGonderi.postURL).into(gonderi)
+
+
+
+            gonderi.setOnClickListener {
+
+                val builder = AlertDialog.Builder(itemView.context)
+
+                val imageView = PhotoView(itemView.context)
+                imageView.adjustViewBounds = true
+
+                Picasso.get().load(anlikGonderi.postURL).into(imageView)
+
+                builder.setView(imageView)
+                val alertDialog = builder.create()
+                alertDialog.setCanceledOnTouchOutside(true)
+                imageView.setOnClickListener {
+                    alertDialog.dismiss()
+                }
+                alertDialog.show()
+
+            }
+
+
+
+
 
             kampanyaTarihi.text = TimeAgo.getTimeAgo(anlikGonderi.postYuklenmeTarih!!)
 

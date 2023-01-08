@@ -1,5 +1,6 @@
 package com.example.paylasimmvvm.adapter
 
+import android.app.AlertDialog
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -7,7 +8,14 @@ import android.view.ViewGroup
 import android.widget.BaseAdapter
 import com.example.paylasimmvvm.R
 import com.example.paylasimmvvm.databinding.RecyclerRowMenuBinding
+import com.example.paylasimmvvm.model.KullaniciBilgileri
 import com.example.paylasimmvvm.model.Menuler
+import com.github.chrisbanes.photoview.PhotoView
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.squareup.picasso.Picasso
 
 class MenulerGridAdapter( val tumMenuler: ArrayList<Menuler>) : BaseAdapter() {
@@ -25,7 +33,51 @@ class MenulerGridAdapter( val tumMenuler: ArrayList<Menuler>) : BaseAdapter() {
 
         val binding= RecyclerRowMenuBinding.bind(view)
 
-       Picasso.get().load(dataItem.menuler).into(binding.imgMenu)
+
+        Picasso.get().load(dataItem.menuler).into(binding.imgMenu);
+
+
+
+     binding.imgMenu.setOnClickListener {
+
+         val builder = AlertDialog.Builder(parent!!.context)
+
+         val photoView = PhotoView(parent.context)
+         photoView.adjustViewBounds = true
+         Picasso.get().load(dataItem.menuler).into(photoView)
+
+         builder.setView(photoView)
+
+         val mref = FirebaseDatabase.getInstance().reference
+         mref.child("users").child("isletmeler").addValueEventListener(object : ValueEventListener {
+             override fun onDataChange(snapshot: DataSnapshot) {
+                 if (snapshot!!.getValue() != null) {
+                     for (user in snapshot!!.children) {
+                         val okunanKullanici = user.getValue(KullaniciBilgileri::class.java)!!
+                         if (okunanKullanici!!.user_id.equals(FirebaseAuth.getInstance().currentUser!!.uid)) {
+                             builder.setNegativeButton("Cancel") { dialog, _ ->
+                                 dialog.dismiss()
+                             }
+                         }
+                     }
+                     val alertDialog = builder.create()
+                     alertDialog.setCanceledOnTouchOutside(true)
+
+                     photoView.setOnClickListener {
+                         alertDialog.dismiss()
+                     }
+                     alertDialog.show()
+                 }
+             }
+
+             override fun onCancelled(error: DatabaseError) {
+             }
+         })
+     }
+
+
+
+
         return view
     }
 
