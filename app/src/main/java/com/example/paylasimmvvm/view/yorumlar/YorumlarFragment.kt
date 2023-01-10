@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.paylasimmvvm.R
@@ -36,6 +37,7 @@ class YorumlarFragment : Fragment() {
     private lateinit var binding:FragmentYorumlarBinding
 
     var   yorumYapilacakGonderininID:String?=null
+    var yorumYapilacakIsletmeID:String?=null
     lateinit var mAuth: FirebaseAuth
     lateinit var mUser: FirebaseUser
     lateinit var mRef: DatabaseReference
@@ -87,8 +89,6 @@ class YorumlarFragment : Fragment() {
 
 
 
-
-
         binding.twYorumPaylas.setOnClickListener {
 
             var yorum=binding.etMesajEkle.text.toString().trim()
@@ -102,9 +102,6 @@ class YorumlarFragment : Fragment() {
                     "yorum_begeni" to "0",
                     "yorum_tarih" to ServerValue.TIMESTAMP
                 )
-
-
-
 
                 FirebaseDatabase.getInstance().getReference().child("yorumlar")
                     .child(yorumYapilacakGonderininID!!).push().setValue(yeniYorum)
@@ -146,12 +143,22 @@ class YorumlarFragment : Fragment() {
             yorumBegenmeSayisi.text = oanOlusturulanYorum.yorum_begeni
             kullaniciAdiveYorum.text = oanOlusturulanYorum.yorum
 
+            kullaniciAdiveYorum.setOnClickListener {
+                if (oanOlusturulanYorum.user_id.equals(FirebaseAuth.getInstance().currentUser!!.uid)){
+                    val action=YorumlarFragmentDirections.actionYorumlarFragmentToProfilFragment()
+                    Navigation.findNavController(it).navigate(action)
+                }else{
+                    val action=YorumlarFragmentDirections.actionYorumlarFragmentToUserProfilFragment(oanOlusturulanYorum.user_id!!)
+                    Navigation.findNavController(it).navigate(action)
+
+                }
+
+            }
+
 
 
 
             kullaniciBilgileriniGetir(oanOlusturulanYorum.user_id,oanOlusturulanYorum.yorum)
-
-
 
 
 
@@ -174,11 +181,10 @@ class YorumlarFragment : Fragment() {
                             sonuc= Html.fromHtml(userNameveYorum)
                         }
                         kullaniciAdiveYorum.text = sonuc
-                      //  imageLoader.setImage(snapshot!!.getValue(KullaniciBilgileri::class.java)!!.user_detail!!.profile_picture!!.toString(),yorumYapanUserPhoto,null,"")
                         Picasso.get().load(snapshot.getValue(KullaniciBilgileri::class.java)!!.user_detail!!.profile_picture!!.toString()).placeholder(R.drawable.ic_baseline_person).error(R.drawable.ic_baseline_person).into(yorumYapanUserPhoto)
 
                     }else{
-                        Log.e("yorumlar kullanicibilgileri","kullacilar tarafı çalıştı")
+
                     }
 
                 }
@@ -315,7 +321,14 @@ class YorumlarFragment : Fragment() {
 
     @Subscribe(sticky = true)
     internal fun onYorumYapilacakGonderi(gonderi: EventbusData.YorumYapilacakGonderininIDsiniGonder) {
+
+
         yorumYapilacakGonderininID = gonderi.gonderiID!!
+
+    }
+
+    internal fun onYorumYapilacakIsletme(isletmeID: EventbusData.yorumYapilacakIsletmeID){
+        yorumYapilacakIsletmeID=isletmeID.isletmeID
 
 
     }
@@ -330,7 +343,7 @@ class YorumlarFragment : Fragment() {
 
             override fun onDataChange(snapshot: DataSnapshot) {
                 val profilPictureURL= snapshot.child("profile_picture").value.toString()
-               // imageLoader.setImage(profilPictureURL,binding.circleProfilPhoto,null,"")
+
             Picasso.get().load(profilPictureURL).placeholder(R.drawable.ic_baseline_person).error(R.drawable.ic_baseline_person).into(binding.circleProfilPhoto)}
 
             override fun onCancelled(error: DatabaseError) {

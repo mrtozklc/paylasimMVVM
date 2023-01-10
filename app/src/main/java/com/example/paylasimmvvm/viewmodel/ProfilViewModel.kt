@@ -3,16 +3,14 @@ package com.example.paylasimmvvm.viewmodel
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.paylasimmvvm.model.*
-import com.example.paylasimmvvm.util.EventbusData
-import com.example.paylasimmvvm.view.profil.ProfilFragment
+import com.example.paylasimmvvm.model.KampanyaOlustur
+import com.example.paylasimmvvm.model.KullaniciBilgileri
+import com.example.paylasimmvvm.model.KullaniciKampanya
+import com.example.paylasimmvvm.model.Menuler
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.*
 import com.google.firebase.ktx.Firebase
-import org.greenrobot.eventbus.EventBus
 
 class ProfilViewModel:ViewModel() {
     val profilKampanya=MutableLiveData<List<KullaniciKampanya>>()
@@ -20,37 +18,33 @@ class ProfilViewModel:ViewModel() {
     lateinit var mref: DatabaseReference
     val profilMenu=MutableLiveData<List<Menuler>>()
     val menuArray=ArrayList<Menuler>()
+    val yukleniyor=MutableLiveData<Boolean>()
+    val gonderiYok=MutableLiveData<Boolean>()
+
 
     fun refreshProfilKampanya(secilenUser:String){
         mref= FirebaseDatabase.getInstance().reference
 
-
         val user = Firebase.auth.currentUser
         if (user != null) {
-
             kampanyalarArray.clear()
-
-
-            mref.child("users").child("isletmeler").child(secilenUser).addListenerForSingleValueEvent(object :
+            mref.child("users").child("isletmeler").child(secilenUser).addValueEventListener(object :
                 ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
 
+                    if (snapshot.value !=null){
+                        val userID=snapshot.getValue(KullaniciBilgileri::class.java)!!.user_id
+                        val kullaniciadi=snapshot.getValue(KullaniciBilgileri::class.java)!!.user_name
+                        val photoURL=snapshot.getValue(KullaniciBilgileri::class.java)!!.user_detail!!.profile_picture
 
-
-                    if (snapshot.getValue()!=null){
-                        var userID=snapshot.getValue(KullaniciBilgileri::class.java)!!.user_id
-                        //   var userID=kullanicid
-                        var kullaniciadi=snapshot.getValue(KullaniciBilgileri::class.java)!!.user_name
-                        var photoURL=snapshot.getValue(KullaniciBilgileri::class.java)!!.user_detail!!.profile_picture
-
-                        mref.child("kampanya").child(secilenUser).addListenerForSingleValueEvent(object :
+                        mref.child("kampanya").child(secilenUser).addValueEventListener(object :
                             ValueEventListener {
                             override fun onDataChange(snapshot: DataSnapshot) {
-                                if (snapshot.getValue()!=null){
-                                    if (snapshot!!.hasChildren()){
+                                if (snapshot.value !=null){
+                                    if (snapshot.hasChildren()){
 
-                                        for (ds in snapshot!!.children){
-                                            var eklenecekUserPost= KullaniciKampanya()
+                                        for (ds in snapshot.children){
+                                            val eklenecekUserPost= KullaniciKampanya()
                                             eklenecekUserPost.userID=userID
                                             eklenecekUserPost.userName=kullaniciadi
                                             eklenecekUserPost.userPhotoURL=photoURL
@@ -62,57 +56,42 @@ class ProfilViewModel:ViewModel() {
                                                 KampanyaOlustur::class.java)!!.yuklenme_tarih
 
                                             kampanyalarArray.add(eklenecekUserPost)
-
-                                            Log.e("tomprofil","sayisi:"+kampanyalarArray.size)
-
-
                                         }
-
                                     }
-
                                     profilKampanya.value=kampanyalarArray
-
+                                    gonderiYok.value=false
+                                    Log.e("gelenarray",""+kampanyalarArray)
+                                }else{
+                                    gonderiYok.value=true
                                 }
 
                             }
-
                             override fun onCancelled(error: DatabaseError) {
-
                             }
-
-
                         })
-
                     }
-
-
-
                 }
-
                 override fun onCancelled(error: DatabaseError) {
                 }
-
             })
 
             mref.child("users").child("kullanicilar").child(FirebaseAuth.getInstance().currentUser!!.uid).addListenerForSingleValueEvent(object :
                 ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
 
+                    if (snapshot.value !=null){
 
-                    if (snapshot!!.getValue()!=null){
 
-                        //  var userID=kullanicid
-                        var kullaniciadi=snapshot.getValue(KullaniciBilgileri::class.java)!!.user_name
-                        var photoURL=snapshot.getValue(KullaniciBilgileri::class.java)!!.user_detail!!.profile_picture
+                        val kullaniciadi=snapshot.getValue(KullaniciBilgileri::class.java)!!.user_name
+                        val photoURL=snapshot.getValue(KullaniciBilgileri::class.java)!!.user_detail!!.profile_picture
 
                         mref.child("kampanya").child(FirebaseAuth.getInstance().currentUser!!.uid).addListenerForSingleValueEvent(object :
                             ValueEventListener {
                             override fun onDataChange(snapshot: DataSnapshot) {
-                                if (snapshot!!.hasChildren()){
+                                if (snapshot.hasChildren()){
 
-                                    for (ds in snapshot!!.children){
-                                        var eklenecekUserPost= KullaniciKampanya()
-                                        // eklenecekUserPost.userID=userID
+                                    for (ds in snapshot.children){
+                                        val eklenecekUserPost= KullaniciKampanya()
                                         eklenecekUserPost.userName=kullaniciadi
                                         eklenecekUserPost.userPhotoURL=photoURL
                                         eklenecekUserPost.postID=ds.getValue(KampanyaOlustur::class.java)!!.post_id
@@ -123,14 +102,14 @@ class ProfilViewModel:ViewModel() {
 
                                         kampanyalarArray.add(eklenecekUserPost)
 
-
                                     }
+                                    profilKampanya.value=kampanyalarArray
+                                    gonderiYok.value=false
+                                    yukleniyor.value=false
 
                                 }
+                                }
 
-                                profilKampanya.value=kampanyalarArray
-
-                            }
 
                             override fun onCancelled(error: DatabaseError) {
                             }
@@ -138,56 +117,52 @@ class ProfilViewModel:ViewModel() {
                         })
 
                     }
-
-
-
                 }
-
                 override fun onCancelled(error: DatabaseError) {
                 }
 
             })
 
             profilKampanya.value=kampanyalarArray
-
-
+            yukleniyor.value=false
         }
-
     }
 
     fun getMenus(secilenUser:String){
+        yukleniyor.value=true
         menuArray.clear()
 
-        mref.child("menuler").child(secilenUser) .addListenerForSingleValueEvent(object :
+        mref.child("menuler").child(secilenUser) .addValueEventListener(object :
             ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
+                menuArray.clear()
 
-
-
-                if (snapshot.getValue()!=null){
+                if (snapshot.value !=null){
 
                     for (ds in snapshot.children){
 
 
 
-                       var menus=ds.getValue(Menuler::class.java)!!.menuler
+                       val menus=ds.getValue(Menuler::class.java)!!.menuler
 
-                         var eklenecekMenu=Menuler()
+                         val eklenecekMenu=Menuler()
 
                          eklenecekMenu.menuler=menus
+
+
                         menuArray.add(eklenecekMenu)
-
-
                         profilMenu.value=menuArray
-                        Log.e("gelen array","${menuArray.size}")
-
-
-
+                        Log.e("gelen menu array","${(profilMenu.value as ArrayList<Menuler>).size}")
 
                     }
 
                     profilMenu.value=menuArray
+                    yukleniyor.value=false
 
+                }else{
+
+                    gonderiYok.value=true
+                    yukleniyor.value=false
                 }
 
 

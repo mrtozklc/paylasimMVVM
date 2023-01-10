@@ -20,6 +20,7 @@ import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import com.example.paylasimmvvm.R
 import com.example.paylasimmvvm.databinding.FragmentKampanyaOlusturBinding
@@ -218,7 +219,9 @@ class KampanyaOlusturFragment : Fragment() {
         binding.spinner.visibility=View.VISIBLE
         binding.btnPaylas.visibility=View.VISIBLE
 
-        findNavController().navigate(R.id.homeFragment)
+        val action=KampanyaOlusturFragmentDirections.actionKampanyaOlusturFragmentToHomeFragment()
+        Navigation.findNavController(requireView()).navigate(action)
+
 
 
 

@@ -66,6 +66,7 @@ class ProfilFragmentRecyclerAdapter (var context: Context, private var tumKampan
         @SuppressLint("SetTextI18n")
         fun setData(anlikGonderi: KullaniciKampanya) {
 
+
             userNameTitle.text = anlikGonderi.userName
             if (anlikGonderi.userPhotoURL!!.isNotEmpty()){
                 Picasso.get().load(anlikGonderi.userPhotoURL).placeholder(R.drawable.ic_baseline_person).error(R.drawable.ic_baseline_person).fit().centerCrop().into(profileImage)
@@ -78,7 +79,7 @@ class ProfilFragmentRecyclerAdapter (var context: Context, private var tumKampan
             }
 
             userNameveAciklama.text = anlikGonderi.userName.toString()+" "+anlikGonderi.postAciklama.toString()
-            Picasso.get().load(anlikGonderi.postURL).centerCrop().fit().into(gonderi)
+            Picasso.get().load(anlikGonderi.postURL).into(gonderi)
 
             kampanyaTarihi.text = TimeAgo.getTimeAgo(anlikGonderi.postYuklenmeTarih!!)
 

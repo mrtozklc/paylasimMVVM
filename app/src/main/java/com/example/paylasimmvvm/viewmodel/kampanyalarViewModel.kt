@@ -171,6 +171,9 @@ class kampanyalarViewModel: ViewModel() {
     fun getIsletmeList(){
 
         yukleniyor.value=true
+        tumGonderiler.clear()
+
+        
 
 
         mref=FirebaseDatabase.getInstance().reference
@@ -204,7 +207,6 @@ class kampanyalarViewModel: ViewModel() {
 
                             tumGonderiler.add(eklenecekUserPost)
 
-                            Log.e("gelenisletmeler","$tumGonderiler")
                             kampanyaYok.value=false
                             yukleniyor.value=true
                             kampanyalar.value= tumGonderiler

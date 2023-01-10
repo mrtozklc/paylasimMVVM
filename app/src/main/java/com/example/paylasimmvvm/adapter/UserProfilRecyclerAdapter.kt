@@ -16,6 +16,7 @@ import com.example.paylasimmvvm.util.Bildirimler
 import com.example.paylasimmvvm.util.EventbusData
 import com.example.paylasimmvvm.util.TimeAgo
 import com.example.paylasimmvvm.view.profil.ProfilFragmentDirections
+import com.example.paylasimmvvm.view.profil.UserProfilFragmentDirections
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -35,8 +36,6 @@ class UserProfilRecyclerAdapter(var context: Context, private var tumKampanyalar
             } else 1
         }
     }
-
-
 
 
     class MyViewHolder(itemView: View, profil: Context) : RecyclerView.ViewHolder(itemView) {
@@ -61,6 +60,7 @@ class UserProfilRecyclerAdapter(var context: Context, private var tumKampanyalar
 
         @SuppressLint("SetTextI18n")
         fun setData(anlikGonderi: KullaniciKampanya) {
+            delete.visibility=View.GONE
 
             userNameTitle.text = anlikGonderi.userName
             if (anlikGonderi.userPhotoURL!!.isNotEmpty()){
@@ -76,7 +76,8 @@ class UserProfilRecyclerAdapter(var context: Context, private var tumKampanyalar
             }
 
             userNameveAciklama.text = anlikGonderi.userName.toString()+" "+anlikGonderi.postAciklama.toString()
-            Picasso.get().load(anlikGonderi.postURL).centerCrop().fit().into(gonderi)
+
+            Picasso.get().load(anlikGonderi.postURL).into(gonderi)
 
             kampanyaTarihi.text = TimeAgo.getTimeAgo(anlikGonderi.postYuklenmeTarih!!)
 
@@ -87,69 +88,12 @@ class UserProfilRecyclerAdapter(var context: Context, private var tumKampanyalar
 
             yorumYap.setOnClickListener {
 
-
-
                 yorumlarFragmentiniBaslat(anlikGonderi)
-
 
             }
 
             postMenu.visibility= View.GONE
 
-            delete.setOnClickListener {
-
-                val alert = AlertDialog.Builder(myprofilActivity, androidx.appcompat.R.style.Base_Theme_AppCompat_Dialog_Alert)
-                    .setTitle("KAMPANYAYI SİL ")
-                    .setMessage("Emin misiniz?")
-                    .setPositiveButton("SİL"
-                    ) { p0, p1 ->
-                        val postID = anlikGonderi.postID
-
-
-                        Bildirimler.mref.child("kampanya")
-                            .child(FirebaseAuth.getInstance().currentUser!!.uid).child(postID!!)
-                            .addListenerForSingleValueEvent(object :
-                                ValueEventListener {
-                                override fun onDataChange(snapshot: DataSnapshot) {
-                                    snapshot.ref.removeValue()
-
-                                }
-
-                                override fun onCancelled(error: DatabaseError) {
-                                }
-
-                            })
-
-                        Bildirimler.mref.child("users").child("isletmeler")
-                            .child(FirebaseAuth.getInstance().currentUser!!.uid)
-                            .child("user_detail").addListenerForSingleValueEvent(object :
-                            ValueEventListener {
-                            override fun onDataChange(snapshot: DataSnapshot) {
-                                var oankiGonderiSayisi =
-                                    snapshot.child("post").value.toString().toInt()
-                                oankiGonderiSayisi--
-                                Bildirimler.mref.child("users").child("isletmeler").child(
-                                    FirebaseAuth.getInstance().currentUser!!.uid
-                                ).child("user_detail").child("post")
-                                    .setValue(oankiGonderiSayisi.toString())
-
-                                Navigation.findNavController(itemView).navigate(R.id.profilFragment)
-
-
-                            }
-
-                            override fun onCancelled(error: DatabaseError) {
-                            }
-
-                        })
-                    }
-                    .setNegativeButton("VAZGEÇ"
-                    ) { p0, p1 -> p0!!.dismiss() }
-                    .create()
-
-                alert.show()
-
-            }
 
 
             yorumlariGoster.setOnClickListener {
@@ -208,7 +152,7 @@ class UserProfilRecyclerAdapter(var context: Context, private var tumKampanyalar
             EventBus.getDefault()
                 .postSticky(EventbusData.YorumYapilacakGonderininIDsiniGonder(anlikGonderi.postID))
 
-            val action= ProfilFragmentDirections.actionProfilFragmentToYorumlarFragment()
+            val action= UserProfilFragmentDirections.actionUserProfilFragmentToYorumlarFragment()
             Navigation.findNavController(itemView).navigate(action)
 
         }

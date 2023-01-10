@@ -8,7 +8,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.navigation.NavOptions
 import androidx.navigation.Navigation
@@ -28,14 +27,14 @@ import org.greenrobot.eventbus.Subscribe
 
 class ProfilEditFragment : Fragment() {
     lateinit var binding:FragmentProfilEditBinding
-    lateinit var profileImage:CircleImageView
+    private lateinit var profileImage:CircleImageView
     var gelenKullaniciBilgileri= KullaniciBilgileri()
 
     lateinit var mDataRef:DatabaseReference
-    lateinit var mStorage:StorageReference
+    private lateinit var mStorage:StorageReference
     private lateinit var storage: FirebaseStorage
 
-    var secilengorsel: Uri? = null
+    private var secilengorsel: Uri? = null
 
 
     override fun onCreateView(
@@ -55,10 +54,9 @@ class ProfilEditFragment : Fragment() {
         mStorage=FirebaseStorage.getInstance().reference
         storage=FirebaseStorage.getInstance()
 
-        setUpKullaniciBilgileri(view)
+        setUpKullaniciBilgileri()
 
         profileImage=binding.profileImage
-
 
 
         setUpprofilePhoto()
@@ -69,45 +67,29 @@ class ProfilEditFragment : Fragment() {
         }
 
       binding.backButton.setOnClickListener {
-
           findNavController().navigateUp()
-
         }
-
-
 
         val getImage=registerForActivityResult(
-            ActivityResultContracts.GetContent(),
-            ActivityResultCallback {
-                it.let {
-                    secilengorsel=it
-                    if (secilengorsel!=null){
+            ActivityResultContracts.GetContent()
+        ) {
+            it.let {
+                secilengorsel = it
+                if (secilengorsel != null) {
 
-                        binding. profileImage.setImageURI(secilengorsel!!)
-
-
-                    }
-
-
+                    binding.profileImage.setImageURI(secilengorsel!!)
                 }
-
-            })
-
-
-        binding.fotoDegis.setOnClickListener {
-
-            getImage.launch("image/*")
-
-
+            }
         }
 
+        binding.fotoDegis.setOnClickListener {
+            getImage.launch("image/*")
 
-
+        }
 
         binding.kayitButon.setOnClickListener {
             if (secilengorsel!=null){
                 binding.progressBar4.visibility=View.VISIBLE
-
 
                 mStorage.child("users").child("isletmeler").child(gelenKullaniciBilgileri.user_id!!)
                     .child(secilengorsel!!.lastPathSegment!!)
@@ -132,7 +114,7 @@ class ProfilEditFragment : Fragment() {
                                         val message = itTask.exception?.message
                                         Toast.makeText(
                                             requireActivity(),
-                                            "hata" + message,
+                                            "hata$message",
                                             Toast.LENGTH_SHORT
                                         ).show()
                                         kullaniciAdiGuncelle(view,false)
@@ -161,7 +143,7 @@ class ProfilEditFragment : Fragment() {
     private fun kullaniciAdiGuncelle(view: View, profilResmiGüncellendi: Boolean?) {
 
 
-        if (!gelenKullaniciBilgileri!!.user_name!!.equals( binding.editTextTextPersonName3.text.toString())){
+        if (gelenKullaniciBilgileri.user_name!! != binding.editTextTextPersonName3.text.toString()){
 
             if ( binding.editTextTextPersonName3.text.toString().trim().length>5){
 
@@ -172,17 +154,18 @@ class ProfilEditFragment : Fragment() {
                         for (ds in snapshot.children){
                             val okunanKllaniciAdi=ds!!.getValue(KullaniciBilgileri::class.java)!!.user_name
 
-                            if (okunanKllaniciAdi!!.equals( binding.editTextTextPersonName3.text.toString())){
-                                profilBilgileriGuncelle(view,profilResmiGüncellendi,false)
+                            if (okunanKllaniciAdi!! == binding.editTextTextPersonName3.text.toString()){
+                                profilBilgileriGuncelle(profilResmiGüncellendi, false)
                                 usernameKullanim=true
                                 break
 
                             }
 
                         }
-                        if (usernameKullanim==false){
-                            mDataRef.child("users").child("isletmeler").child(gelenKullaniciBilgileri!!.user_id!!).child("user_name").setValue( binding.editTextTextPersonName3.text.toString())
-                            profilBilgileriGuncelle(view,profilResmiGüncellendi,true)
+                        if (!usernameKullanim){
+                            mDataRef.child("users").child("isletmeler").child(
+                                gelenKullaniciBilgileri.user_id!!).child("user_name").setValue( binding.editTextTextPersonName3.text.toString())
+                            profilBilgileriGuncelle(profilResmiGüncellendi, true)
 
 
 
@@ -205,7 +188,7 @@ class ProfilEditFragment : Fragment() {
 
 
         }else{
-            profilBilgileriGuncelle(view,profilResmiGüncellendi,null)
+            profilBilgileriGuncelle(profilResmiGüncellendi, null)
 
 
         }
@@ -214,12 +197,15 @@ class ProfilEditFragment : Fragment() {
 
     }
 
-    private fun profilBilgileriGuncelle(view: View, profilResmiGüncellendi: Boolean?, profilBilgileriGuncellendi: Boolean?) {
+    private fun profilBilgileriGuncelle(
+        profilResmiGüncellendi: Boolean?,
+        profilBilgileriGuncellendi: Boolean?
+    ) {
         var profilGuncel:Boolean?=null
 
-        if (!gelenKullaniciBilgileri!!.adi_soyadi!!.equals( binding.editTextTextPersonName2.text.toString())){
+        if (gelenKullaniciBilgileri.adi_soyadi!! != binding.editTextTextPersonName2.text.toString()){
             if ( binding.editTextTextPersonName2.text.toString().trim().isNotEmpty()){
-                mDataRef.child("users").child("isletmeler").child(gelenKullaniciBilgileri!!.user_id!!).child("adi_soyadi").setValue( binding.editTextTextPersonName2.text.toString())
+                mDataRef.child("users").child("isletmeler").child(gelenKullaniciBilgileri.user_id!!).child("adi_soyadi").setValue( binding.editTextTextPersonName2.text.toString())
                 profilGuncel=true
 
             }else{
@@ -228,8 +214,8 @@ class ProfilEditFragment : Fragment() {
             }
 
         }
-        if(!gelenKullaniciBilgileri!!.user_detail!!.biography.equals( binding.editTextTextPersonName5.text.toString())){
-            mDataRef.child("users").child("isletmeler").child(gelenKullaniciBilgileri!!.user_id!!).child("user_detail").child("biography").setValue( binding.editTextTextPersonName5.text.toString())
+        if(!gelenKullaniciBilgileri.user_detail!!.biography.equals( binding.editTextTextPersonName5.text.toString())){
+            mDataRef.child("users").child("isletmeler").child(gelenKullaniciBilgileri.user_id!!).child("user_detail").child("biography").setValue( binding.editTextTextPersonName5.text.toString())
             profilGuncel=true
 
 
@@ -251,18 +237,18 @@ class ProfilEditFragment : Fragment() {
     }
 
 
-    private fun setUpKullaniciBilgileri(view: View?) {
-        binding.editTextTextPersonName2!!.setText(gelenKullaniciBilgileri!!.adi_soyadi)
-        binding.editTextTextPersonName3.setText(gelenKullaniciBilgileri!!.user_name)
-        if (!gelenKullaniciBilgileri!!.user_detail!!.biography.isNullOrEmpty()){
-            binding.editTextTextPersonName5.setText(gelenKullaniciBilgileri!!.user_detail!!.biography)
+    private fun setUpKullaniciBilgileri() {
+        binding.editTextTextPersonName2.setText(gelenKullaniciBilgileri.adi_soyadi)
+        binding.editTextTextPersonName3.setText(gelenKullaniciBilgileri.user_name)
+        if (!gelenKullaniciBilgileri.user_detail!!.biography.isNullOrEmpty()){
+            binding.editTextTextPersonName5.setText(gelenKullaniciBilgileri.user_detail!!.biography)
 
 
 
 
         }
 
-        val imgUrl:String=gelenKullaniciBilgileri!!.user_detail!!.profile_picture!!
+        val imgUrl:String= gelenKullaniciBilgileri.user_detail!!.profile_picture!!
         if (imgUrl.isNotEmpty()){
             Picasso.get().load(imgUrl).placeholder(R.drawable.ic_baseline_person).error(R.drawable.ic_baseline_person).into(binding.profileImage)
 
@@ -282,7 +268,7 @@ class ProfilEditFragment : Fragment() {
     @Subscribe(sticky = true)
 
     internal fun onKullaniciBilgileriKayitEvent(kullanicibilgileri: EventbusData.kullaniciBilgileriniGonder) {
-        gelenKullaniciBilgileri=kullanicibilgileri!!.kullanici!!
+        gelenKullaniciBilgileri= kullanicibilgileri.kullanici!!
 
 
 

@@ -123,7 +123,7 @@ class MesajlarFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        Log.e("hata","mesajlardasın"+tumMesajlar.size)
+
 
         auth.addAuthStateListener(mauthLis)
     }
@@ -131,33 +131,12 @@ class MesajlarFragment : Fragment() {
     override fun onStop() {
         super.onStop()
 
-        Log.e("hata","onstop")
-        Log.e("hata","onstopmesajlarsayisi"+tumMesajlar.size)
-
-
 
         auth.removeAuthStateListener(mauthLis)
     }
 
 
-    override fun onPause() {
-        super.onPause()
-        Log.e("hata","onpausemesajlarsayisi"+tumMesajlar.size)
-        Log.e("hata","onpause")
 
-    }
-
-
-    override fun onResume() {
-        super.onResume()
-
-
-        Log.e("hata","onresumemesajlarsayisi"+tumMesajlar.size)
-
-
-        Log.e("hata","onresume")
-
-    }
 
 
 

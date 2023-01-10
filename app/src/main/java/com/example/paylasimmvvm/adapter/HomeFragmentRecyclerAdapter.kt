@@ -135,8 +135,6 @@ class HomeFragmentRecyclerAdapter (var context: Context, private var tumKampanya
 
 
 
-
-
             kampanyaTarihi.text = TimeAgo.getTimeAgo(anlikGonderi.postYuklenmeTarih!!)
 
             if (anlikGonderi.geri_sayim=="1 saat"){

@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/bildirimlerbar"
+        android:title="Bildirimler"
+        android:icon="@drawable/ic_baseline_circle_notifications"
+        app:showAsAction="ifRoom" />
 
 
     <item
@@ -9,6 +16,11 @@
     <item
         android:id="@+id/kampanyaOlustur_id"
         android:title="Kampanya Oluştur" />
+
+    <item
+        android:id="@+id/profilDuzenle_id"
+        android:title="Profili Düzenle" />
+
 
     <item
         android:id="@+id/cikisYap"

@@ -4,14 +4,12 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import android.view.*
-import android.widget.FrameLayout
 import android.widget.GridView
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.NavOptions
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -24,6 +22,7 @@ import com.example.paylasimmvvm.model.KullaniciKampanya
 import com.example.paylasimmvvm.model.Menuler
 import com.example.paylasimmvvm.util.EventbusData
 import com.example.paylasimmvvm.view.login.SignOutFragment
+import com.example.paylasimmvvm.viewmodel.BadgeViewModel
 import com.example.paylasimmvvm.viewmodel.ProfilViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
@@ -41,29 +40,41 @@ class ProfilFragment : Fragment() {
     private lateinit var auth : FirebaseAuth
     private lateinit var mauthLis: FirebaseAuth.AuthStateListener
     lateinit var mref: DatabaseReference
-    var tumMenuler=ArrayList<Menuler>()
+    private var tumMenuler=ArrayList<Menuler>()
     private var tumGonderiler=ArrayList<KullaniciKampanya>()
     private lateinit var profilKampanyalarViewModeli:ProfilViewModel
     private lateinit var recyclerviewadapter:ProfilFragmentRecyclerAdapter
-    lateinit var gridView: GridView
+    var tiklanilanKullanici:String?=null
+    private lateinit var profilBadges:BadgeViewModel
 
 
 
 
+
+
+
+
+    @SuppressLint("SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         mref= FirebaseDatabase.getInstance().reference
-
-
 
         setupAuthLis()
 
         profilKampanyalarViewModeli= ViewModelProvider(this)[ProfilViewModel::class.java]
         profilKampanyalarViewModeli.refreshProfilKampanya(auth.currentUser!!.uid)
 
+        profilBadges= ViewModelProvider(this)[BadgeViewModel::class.java]
+        profilBadges.refreshIsletmeYorumlarBadge(auth.currentUser!!.uid)
+        profilKampanyalarViewModeli.getMenus(auth.currentUser!!.uid)
+
+
+
        kullaniciBilgileriVerileriniAl()
         observeliveData()
-        profilDuzenle()
+
+        binding.paylasimlar.isEnabled=false
 
 
         val layoutManager= LinearLayoutManager(activity)
@@ -71,34 +82,37 @@ class ProfilFragment : Fragment() {
         recyclerviewadapter= ProfilFragmentRecyclerAdapter(requireActivity(),tumGonderiler)
         binding.recyclerProfil.adapter=recyclerviewadapter
 
+
+
         binding.paylasimlar.setOnClickListener {
+            binding.paylasimlar.isEnabled=false
+            binding.menu.isEnabled=true
+            binding.yorumlar.isEnabled=true
+            profilKampanyalarViewModeli= ViewModelProvider(this)[ProfilViewModel::class.java]
+            profilKampanyalarViewModeli.refreshProfilKampanya(auth.currentUser!!.uid)
 
 
         }
 
         binding.menu.setOnClickListener {
+            binding.menu.isEnabled=false
+            binding.paylasimlar.isEnabled=true
+            binding.yorumlar.isEnabled=true
 
-
-            val gridView = requireActivity().findViewById<GridView>(R.id.grid_id) as GridView
-
-
-
-            val customAdapter = MenulerGridAdapter(tumMenuler)
-
-            gridView.adapter = customAdapter
 
             profilKampanyalarViewModeli.getMenus(auth.currentUser!!.uid)
+            profilKampanyalarViewModeli.gonderiYok.observe(viewLifecycleOwner){
+                it.let {
+                    if(it){
+                        binding.gonderiYok.text = "Henüz menü yüklenmemiş."
+                        binding.gonderiYok.visibility=View.VISIBLE
+                        binding.gridId.visibility=View.GONE
+                        binding.recyclerProfil.visibility=View.GONE
 
+                    }else{
+                        binding.gonderiYok.visibility=View.GONE
 
-            profilKampanyalarViewModeli.profilMenu.observe(viewLifecycleOwner) { profilMenu ->
-                profilMenu.let {
-
-
-
-                    binding.gridId.visibility = View.VISIBLE
-                    customAdapter.menuleriGuncelle(profilMenu)
-                    binding.recyclerProfil.visibility=View.GONE
-
+                    }
                 }
             }
 
@@ -106,6 +120,18 @@ class ProfilFragment : Fragment() {
         }
 
         binding.yorumlar.setOnClickListener {
+            binding.yorumlar.isEnabled=false
+            binding.menu.isEnabled=true
+            binding.paylasimlar.isEnabled=true
+
+            EventBus.getDefault()
+                .postSticky(EventbusData.YorumYapilacakGonderininIDsiniGonder(tiklanilanKullanici))
+
+            val action=ProfilFragmentDirections.actionProfilFragmentToYorumlarFragment()
+            Navigation.findNavController(it).navigate(action)
+
+
+
 
         }
 
@@ -121,24 +147,37 @@ class ProfilFragment : Fragment() {
 
             @SuppressLint("SuspiciousIndentation")
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-                if (menuItem.itemId== R.id.cikisYap){
-                    val dialog=SignOutFragment()
-                    dialog.show(parentFragmentManager,"Çıkış yap")
-                }
-                else if(menuItem.itemId==R.id.kampanyaOlustur_id){
+                when (menuItem.itemId) {
+
+                    R.id.cikisYap -> {
+                        val dialog=SignOutFragment()
+                        dialog.show(parentFragmentManager,"Çıkış yap")
+                    }
+                    R.id.kampanyaOlustur_id -> {
+
+                        val action=ProfilFragmentDirections.actionProfilFragmentToKampanyaOlusturFragment()
+                        Navigation.findNavController(view).navigate(action)
+
+                    }
+                    R.id.sabitkampanyaOlustur_id -> {
 
 
-                  val action=ProfilFragmentDirections.actionProfilFragmentToKampanyaOlusturFragment()
+                        val action=ProfilFragmentDirections.actionProfilFragmentToBiralarFragment()
+                        Navigation.findNavController(view).navigate(action)
+                    }
+                    R.id.profilDuzenle_id -> {
+
+                        val action=ProfilFragmentDirections.actionProfilFragmentToProfilEditFragment()
+                        Navigation.findNavController(view).navigate(action)
+
+                    }
+                    R.id.bildirimlerbar -> {
+
+                        val action=ProfilFragmentDirections.actionProfilFragmentToBildirimlerFragment()
+                        Navigation.findNavController(view).navigate(action)
 
 
-                    Navigation.findNavController(view).navigate(action)
-
-                }
-                else if(menuItem.itemId==R.id.sabitkampanyaOlustur_id){
-
-
-                    val action=ProfilFragmentDirections.actionProfilFragmentToBiralarFragment()
-                    Navigation.findNavController(view).navigate(action)
+                    }
                 }
 
                 return true
@@ -148,7 +187,73 @@ class ProfilFragment : Fragment() {
     }, viewLifecycleOwner, Lifecycle.State.RESUMED)
     }
 
+    @SuppressLint("SetTextI18n")
     private fun observeliveData(){
+
+        val gridView = requireActivity().findViewById(R.id.grid_id) as GridView
+
+        val customAdapter = MenulerGridAdapter(tumMenuler)
+
+        gridView.adapter = customAdapter
+
+        profilKampanyalarViewModeli.profilMenu.observe(viewLifecycleOwner) { profilMenu ->
+            profilMenu.let {
+                if (profilMenu!=null){
+                    binding.gridId.visibility = View.VISIBLE
+                    customAdapter.menuleriGuncelle(profilMenu)
+                    binding.recyclerProfil.visibility=View.GONE
+                    binding.gonderiYok.visibility=View.GONE
+                    binding.menu.text = "Menu [${profilMenu.size}]"
+                }
+            }
+        }
+
+        profilBadges.isletmeYorumlarBadgeLive.observe(viewLifecycleOwner) {yorumSayisi ->
+            yorumSayisi.let {
+
+                if (yorumSayisi!=null){
+
+                    binding.yorumlar.text = "Yorumlar $yorumSayisi"
+
+                }
+
+            }
+
+        }
+
+
+        profilKampanyalarViewModeli.gonderiYok.observe(viewLifecycleOwner){
+            it.let {
+                if(it){
+                    binding.gonderiYok.text = "Henüz hiç gönderi yok."
+                    binding.gonderiYok.visibility=View.VISIBLE
+                    binding.gridId.visibility=View.GONE
+                    binding.recyclerProfil.visibility=View.GONE
+
+                }else{
+                    binding.gonderiYok.visibility=View.GONE
+
+
+                }
+            }
+
+        }
+
+        profilKampanyalarViewModeli.yukleniyor.observe(viewLifecycleOwner){
+            it.let {
+                if(it){
+                    binding.gonderiYok.visibility=View.GONE
+                    binding.gridId.visibility=View.GONE
+                    binding.recyclerProfil.visibility=View.GONE
+                    binding.progresBarKokteyl.visibility=View.VISIBLE
+
+                }else{
+                    binding.progresBarKokteyl.visibility=View.GONE
+
+                }
+            }
+        }
+
         profilKampanyalarViewModeli.profilKampanya.observe(viewLifecycleOwner) { profilKampanya ->
             profilKampanya.let {
                 Collections.sort(profilKampanya, object : Comparator<KullaniciKampanya> {
@@ -161,7 +266,9 @@ class ProfilFragment : Fragment() {
                 })
 
                 binding.recyclerProfil.visibility = View.VISIBLE
+                binding.gridId.visibility=View.GONE
                 recyclerviewadapter.kampanyalariGuncelle(profilKampanya)
+                binding.paylasimlar.text = "Paylaşımlar [${profilKampanya.size}]"
             }
         }
 
@@ -187,23 +294,21 @@ class ProfilFragment : Fragment() {
         if (user != null) {
             mref.child("users").child("isletmeler").child(auth.currentUser!!.uid).addValueEventListener(object :
                 ValueEventListener {
+                @SuppressLint("SetTextI18n")
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if (snapshot.value !=null){
                         val okunanKullanici= snapshot.getValue(KullaniciBilgileri::class.java)
                         EventBus.getDefault().postSticky(EventbusData.kullaniciBilgileriniGonder(okunanKullanici))
-
-                        binding.tvMesaj.isEnabled=true
-
-                        binding.tvKullaniciAdi.text = okunanKullanici!!.user_name
-
-                        binding.tvPost.text = okunanKullanici.user_detail!!.post
-
-                        Log.e("post", "sayisi$okunanKullanici")
-                        if (!okunanKullanici.user_detail!!.biography.isNullOrEmpty()){
-                         //   binding.tvBio.text = okunanKullanici.user_detail!!.biography
+                        tiklanilanKullanici=okunanKullanici!!.user_id
 
 
-                        }
+
+
+                        binding.tvKullaniciAdi.text = okunanKullanici.user_name
+
+
+                        binding.paylasimlar.text = "Paylaşımlar [${okunanKullanici.user_detail!!.post}]"
+
 
                         val imgUrl:String= okunanKullanici.user_detail!!.profile_picture!!
                         if (imgUrl.isNotEmpty()){
@@ -228,16 +333,11 @@ class ProfilFragment : Fragment() {
                         val okunanKullanici= snapshot.getValue(KullaniciBilgileri::class.java)
                         EventBus.getDefault().postSticky(EventbusData.kullaniciBilgileriniGonder(okunanKullanici))
 
-                        binding.tvMesaj.isEnabled=true
+
 
                         binding.tvKullaniciAdi.text = okunanKullanici!!.user_name
-                        binding.tvPost.text = okunanKullanici.user_detail!!.post
-
-                        if (!okunanKullanici.user_detail!!.biography.isNullOrEmpty()){
-                         //   binding.tvBio.text = okunanKullanici.user_detail!!.biography
 
 
-                        }
 
                         val imgUrl:String= okunanKullanici.user_detail!!.profile_picture!!
 
@@ -259,7 +359,6 @@ class ProfilFragment : Fragment() {
             })
 
         }
-
 
 
     }
@@ -295,13 +394,6 @@ class ProfilFragment : Fragment() {
         auth.removeAuthStateListener(mauthLis)
     }
 
-    private fun profilDuzenle(){
-        binding.tvMesaj.setOnClickListener {
-            val navOptions = NavOptions.Builder().setPopUpTo(R.id.profilFragment, true).build()
-            Navigation.findNavController(it).navigate(R.id.profilEditFragment, null, navOptions)
-        }
-
-        }
 
 
 

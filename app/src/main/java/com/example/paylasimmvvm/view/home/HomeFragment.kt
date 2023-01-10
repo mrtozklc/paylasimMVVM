@@ -69,7 +69,6 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
 
-        // NOTLA G
        kampanyalarViewModeli= ViewModelProvider(this)[kampanyalarViewModel::class.java]
         kampanyalarViewModeli.refreshKampanyalar()
 
@@ -92,9 +91,6 @@ class HomeFragment : Fragment() {
                 tumGonderiler.clear()
                 sayfaBasiGonderiler.clear()
                 sayfaninSonunaGelindi=false
-
-
-
 
 
                 kampanyalarViewModeli.refreshKampanyalar()

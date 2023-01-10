@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
+import android.widget.Toast
 import com.example.paylasimmvvm.R
 import com.example.paylasimmvvm.databinding.RecyclerRowMenuBinding
 import com.example.paylasimmvvm.model.KullaniciBilgileri
@@ -45,6 +46,8 @@ class MenulerGridAdapter( val tumMenuler: ArrayList<Menuler>) : BaseAdapter() {
          val photoView = PhotoView(parent.context)
          photoView.adjustViewBounds = true
          Picasso.get().load(dataItem.menuler).into(photoView)
+         Log.e("gelendata","")
+
 
          builder.setView(photoView)
 
@@ -55,7 +58,30 @@ class MenulerGridAdapter( val tumMenuler: ArrayList<Menuler>) : BaseAdapter() {
                      for (user in snapshot!!.children) {
                          val okunanKullanici = user.getValue(KullaniciBilgileri::class.java)!!
                          if (okunanKullanici!!.user_id.equals(FirebaseAuth.getInstance().currentUser!!.uid)) {
-                             builder.setNegativeButton("Cancel") { dialog, _ ->
+                             val silinicekMenu=dataItem.menuler
+
+                             builder.setNeutralButton("MENÜ SİLİNSİN Mİ?"){dialog, _ ->
+
+                             }
+                             builder.setPositiveButton("VAZGEÇ") { dialog, _ ->
+                                 dialog.dismiss()
+                             }
+                             builder.setNegativeButton("SİL"){dialog,_->
+
+                                 mref.child("menuler").child(FirebaseAuth.getInstance().currentUser!!.uid).orderByChild("menuler").equalTo(silinicekMenu).addListenerForSingleValueEvent(object :ValueEventListener{
+                                     override fun onDataChange(snapshot: DataSnapshot) {
+                                         for (ds in snapshot.children) {
+                                            var kley=ds.key
+                                             mref.child("menuler").child(FirebaseAuth.getInstance().currentUser!!.uid).child(kley!!).removeValue()
+
+                                             Toast.makeText(parent.context,"Menü silindi",Toast.LENGTH_LONG).show()
+                                         }
+                                     }
+                                     override fun onCancelled(error: DatabaseError) {
+                                     }
+                                 })
+                                 notifyDataSetChanged()
+
                                  dialog.dismiss()
                              }
                          }

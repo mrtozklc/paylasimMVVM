@@ -46,6 +46,8 @@ class IsletmeMenuFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+
+
         binding.menuBack.setOnClickListener {
 
             findNavController().navigateUp()
@@ -101,6 +103,7 @@ class IsletmeMenuFragment : Fragment() {
                                         val navOptions = NavOptions.Builder()
                                             .setPopUpTo(R.id.profilEditFragment, true)
                                             .build()
+
                                         val action=IsletmeMenuFragmentDirections.actionIsletmeMenuFragmentToProfilFragment()
                                         Navigation.findNavController(binding.menuOnay).navigate(action,navOptions)
 
