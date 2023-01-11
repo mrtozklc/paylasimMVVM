@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.Navigation
@@ -28,6 +29,12 @@ class RegisterFragment : Fragment() {
     lateinit var mref: DatabaseReference
     lateinit var auth: FirebaseAuth
     private lateinit var mauthLis: FirebaseAuth.AuthStateListener
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        (activity as AppCompatActivity).supportActionBar?.hide()
+    }
+
 
 
     override fun onCreateView(
@@ -588,6 +595,7 @@ class RegisterFragment : Fragment() {
 
 
     }
+
 
 
 }

@@ -12,7 +12,9 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.Navigation
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.paylasimmvvm.R
@@ -44,6 +46,10 @@ class YorumlarFragment : Fragment() {
     lateinit var adapter: FirebaseRecyclerAdapter<Yorumlar, YorumlarViewHolder>
 
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        (activity as AppCompatActivity).supportActionBar?.hide()
+    }
 
 
     override fun onCreateView(
@@ -86,6 +92,10 @@ class YorumlarFragment : Fragment() {
         binding.recyclerviewYorumlar.layoutManager= LinearLayoutManager(activity,
             LinearLayoutManager.VERTICAL,false)
         binding.recyclerviewYorumlar.adapter=adapter
+
+        binding.imageViewBack.setOnClickListener {
+            findNavController().navigateUp()
+        }
 
 
 

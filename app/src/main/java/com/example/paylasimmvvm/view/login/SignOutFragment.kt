@@ -29,4 +29,5 @@ class SignOutFragment : DialogFragment() {
         return alert
     }
 
+
 }

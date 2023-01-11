@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
@@ -26,6 +27,12 @@ class LoginFragment : Fragment() {
     lateinit var auth: FirebaseAuth
     lateinit var mref: DatabaseReference
     private lateinit var mauthLis: FirebaseAuth.AuthStateListener
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        (activity as AppCompatActivity).supportActionBar?.hide()
+    }
+
 
 
 
@@ -325,6 +332,7 @@ class LoginFragment : Fragment() {
         super.onStop()
         auth.removeAuthStateListener(mauthLis)
     }
+
 
 
 

@@ -7,6 +7,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
@@ -40,6 +41,12 @@ class ChatFragment : Fragment() {
     var refreshMesajPosition=0
     var getirilenMesajId=""
     var zatenListedeOlanMesajID=""
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        (activity as AppCompatActivity).supportActionBar?.hide()
+    }
+
 
 
 
@@ -324,5 +331,6 @@ class ChatFragment : Fragment() {
 
 
     }
+
 
 }

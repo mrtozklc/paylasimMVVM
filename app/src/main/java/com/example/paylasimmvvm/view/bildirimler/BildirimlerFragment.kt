@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
@@ -35,6 +36,10 @@ class BildirimlerFragment : Fragment() {
 
 
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        (activity as AppCompatActivity).supportActionBar?.hide()
+    }
 
 
     override fun onCreateView(
@@ -75,6 +80,10 @@ class BildirimlerFragment : Fragment() {
             bildirimlerViewModeli.refreshBildirimler()
 
             binding.refreshId.isRefreshing = false
+        }
+
+        binding.imageViewBack.setOnClickListener {
+            findNavController().navigateUp()
         }
 
     }
@@ -150,6 +159,8 @@ class BildirimlerFragment : Fragment() {
         super.onStop()
         auth.removeAuthStateListener(mauthLis)
     }
+
+
 
 
 

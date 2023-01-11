@@ -63,16 +63,14 @@ class MesajlarRecyclerAdapter(private var tumMesajlar:ArrayList<Mesajlar>):Recyc
                 okunduBilgisi.visibility=View.VISIBLE
                 userName.setTypeface(null, Typeface.BOLD)
                 sonAtilanmesaj.setTypeface(null,Typeface.BOLD)
-                sonAtilanmesaj.setTextColor(ContextCompat.getColor(itemView.context,R.color.black))
-                gonderilmeZamani.setTextColor(ContextCompat.getColor(itemView.context,R.color.black))
+
 
             }
             else {
                 okunduBilgisi.visibility=View.INVISIBLE
                 userName.setTypeface(null,Typeface.NORMAL)
                 sonAtilanmesaj.setTypeface(null,Typeface.NORMAL)
-                gonderilmeZamani.setTextColor(ContextCompat.getColor(itemView.context,R.color.yesil))
-                sonAtilanmesaj.setTextColor(ContextCompat.getColor(itemView.context,R.color.yesil))
+
 
             }
 

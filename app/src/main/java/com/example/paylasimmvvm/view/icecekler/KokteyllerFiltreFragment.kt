@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.paylasimmvvm.adapter.KokteyllerRecyclerAdapter
@@ -27,6 +28,12 @@ class KokteyllerFiltreFragment : Fragment() {
     private lateinit var kokteylViewModeli: KokteylViewModel
     private var tumKokteyller=ArrayList<Drink>()
     var secilenFiltre:String?=null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        (activity as AppCompatActivity).supportActionBar?.hide()
+    }
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -139,6 +146,7 @@ class KokteyllerFiltreFragment : Fragment() {
         }
 
     }
+
 
 
 }

@@ -6,9 +6,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.GridView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.paylasimmvvm.R
 import com.example.paylasimmvvm.adapter.MenulerGridAdapter
@@ -38,6 +40,12 @@ class UserProfilFragment : Fragment() {
     private lateinit var recyclerviewadapter: UserProfilRecyclerAdapter
     private lateinit var profilBadges:BadgeViewModel
     private var tumMenuler=ArrayList<Menuler>()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        (activity as AppCompatActivity).supportActionBar?.hide()
+    }
+
 
 
 
@@ -91,10 +99,11 @@ class UserProfilFragment : Fragment() {
 
                         }
                     }
-
                 }
+            }
 
-
+            binding.imageViewBack.setOnClickListener {
+                findNavController().navigateUp()
             }
 
             binding.menu.setOnClickListener {
@@ -139,20 +148,18 @@ class UserProfilFragment : Fragment() {
 
             }
 
-        }
+            binding.mesajGonder.setOnClickListener {
+                val action=UserProfilFragmentDirections.actionUserProfilFragmentToChatFragment(secilenUser)
+                Navigation.findNavController(it).navigate(action)
+            }
 
+        }
 
 
         val layoutManager= LinearLayoutManager(activity)
         binding.recyclerProfil.layoutManager=layoutManager
         recyclerviewadapter= UserProfilRecyclerAdapter(requireActivity(),tumGonderiler)
         binding.recyclerProfil.adapter=recyclerviewadapter
-
-
-
-
-
-
 
 
     }
@@ -168,19 +175,22 @@ class UserProfilFragment : Fragment() {
                         EventBus.getDefault().postSticky(EventbusData.kullaniciBilgileriniGonder(okunanKullanici))
 
                       //  binding.tvMesaj.isEnabled=true
-                        binding.tvKullaniciAdi.text = okunanKullanici!!.user_name
+                        binding.kullaniciadiId.text = okunanKullanici!!.user_name
 
 
 
                       //  binding.tvPostt.text = okunanKullanici.user_detail!!.post
 
-                        Log.e("post", "sayisi$okunanKullanici")
+
                         if (!okunanKullanici.user_detail!!.biography.isNullOrEmpty()){
 
                            // binding.tvBioo.text = okunanKullanici.user_detail!!.biography
 
 
                         }
+
+
+
 
                         val imgUrl:String= okunanKullanici.user_detail!!.profile_picture!!
                         if (imgUrl.isNotEmpty()){
@@ -207,7 +217,7 @@ class UserProfilFragment : Fragment() {
 
                      //   binding.tvMesaj.isEnabled=true
 
-                        binding.tvKullaniciAdi.text = okunanKullanici!!.user_name
+                        binding.kullaniciadiId.text = okunanKullanici!!.user_name
                       //  binding.tvPostt.text = okunanKullanici.user_detail!!.post
 
                         if (!okunanKullanici.user_detail!!.biography.isNullOrEmpty()){
@@ -215,6 +225,11 @@ class UserProfilFragment : Fragment() {
 
 
                         }
+                        binding.menu.visibility=View.GONE
+                        binding.yorumlar.visibility=View.GONE
+                        binding.spcaID.visibility=View.GONE
+                        binding.spcaID2.visibility=View.GONE
+                        binding.paylasimlar.isClickable=false
 
                         val imgUrl:String= okunanKullanici.user_detail!!.profile_picture!!
                         Picasso.get().load(imgUrl).placeholder(R.drawable.ic_baseline_person).error(R.drawable.ic_baseline_person).into(binding.profileImage)
@@ -319,4 +334,17 @@ class UserProfilFragment : Fragment() {
         }
 
     }
+
+    override fun onResume() {
+        super.onResume()
+        (activity as AppCompatActivity?)!!.supportActionBar!!.hide()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        (activity as AppCompatActivity?)!!.supportActionBar!!.show()
+    }
+
+
+
 }

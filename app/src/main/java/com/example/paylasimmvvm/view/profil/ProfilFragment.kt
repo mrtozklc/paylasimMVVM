@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.*
 import android.widget.GridView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
@@ -32,7 +33,6 @@ import com.google.firebase.ktx.Firebase
 import com.squareup.picasso.Picasso
 import org.greenrobot.eventbus.EventBus
 import java.util.*
-import kotlin.collections.ArrayList
 
 
 class ProfilFragment : Fragment() {
@@ -48,10 +48,10 @@ class ProfilFragment : Fragment() {
     private lateinit var profilBadges:BadgeViewModel
 
 
-
-
-
-
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        (activity as AppCompatActivity).supportActionBar?.show()
+    }
 
 
     @SuppressLint("SetTextI18n")
@@ -387,14 +387,6 @@ class ProfilFragment : Fragment() {
         Log.e("hata","profildesin")
         auth.addAuthStateListener(mauthLis)
     }
-
-    override fun onStop() {
-
-        super.onStop()
-        auth.removeAuthStateListener(mauthLis)
-    }
-
-
 
 
 }

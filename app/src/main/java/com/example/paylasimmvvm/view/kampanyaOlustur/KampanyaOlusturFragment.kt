@@ -18,6 +18,7 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.navigation.Navigation
@@ -43,6 +44,13 @@ class KampanyaOlusturFragment : Fragment() {
     private lateinit var db:DatabaseReference
     private lateinit var auth: FirebaseAuth
     private lateinit var mauthLis: FirebaseAuth.AuthStateListener
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        (activity as AppCompatActivity).supportActionBar?.hide()
+    }
+
+
 
 
     override fun onCreateView(
@@ -283,6 +291,8 @@ class KampanyaOlusturFragment : Fragment() {
         }
         super.onActivityResult(requestCode, resultCode, data)
     }
+
+
 
 
 }

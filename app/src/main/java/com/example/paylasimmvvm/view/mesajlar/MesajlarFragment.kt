@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
@@ -29,6 +30,10 @@ class MesajlarFragment : Fragment() {
     private lateinit var mesajlarViewModeli:MesajlarViewModel
     var tumMesajlar=ArrayList<Mesajlar>()
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        (activity as AppCompatActivity).supportActionBar?.hide()
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -134,6 +139,7 @@ class MesajlarFragment : Fragment() {
 
         auth.removeAuthStateListener(mauthLis)
     }
+
 
 
 

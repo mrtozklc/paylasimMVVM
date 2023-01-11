@@ -18,7 +18,6 @@ class KokteyllerRecyclerAdapter2 (private val tumKokteyller: ArrayList<Drink>): 
 
         fun setData(gelenKokteyl: Drink) {
             val binding= RecyclerRowKokteylBinding.bind(itemView)
-            Log.e("TAG","gelenkokteyll :: "+gelenKokteyl)
 
             binding.isim.text=gelenKokteyl.kokteylIsim
 

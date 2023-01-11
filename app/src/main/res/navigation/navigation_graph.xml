@@ -128,6 +128,9 @@
         <action
             android:id="@+id/action_userProfilFragment_to_yorumlarFragment"
             app:destination="@id/yorumlarFragment" />
+        <action
+            android:id="@+id/action_userProfilFragment_to_chatFragment"
+            app:destination="@id/chatFragment" />
     </fragment>
     <fragment
         android:id="@+id/profilFragment"

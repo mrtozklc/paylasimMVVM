@@ -7,6 +7,49 @@
     tools:context=".view.profil.UserProfilFragment">
 
 
+    <ImageView
+        android:id="@+id/mesajGonder"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginEnd="4dp"
+        android:background="@drawable/ic_launcher_mesaj_foreground"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/imageView_back"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="4dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_launcher_back_foreground" />
+
+    <TextView
+        android:id="@+id/kullaniciadi_id"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:text=""
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/imageView_back"
+        app:layout_constraintEnd_toEndOf="@+id/profile_image"
+        app:layout_constraintStart_toStartOf="@+id/profile_image"
+        app:layout_constraintTop_toTopOf="@+id/imageView_back"
+        app:layout_constraintVertical_bias="0.533" />
+
+
+    <View
+        android:id="@+id/golgelik"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@drawable/register_edit_text"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageView_back" />
+
+
     <ProgressBar
         android:id="@+id/progresBarKokteyl"
         android:layout_width="wrap_content"
@@ -30,28 +73,17 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/tv_kullaniciAdi"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text=""
-        android:textSize="20sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="@+id/profile_image"
-        app:layout_constraintStart_toStartOf="@+id/profile_image"
-        app:layout_constraintTop_toBottomOf="@+id/profile_image" />
-
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/profile_image"
         android:layout_width="132dp"
         android:layout_height="122dp"
-        android:layout_marginTop="4dp"
+        android:layout_marginTop="8dp"
         app:civ_border_color="#6C6A6A"
         app:civ_border_width="1dp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.501"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/golgelik" />
 
     <TextView
         android:id="@+id/tv_bio"
@@ -69,12 +101,13 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:animateLayoutChanges="true"
 
+        android:animateLayoutChanges="true"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_kullaniciAdi">
+        app:layout_constraintTop_toBottomOf="@+id/profile_image">
+
         <Space
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -95,9 +128,11 @@
             android:textStyle="bold" />
 
         <Space
+            android:id="@+id/spcaID"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1" />
+
         <TextView
             android:id="@+id/menu"
             android:layout_width="wrap_content"
@@ -111,8 +146,9 @@
             android:textStyle="bold" />
 
 
-
         <Space
+            android:id="@+id/spcaID2"
+
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1" />
@@ -132,10 +168,11 @@
 
 
         <Space
+            android:id="@+id/spcaID3"
+
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1" />
-
 
 
     </LinearLayout>

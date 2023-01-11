@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.util.Log
 
 import android.view.*
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -39,6 +40,11 @@ class HomeFragment : Fragment() {
     private val SAYFA_BASI_GONDERI=10
     private var sayfaSayisi=1
     var sayfaninSonunaGelindi = false
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        (activity as AppCompatActivity).supportActionBar?.hide()
+    }
 
 
 
@@ -264,6 +270,7 @@ class HomeFragment : Fragment() {
         super.onStop()
        // auth.removeAuthStateListener(mauthLis)
     }
+
 
 
 

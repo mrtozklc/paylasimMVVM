@@ -7,7 +7,38 @@
     tools:context=".view.yorumlar.YorumlarFragment">
 
 
+    <ImageView
+        android:id="@+id/imageView_back"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_launcher_back_foreground" />
 
+
+    <TextView
+        android:id="@+id/yoyrumlarr"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:text="Yorumlar"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/imageView_back"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/imageView_back"
+        app:layout_constraintTop_toTopOf="@+id/imageView_back"
+        app:layout_constraintVertical_bias="0.695" />
+
+    <View
+        android:id="@+id/golgelik"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="4dp"
+        android:background="@drawable/register_edit_text"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageView_back" />
 
     <EditText
         android:id="@+id/et_mesajEkle"
@@ -26,10 +57,12 @@
         android:id="@+id/recyclerviewYorumlar"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:layout_marginTop="2dp"
         app:layout_constraintBottom_toTopOf="@+id/et_mesajEkle"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/golgelik" />
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/circle_profilPhoto"

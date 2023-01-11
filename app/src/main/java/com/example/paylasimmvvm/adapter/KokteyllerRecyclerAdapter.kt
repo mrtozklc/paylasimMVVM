@@ -27,7 +27,9 @@ class KokteyllerRecyclerAdapter(private val tumKokteyller: ArrayList<Drink>):Rec
 
                 binding.kokteylFilters.text=gelenKokteyl.kokteyGlass
                 binding.tumLayout.setOnClickListener {
-                    val action=KokteyllerFiltreFragmentDirections.actionKokteyllerFragmentToKokteyllerFragment2(gelenKokteyl.kokteyGlass!!)
+                    val action=KokteyllerFiltreFragmentDirections.actionKokteyllerFragmentToKokteyllerFragment2(
+                        gelenKokteyl.kokteyGlass
+                    )
                     Navigation.findNavController(it).navigate(action)
 
                 }
@@ -35,46 +37,33 @@ class KokteyllerRecyclerAdapter(private val tumKokteyller: ArrayList<Drink>):Rec
             }else if(gelenKokteyl.kokteylicerik!=null){
                 binding.kokteylFilters.text=gelenKokteyl.kokteylicerik
                 binding.tumLayout.setOnClickListener {
-                    val action=KokteyllerFiltreFragmentDirections.actionKokteyllerFragmentToKokteyllerFragment2(gelenKokteyl.kokteylicerik!!)
+                    val action=KokteyllerFiltreFragmentDirections.actionKokteyllerFragmentToKokteyllerFragment2(
+                        gelenKokteyl.kokteylicerik
+                    )
                     Navigation.findNavController(it).navigate(action)
 
                 }
 
             }else if (gelenKokteyl.kokteylKategori!=null){
 
-                Log.e("TAG","KATEGORİ : ${gelenKokteyl.kokteylKategori}")
 
                 binding.kokteylFilters.text=gelenKokteyl.kokteylKategori
                 binding.tumLayout.setOnClickListener {
-                    val action=KokteyllerFiltreFragmentDirections.actionKokteyllerFragmentToKokteyllerFragment2(gelenKokteyl.kokteylKategori!!)
+                    val action=KokteyllerFiltreFragmentDirections.actionKokteyllerFragmentToKokteyllerFragment2(gelenKokteyl.kokteylKategori)
                     Navigation.findNavController(it).navigate(action)
 
                 }
 
-                var xy = gelenKokteyl.kokteylKategori!!
-                // AYARLAR
+                var xy = gelenKokteyl.kokteylKategori
 
-                /*if (binding.kokteylFilters.text == xy){
-                    binding.kokteylFilters.setText("İÇECEK")
-                }*/
 
                 when (xy){
-                    "Ordinary Drink"-> binding.kokteylFilters.setText("İÇECEK")
-                    "Cocktail"-> binding.kokteylFilters.setText("İÇECEK2")
-                    "Shake"-> binding.kokteylFilters.setText("İÇECE3K")
-                    "Other / Unknown"-> binding.kokteylFilters.setText("İÇEC4EK")
+                    "Ordinary Drink"-> binding.kokteylFilters.text = "İÇECEK"
 
                 }
 
 
             }
-
-
-
-
-
-
-
 
 
 
@@ -95,9 +84,6 @@ class KokteyllerRecyclerAdapter(private val tumKokteyller: ArrayList<Drink>):Rec
         val tiklananIteminPozisyonu = position
 
         val tiklananItem = tumKokteyller[tiklananIteminPozisyonu]
-
-
-
 
 
 
