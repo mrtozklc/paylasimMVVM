@@ -54,6 +54,8 @@ class MainActivity : AppCompatActivity() {
             R.id.profilFragment -> {
                 if (currentDestination != null && currentDestination.id != R.id.profilFragment) {
                     navController.popBackStack(R.id.profilFragment, true)
+
+
                     navController.navigate(R.id.profilFragment)
                 }
                 return true
@@ -61,6 +63,8 @@ class MainActivity : AppCompatActivity() {
             R.id.isletmeListFragment -> {
                 if (currentDestination != null && currentDestination.id != R.id.isletmeListFragment) {
                     navController.popBackStack(R.id.isletmeListFragment, true)
+
+
                     navController.navigate(R.id.isletmeListFragment)
                 }
                 return true

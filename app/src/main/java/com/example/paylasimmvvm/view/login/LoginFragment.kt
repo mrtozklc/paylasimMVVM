@@ -1,5 +1,6 @@
 package com.example.paylasimmvvm.view.login
 
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -47,6 +48,7 @@ class LoginFragment : Fragment() {
         val view=binding.root
         auth = FirebaseAuth.getInstance()
         mref = FirebaseDatabase.getInstance().reference
+        setupAuthLis()
 
 
         init()
@@ -67,7 +69,7 @@ class LoginFragment : Fragment() {
        }
     }
     private fun init() {
-        setupAuthLis()
+
         binding.tvLogin.addTextChangedListener(watcher)
         binding.tvSifre.addTextChangedListener(watcher)
 
@@ -79,13 +81,13 @@ class LoginFragment : Fragment() {
     private fun setupAuthLis() {
 
 
+
         mauthLis= FirebaseAuth.AuthStateListener {
-            val user=FirebaseAuth.getInstance().currentUser
-            Log.e("auth", "loginmauth çalıstı$user")
+            val user=FirebaseAuth.getInstance().currentUser?.uid
+
 
             if (user!=null){
-                Log.e("auth", "loginmauth çalıstıboş değil")
-
+                Log.e("autjliss","gelenid${user}")
 
                 findNavController().navigate(R.id.homeFragment)
 
@@ -95,7 +97,7 @@ class LoginFragment : Fragment() {
 
 
             }else{
-                Log.e("auth", "loginmauth çalıstıboş ")
+
                 val bottomNav = requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView)
                 bottomNav.visibility=View.GONE
 
@@ -122,11 +124,11 @@ class LoginFragment : Fragment() {
 
                     Toast.makeText(
                         requireContext(),
-                        "Hoşgeldiniz:" + okunanKullanici.user_name,
+                        "Hoşgeldiniz \n" + okunanKullanici.user_name,
                         Toast.LENGTH_LONG
                     ).show()
                     navController.navigate(R.id.homeFragment)
-                    Log.e("bulunanKullanici", "" + okunanKullanici.user_name)
+
                     val bottomNav =
                         requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView)
                     bottomNav.visibility = View.VISIBLE
@@ -273,7 +275,6 @@ class LoginFragment : Fragment() {
 
                     })
 
-
                 }
 
                 override fun onCancelled(error: DatabaseError) {
@@ -292,25 +293,13 @@ class LoginFragment : Fragment() {
         }
 
         override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-            if (binding.tvLogin.text.toString().length >= 6 && binding.tvSifre.text.toString().length >= 6) {
+            if (binding.tvLogin.text.toString().length >= 0 && binding.tvSifre.text.toString().length >= 6) {
                 binding. btnLogin.isEnabled = true
-                binding. btnLogin.setTextColor(ContextCompat.getColor(activity!!,R.color.white))
-                binding. btnLogin.setBackgroundColor(
-                    ContextCompat.getColor(
-                        activity!!,
-                        R.color.teal_700
-                    )
-                )
+
 
             } else {
                 binding.btnLogin.isEnabled = false
-                binding. btnLogin.setBackgroundColor(
-                    ContextCompat.getColor(
-                        activity!!,
-                        R.color.white
-                    )
-                )
-                binding.btnLogin.setTextColor(ContextCompat.getColor(activity!!,R.color.black))
+
 
 
             }

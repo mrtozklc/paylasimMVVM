@@ -35,7 +35,7 @@ class ProfilViewModel:ViewModel() {
                     if (snapshot.value !=null){
                         val userID=snapshot.getValue(KullaniciBilgileri::class.java)!!.user_id
                         val kullaniciadi=snapshot.getValue(KullaniciBilgileri::class.java)!!.user_name
-                        val photoURL=snapshot.getValue(KullaniciBilgileri::class.java)!!.user_detail!!.profile_picture
+                  //      val photoURL=snapshot.getValue(KullaniciBilgileri::class.java)!!.user_detail!!.profile_picture
 
                         mref.child("kampanya").child(secilenUser).addValueEventListener(object :
                             ValueEventListener {
@@ -47,7 +47,7 @@ class ProfilViewModel:ViewModel() {
                                             val eklenecekUserPost= KullaniciKampanya()
                                             eklenecekUserPost.userID=userID
                                             eklenecekUserPost.userName=kullaniciadi
-                                            eklenecekUserPost.userPhotoURL=photoURL
+                                         //   eklenecekUserPost.userPhotoURL=photoURL
                                             eklenecekUserPost.postID=ds.getValue(KampanyaOlustur::class.java)!!.post_id
                                             eklenecekUserPost.postURL=ds.getValue(KampanyaOlustur::class.java)!!.file_url
                                             eklenecekUserPost.postAciklama=ds.getValue(

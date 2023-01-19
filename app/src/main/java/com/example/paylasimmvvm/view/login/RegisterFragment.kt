@@ -10,7 +10,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
@@ -85,29 +84,33 @@ class RegisterFragment : Fragment() {
 
 
     private fun register() {
+        binding.editTextTextPersonName.visibility=View.GONE
+        binding.btnKayit.visibility=View.GONE
 
 
 
 
-
-        binding.textViewTelefon.setOnClickListener {
-            binding.view2.visibility = View.VISIBLE
-            binding. viewEposta.visibility = View.INVISIBLE
+        binding.textViewKullanici.setOnClickListener {
+            binding.textViewKullanici.isEnabled=false
+            binding.textViewIsletme.isEnabled=true
+            binding.btnKayit.visibility=View.VISIBLE
+            binding.editTextTextPersonName.visibility=View.VISIBLE
             binding. editTextTextPersonName.setText("")
             binding.editTextTextPersonName.inputType = InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
-            binding. editTextTextPersonName.hint = "e-posta"
+            binding. editTextTextPersonName.hint = "E-POSTA"
             binding. btnKayit.isEnabled = false
 
 
         }
 
-        binding.textViewEposta.setOnClickListener {
-
-            binding. view2.visibility = View.INVISIBLE
-            binding.viewEposta.visibility = View.VISIBLE
+        binding.textViewIsletme.setOnClickListener {
+            binding.textViewKullanici.isEnabled=true
+            binding.textViewIsletme.isEnabled=false
+            binding.btnKayit.visibility=View.VISIBLE
+            binding.editTextTextPersonName.visibility=View.VISIBLE
             binding. editTextTextPersonName.setText("")
             binding.editTextTextPersonName.inputType = InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
-            binding.editTextTextPersonName.hint = "E-POSTA"
+            binding.editTextTextPersonName.hint = "E-Posta"
             binding. btnKayit.isEnabled = false
 
 
@@ -119,27 +122,7 @@ class RegisterFragment : Fragment() {
             }
 
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                if (p0!!.length >= 10) {
-                    binding. btnKayit.isEnabled = true
-                    binding. btnKayit.setTextColor(
-                        ContextCompat.getColor(
-                            activity!!,
-                        R.color.white
-                        )
-                    )
-                    binding. btnKayit.setBackgroundColor(
-                        ContextCompat.getColor(
-                            activity!!,
-                           R.color.teal_700
-                        )
-                    )
-
-
-                } else {
-                    binding. btnKayit.isEnabled = false
-
-
-                }
+                binding. btnKayit.isEnabled = p0!!.length >= 10
 
 
             }
@@ -152,7 +135,7 @@ class RegisterFragment : Fragment() {
 
         binding.btnKayit.setOnClickListener {
 
-            if(binding.editTextTextPersonName.hint.toString() == "e-posta"){
+            if(binding.editTextTextPersonName.hint.toString() == "E-POSTA"){
 
 
                 if (checkMail( binding.editTextTextPersonName.text.toString())) {
@@ -219,7 +202,6 @@ class RegisterFragment : Fragment() {
                                                 } // işletme var kullanici var kullanici bulunamadı,kaydet
                                                 if (!emailKullanimdaMi){
                                                     binding. loginroot.visibility = View.GONE
-                                                    binding. loginframe.visibility = View.VISIBLE
 
                                                     findNavController().navigate(R.id.kullaniciKayitBilgileriFragment)
 
@@ -233,9 +215,6 @@ class RegisterFragment : Fragment() {
 
                                                         )
                                                     )
-
-
-
                                                 }
                                             }
                                             if(!emailKullanimdaMi){
@@ -244,7 +223,6 @@ class RegisterFragment : Fragment() {
 
 
                                                 binding.loginroot.visibility = View.GONE
-                                                binding. loginframe.visibility = View.VISIBLE
 
                                                 findNavController().navigate(R.id.kullaniciKayitBilgileriFragment)
 
@@ -266,10 +244,6 @@ class RegisterFragment : Fragment() {
                                         }
 
                                     })
-
-
-
-
 
                                 }
 
@@ -307,7 +281,6 @@ class RegisterFragment : Fragment() {
 
 
                                                     binding.loginroot.visibility = View.GONE
-                                                    binding.loginframe.visibility = View.VISIBLE
 
                                                     findNavController().navigate(R.id.kullaniciKayitBilgileriFragment)
 
@@ -332,7 +305,6 @@ class RegisterFragment : Fragment() {
 
 
                                                 binding. loginroot.visibility = View.GONE
-                                                binding. loginframe.visibility = View.VISIBLE
 
                                                 findNavController().navigate(R.id.kullaniciKayitBilgileriFragment)
 
@@ -348,32 +320,22 @@ class RegisterFragment : Fragment() {
 
                                             }
 
-
-
                                         }
-
                                         override fun onCancelled(error: DatabaseError) {
-                                            Log.e("hata","hatacalıstı")
                                         }
-
                                     })
-
-
-
                                 }
-
                             }
-
                         })
-
-
+                }else {
+                    Toast.makeText(
+                        requireActivity(),
+                        "Lütfen geçerli bir E-mail  giriniz",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
-
             }
-            else {
-
-
-
+            else{
                 if (checkMail( binding.editTextTextPersonName.text.toString())) {
 
                     var emailKullanimdaMi = false
@@ -400,7 +362,7 @@ class RegisterFragment : Fragment() {
 
 
 
-                                            Toast.makeText(activity!!, "E-mail Kullanımda", Toast.LENGTH_SHORT).show()
+                                            Toast.makeText(  activity!!, "E-mail Kullanımda", Toast.LENGTH_SHORT).show()
 
 
                                             emailKullanimdaMi = true
@@ -423,35 +385,34 @@ class RegisterFragment : Fragment() {
 
                                                     if (okunanKullanici!!.email!! == binding.editTextTextPersonName.text.toString()) {
 
-                                                        Log.e("kullaniciların", "kullanicibölümü$okunanKullanici"
+                                                        Log.e("kullaniciların",
+                                                            "kullanicibölümü$okunanKullanici"
                                                         )
 
 
-                                                        Toast.makeText(activity!!, "E-mail Kullanımda", Toast.LENGTH_SHORT).show()
+                                                        Toast.makeText(  activity!!, "E-mail Kullanımda", Toast.LENGTH_SHORT).show()
 
                                                         emailKullanimdaMi = true
                                                         break
 
                                                     }
 
-                                                } // kullanici bulunamadı,kaydet
+                                                } // işletme var kullanici var kullanici bulunamadı,kaydet
                                                 if (!emailKullanimdaMi){
                                                     binding. loginroot.visibility = View.GONE
-                                                    binding. loginframe.visibility = View.VISIBLE
 
                                                     findNavController().navigate(R.id.isletmeKayitBilgileriFragment)
+
 
                                                     EventBus.getDefault().postSticky(
                                                         EventbusData.kayitBilgileriniGonder(
                                                             null,
-                                                            binding. editTextTextPersonName.text.toString(),
+                                                            binding.editTextTextPersonName.text.toString(),
                                                             null,
                                                             true,
 
-                                                        )
+                                                            )
                                                     )
-
-
                                                 }
                                             }
                                             if(!emailKullanimdaMi){
@@ -460,7 +421,6 @@ class RegisterFragment : Fragment() {
 
 
                                                 binding.loginroot.visibility = View.GONE
-                                                binding. loginframe.visibility = View.VISIBLE
 
                                                 findNavController().navigate(R.id.isletmeKayitBilgileriFragment)
 
@@ -471,7 +431,7 @@ class RegisterFragment : Fragment() {
                                                         null,
                                                         true,
 
-                                                    )
+                                                        )
                                                 )
 
                                             }
@@ -482,10 +442,6 @@ class RegisterFragment : Fragment() {
                                         }
 
                                     })
-
-
-
-
 
                                 }
 
@@ -522,24 +478,23 @@ class RegisterFragment : Fragment() {
                                                     Log.e("veritabanında işletme yok,kullanici var ancak kayıtlı değil,kaydet","çalıstı")
 
 
-                                                    binding. loginroot.visibility = View.GONE
-                                                    binding.loginframe.visibility = View.VISIBLE
+                                                    binding.loginroot.visibility = View.GONE
 
                                                     findNavController().navigate(R.id.isletmeKayitBilgileriFragment)
 
                                                     EventBus.getDefault().postSticky(
                                                         EventbusData.kayitBilgileriniGonder(
                                                             null,
-                                                            binding.editTextTextPersonName.text.toString(),
+                                                            binding. editTextTextPersonName.text.toString(),
                                                             null,
                                                             true,
 
-                                                        )
+                                                            )
                                                     )
                                                 }
                                             }
                                             if  (!emailKullanimdaMi)
-                                            //veritabanında kullanicida yok direkt kaydet
+                                            //veritabanında  işletme ve kullanici yok direkt kaydet
                                             {
                                                 Log.e("elsekkaydet","direktkaydetcalıstı")
 
@@ -548,40 +503,29 @@ class RegisterFragment : Fragment() {
 
 
                                                 binding. loginroot.visibility = View.GONE
-                                                binding.  loginframe.visibility = View.VISIBLE
 
                                                 findNavController().navigate(R.id.isletmeKayitBilgileriFragment)
 
                                                 EventBus.getDefault().postSticky(
                                                     EventbusData.kayitBilgileriniGonder(
                                                         null,
-                                                        binding. editTextTextPersonName.text.toString(),
+                                                        binding.editTextTextPersonName.text.toString(),
                                                         null,
                                                         true,
 
-                                                    )
+                                                        )
                                                 )
 
                                             }
 
-
-
                                         }
-
                                         override fun onCancelled(error: DatabaseError) {
                                         }
-
                                     })
-
-
-
                                 }
-
                             }
-
                         })
-
-                } else {
+                }else {
                     Toast.makeText(
                         requireActivity(),
                         "Lütfen geçerli bir E-mail  giriniz",
@@ -593,9 +537,6 @@ class RegisterFragment : Fragment() {
 
         }
 
-
     }
-
-
 
 }

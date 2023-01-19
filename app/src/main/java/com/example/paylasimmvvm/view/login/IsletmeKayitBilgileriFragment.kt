@@ -166,55 +166,54 @@ class IsletmeKayitBilgileriFragment : Fragment() {
                                                             break
                                                         }
                                                     }
-
-                                                }
-                                            }
-                                            if (!userNameKullanimdaMi) {
-
-                                                if (emailleKayit) {
-
-                                                    val sifre =  binding.etSifreIsletme.text.toString()
-                                                    val adSoyad =  binding.etAdSoyadISletme.text.toString()
-                                                    val userName =  binding.etKullaniciAdiISletme.text.toString()
-                                                    val adres= binding.etAdresIsletme.text.toString()
-                                                    val telefon= binding.etTelefonIsletme.text.toString()
-
-                                                    auth.createUserWithEmailAndPassword(gelenEmail, sifre)
-                                                        .addOnCompleteListener { p0 ->
-                                                            if (p0.isSuccessful) {
-                                                                val userID = auth.currentUser!!.uid
-                                                                getAddressFromLocation(adres, context, userID)
-
-                                                                val kaydedilecekKullaniciDetaylari = KullaniciBilgiDetaylari("0", "", "", secilenMuzik, secilenIsletmeTuru, adres, null,null)
-
-                                                                val kaydedilecekKullanici = KullaniciBilgileri(gelenEmail, sifre, userName, adSoyad, telefon, userID, "", kaydedilecekKullaniciDetaylari)
-
-                                                                mref.child("users")
-                                                                    .child("isletmeler")
-                                                                    .child(userID)
-                                                                    .setValue(kaydedilecekKullanici)
-                                                                    .addOnCompleteListener { p0 ->
-                                                                        if (p0.isSuccessful) { Toast.makeText(activity, "Hoşgeldiniz $userName", Toast.LENGTH_SHORT).show()
-                                                                            val action = IsletmeKayitBilgileriFragmentDirections.actionIsletmeKayitBilgileriFragmentToHomeFragment()
-                                                                            Navigation.findNavController(it).navigate(action)
-                                                                            val bottomNav = requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView)
-                                                                            bottomNav.visibility = View.VISIBLE
-
-                                                                        } else {
-                                                                            auth.currentUser!!.delete().addOnCompleteListener { p0 ->
-                                                                                    if (p0.isSuccessful) { Toast.makeText(activity, "Kullanıcı kaydedilemedi, Tekrar deneyin", Toast.LENGTH_SHORT).show()
-                                                                                    }
-                                                                                }
-                                                                        }
-                                                                    }
-                                                            }
-                                                        }
                                                 }
                                             }
                                         }
                                         override fun onCancelled(error: DatabaseError) {
                                         }
                                     })
+                                }
+                                if (!userNameKullanimdaMi) {
+
+                                    if (emailleKayit) {
+
+                                        val sifre =  binding.etSifreIsletme.text.toString()
+                                        val adSoyad =  binding.etAdSoyadISletme.text.toString()
+                                        val userName =  binding.etKullaniciAdiISletme.text.toString()
+                                        val adres= binding.etAdresIsletme.text.toString()
+                                        val telefon= binding.etTelefonIsletme.text.toString()
+
+                                        auth.createUserWithEmailAndPassword(gelenEmail, sifre)
+                                            .addOnCompleteListener { p0 ->
+                                                if (p0.isSuccessful) {
+                                                    val userID = auth.currentUser!!.uid
+                                                    getAddressFromLocation(adres, context, userID)
+
+                                                    val kaydedilecekKullaniciDetaylari = KullaniciBilgiDetaylari("0", "", "", secilenMuzik, secilenIsletmeTuru, adres, null,null)
+
+                                                    val kaydedilecekKullanici = KullaniciBilgileri(gelenEmail, sifre, userName, adSoyad, telefon, userID, "", kaydedilecekKullaniciDetaylari)
+
+                                                    mref.child("users")
+                                                        .child("isletmeler")
+                                                        .child(userID)
+                                                        .setValue(kaydedilecekKullanici)
+                                                        .addOnCompleteListener { p0 ->
+                                                            if (p0.isSuccessful) { Toast.makeText(activity, "Hoşgeldiniz \n$userName", Toast.LENGTH_SHORT).show()
+                                                                val action = IsletmeKayitBilgileriFragmentDirections.actionIsletmeKayitBilgileriFragmentToHomeFragment()
+                                                                Navigation.findNavController(it).navigate(action)
+                                                                val bottomNav = requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView)
+                                                                bottomNav.visibility = View.VISIBLE
+
+                                                            } else {
+                                                                auth.currentUser!!.delete().addOnCompleteListener { p0 ->
+                                                                    if (p0.isSuccessful) { Toast.makeText(activity, "Kullanıcı kaydedilemedi, Tekrar deneyin", Toast.LENGTH_SHORT).show()
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                }
+                                            }
+                                    }
                                 }
                             }
                             //veritabanında kullanıcı yok, aynen kaydet
@@ -244,7 +243,7 @@ class IsletmeKayitBilgileriFragment : Fragment() {
                                                     .child(userID).setValue(kaydedilecekKullanici)
                                                     .addOnCompleteListener { p0->
                                                         if (p0.isSuccessful) {
-                                                            Toast.makeText(activity, "Hoşgeldiniz $userName", Toast.LENGTH_SHORT).show()
+                                                            Toast.makeText(activity, "Hoşgeldiniz \n$userName", Toast.LENGTH_SHORT).show()
                                                             val action = IsletmeKayitBilgileriFragmentDirections.actionIsletmeKayitBilgileriFragmentToHomeFragment()
                                                             Navigation.findNavController(it).navigate(action)
                                                             val bottomNav = requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView)
@@ -285,15 +284,9 @@ class IsletmeKayitBilgileriFragment : Fragment() {
 
             if ( binding.etAdSoyadISletme.text.toString().isNotEmpty() && binding.etKullaniciAdiISletme.text.toString()
                     .isNotEmpty() && binding.etSifreIsletme.text.toString().isNotEmpty() && binding.etAdresIsletme.text.toString()
-                    .isNotEmpty() && binding.etTelefonIsletme.text.toString().isNotEmpty()
-            ) {
+                    .isNotEmpty() && binding.etTelefonIsletme.text.toString().isNotEmpty()) {
                 binding. btnGirisISletme.isEnabled = true
-                binding.btnGirisISletme.setTextColor(ContextCompat.getColor(activity!!, R.color.white))
-                binding.btnGirisISletme.setBackgroundColor(
-                    ContextCompat.getColor(activity!!, R.color.teal_700))
-            } else {
-                binding.btnGirisISletme.setBackgroundColor(ContextCompat.getColor(activity!!, R.color.white))
-                binding. btnGirisISletme.setTextColor(ContextCompat.getColor(activity!!,R.color.black))
+
             }
         }
 

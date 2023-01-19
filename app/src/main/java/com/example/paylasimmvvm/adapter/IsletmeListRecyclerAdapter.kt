@@ -3,6 +3,7 @@ package com.example.paylasimmvvm.adapter
 import android.annotation.SuppressLint
 import android.content.Context
 import android.location.Location
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,6 +16,7 @@ import com.example.paylasimmvvm.util.Bildirimler
 import com.example.paylasimmvvm.util.EventbusData
 import com.example.paylasimmvvm.util.TimeAgo
 import com.example.paylasimmvvm.view.home.IsletmeListFragmentDirections
+import com.example.paylasimmvvm.view.profil.UserProfilFragmentDirections
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -35,8 +37,7 @@ class IsletmeListRecyclerAdapter(var context: Context, private var tumKampanyala
         private var userNameTitle = binding.kullaniciAdiTepe
         private var isletmeTuru = binding.textView21
         private var kampanyaTarihi = binding.kampanyaTarihiId
-        private var yorumYap = binding.imgYorum
-        var gonderiBegen = binding.imgBegen
+        var mesajGonder = binding.imgMesaj
         private var tumLayout=binding.tumLayout
         // var begenmeSayisi=binding.begenmeSayisi
         //  var yorumlariGoster=binding.tvYorumGoster
@@ -56,8 +57,10 @@ class IsletmeListRecyclerAdapter(var context: Context, private var tumKampanyala
                     @SuppressLint("SetTextI18n")
                     override fun onDataChange(snapshot: DataSnapshot) {
 
+
                         val latitude = snapshot.child("latitude").value.toString()
                         val longitude = snapshot.child("longitude").value.toString()
+                        Log.e("gelenisletrme",""+latitude)
                         if (snapshot.exists()){
                             if (anlikGonderi.isletmeLatitude!=0.0 && anlikGonderi.isletmeLongitude!=0.0) {
 
@@ -119,129 +122,25 @@ class IsletmeListRecyclerAdapter(var context: Context, private var tumKampanyala
                    val action= IsletmeListFragmentDirections.actionIsletmeListFragmentToUserProfilFragment(anlikGonderi.userID!!)
                    Navigation.findNavController(it).navigate(action)
 
+
+
                 }
             }
 
 
 
 
-            gonderiBegen.setOnClickListener {
-                val ref = FirebaseDatabase.getInstance().reference
-                val currentID = FirebaseAuth.getInstance().currentUser!!.uid
-                ref.child("begeniler").child(anlikGonderi.postID!!)
-                    .addListenerForSingleValueEvent(object : ValueEventListener {
-                        override fun onDataChange(snapshot: DataSnapshot) {
-                            if (snapshot.hasChild(currentID)) {
-                                ref.child("begeniler").child(anlikGonderi.postID!!).child(currentID)
-                                    .removeValue()
-                                if (anlikGonderi.userID!= FirebaseAuth.getInstance().currentUser!!.uid){
-                                    Bildirimler.bildirimKaydet(
-                                        anlikGonderi.userID!!,
-                                        Bildirimler.KAMPANYA_BEGENILDI_GERI,
-                                        anlikGonderi.postID!!)
-                                }
-                                gonderiBegen.setImageResource(R.drawable.ic_launcher_like_foreground)
-                            } else {
-                                ref.child("begeniler").child(anlikGonderi.postID!!).child(currentID)
-                                    .setValue(currentID)
-                                if (anlikGonderi.userID!= FirebaseAuth.getInstance().currentUser!!.uid){
-                                    Bildirimler.bildirimKaydet(
-                                        anlikGonderi.userID!!,
-                                        Bildirimler.KAMPANYA_BEGENILDI,
-                                        anlikGonderi.postID!!
-                                    )
-                                }
-                                gonderiBegen.setImageResource(R.drawable.ic_launcher_like_red_foreground)
-                                //    begenmeSayisi.visibility=View.VISIBLE
-                                //     begenmeSayisi.text = ""+ snapshot.childrenCount.toString()+" beğeni"
-                            }
-                        }
-                        override fun onCancelled(error: DatabaseError) {
-                        }
-                    })
-            }
-         //   begeniKontrolu(anlikGonderi)
+            mesajGonder.setOnClickListener {
+                val action= IsletmeListFragmentDirections.actionIsletmeListFragmentToChatFragment(anlikGonderi.userID!!)
+                Navigation.findNavController(it).navigate(action)
 
-       //     yorumlariGoster(anlikGonderi)
-
-            yorumYap.setOnClickListener {
-                yorumlarFragmentiniBaslat(anlikGonderi)
             }
 
-            /*    yorumlariGoster.setOnClickListener {
-                    yorumlarFragmentiniBaslat(anlikGonderi)
 
-            }*/
-        }
 
-        private fun begeniKontrolu(anlikGonderi: KullaniciKampanya) {
-
-            val mRef = FirebaseDatabase.getInstance().reference
-            val userID = FirebaseAuth.getInstance().currentUser!!.uid
-            mRef.child("begeniler").child(anlikGonderi.postID!!).addValueEventListener(object :
-                ValueEventListener {
-
-                @SuppressLint("SetTextI18n")
-                override fun onDataChange(snapshot: DataSnapshot) {
-
-                    if(snapshot.value !=null){
-
-                        //   begenmeSayisi.visibility=View.VISIBLE
-                        //    begenmeSayisi.text = ""+ snapshot.childrenCount.toString()+" beğeni"
-
-                    }else {
-                        //   begenmeSayisi.visibility=View.GONE
-                    }
-
-                    if (snapshot.hasChild(userID)) {
-                        gonderiBegen.setImageResource(R.drawable.ic_launcher_like_red_foreground)
-                    } else {
-                        gonderiBegen.setImageResource(R.drawable.ic_launcher_like_foreground)
-
-                    }
-                }
-                override fun onCancelled(error: DatabaseError) {
-                }
-            })
-        }
-
-        private fun yorumlarFragmentiniBaslat(anlikGonderi: KullaniciKampanya) {
-
-            if (anlikGonderi.userID!= FirebaseAuth.getInstance().currentUser!!.uid){
-
-                Bildirimler.bildirimKaydet(anlikGonderi.userID!!,
-                    Bildirimler.YORUM_YAPILDI,anlikGonderi.postID!!)
-            }
-            EventBus.getDefault()
-                .postSticky(EventbusData.YorumYapilacakGonderininIDsiniGonder(anlikGonderi.postID))
-         //  val action= HomeFragmentDirections.actionHomeFragmentToYorumlarFragment()
-          //  Navigation.findNavController(itemView).navigate(action)
 
         }
 
-        private fun yorumlariGoster(anlikGonderi: KullaniciKampanya) {
-            val mref= FirebaseDatabase.getInstance().reference
-            mref.child("yorumlar").child(anlikGonderi.postID!!).addListenerForSingleValueEvent(object :
-                ValueEventListener {
-                @SuppressLint("SetTextI18n")
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    var yorumSayisi=0
-                    for (ds in snapshot.children){
-                        if (ds!!.key.toString() != anlikGonderi.postID){
-                            yorumSayisi++
-                        }
-                    }
-                    if (yorumSayisi>=1){
-                        //    yorumlariGoster.visibility=View.VISIBLE
-                        //    yorumlariGoster.text = "$yorumSayisi  yorum"
-                    }else{
-                        //  yorumlariGoster.visibility=View.GONE
-                    }
-                }
-                override fun onCancelled(error: DatabaseError) {
-                }
-            })
-        }
     }
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
 

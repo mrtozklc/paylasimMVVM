@@ -6,19 +6,53 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".view.kampanyaOlustur.KampanyaOlusturFragment">
 
+    <ImageView
+        android:id="@+id/imageView_back"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_launcher_back_foreground" />
+
+
+    <TextView
+        android:id="@+id/gonderiOlustur"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:text="Gönderi Oluştur"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/imageView_back"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/imageView_back"
+        app:layout_constraintTop_toTopOf="@+id/imageView_back"
+        app:layout_constraintVertical_bias="0.695" />
+
+    <View
+        android:id="@+id/golgelik"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="4dp"
+        android:background="@drawable/register_edit_text"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageView_back" />
+
 
     <ImageView
         android:id="@+id/gorselSec"
-        android:layout_width="154dp"
-        android:layout_height="201dp"
-        android:layout_marginTop="16dp"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_marginTop="36dp"
         android:background="@drawable/ic_launcher_addphoto_foreground"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.089"
+
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/gonderiOlustur" />
+
     <ProgressBar
-        android:id="@+id/progressBarKampanya"
+        android:id="@+id/progressBar"
         style="?android:attr/progressBarStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -30,30 +64,26 @@
 
     <EditText
         android:id="@+id/aciklama_id"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
+        android:layout_marginTop="28dp"
         android:hint="Açıklama Giriniz"
+
         android:textAlignment="center"
-        android:textColor="@color/black"
-        app:layout_constraintHeight_max="200dp"
         android:textSize="25sp"
-        app:layout_constraintBottom_toBottomOf="@+id/gorselSec"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toEndOf="@+id/gorselSec"
-        app:layout_constraintTop_toTopOf="@+id/gorselSec" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/gorselSec" />
 
     <Button
         android:id="@+id/btn_paylas"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:text="PAYLAŞ"
-        android:textColor="@color/black"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+
+        android:background="@drawable/textview_bg"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/spinner"
         tools:ignore="OnClick" />
@@ -62,12 +92,12 @@
         android:id="@+id/spinner"
         android:layout_width="409dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="108dp"
+        android:layout_marginTop="20dp"
         android:layout_marginEnd="2dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/gorselSec" />
+        app:layout_constraintTop_toBottomOf="@+id/aciklama_id" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

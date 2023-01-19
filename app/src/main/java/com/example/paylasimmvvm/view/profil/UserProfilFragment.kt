@@ -1,5 +1,6 @@
 package com.example.paylasimmvvm.view.profil
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -167,12 +168,12 @@ class UserProfilFragment : Fragment() {
     private fun kullaniciBilgileriVerileriniAl(secilenUser:String) {
         val user = Firebase.auth.currentUser
         if (user != null) {
-            mref.child("users").child("isletmeler").child(secilenUser).addValueEventListener(object :
+        mref.child("users").child("isletmeler").child(secilenUser).addValueEventListener(object :
                 ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if (snapshot.value !=null){
                         val okunanKullanici= snapshot.getValue(KullaniciBilgileri::class.java)
-                        EventBus.getDefault().postSticky(EventbusData.kullaniciBilgileriniGonder(okunanKullanici))
+
 
                       //  binding.tvMesaj.isEnabled=true
                         binding.kullaniciadiId.text = okunanKullanici!!.user_name
@@ -208,12 +209,12 @@ class UserProfilFragment : Fragment() {
                 }
 
             })
-            mref.child("users").child("kullanicilar").child(secilenUser).addValueEventListener(object :
+          mref.child("users").child("kullanicilar").child(secilenUser).addValueEventListener(object :
                 ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if (snapshot.value !=null){
                         val okunanKullanici= snapshot.getValue(KullaniciBilgileri::class.java)
-                        EventBus.getDefault().postSticky(EventbusData.kullaniciBilgileriniGonder(okunanKullanici))
+
 
                      //   binding.tvMesaj.isEnabled=true
 
@@ -343,8 +344,9 @@ class UserProfilFragment : Fragment() {
     override fun onStop() {
         super.onStop()
         (activity as AppCompatActivity?)!!.supportActionBar!!.show()
-    }
 
+
+    }
 
 
 }

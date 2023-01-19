@@ -100,6 +100,10 @@ class KampanyaOlusturFragment : Fragment() {
 
         }
 
+        binding.imageViewBack.setOnClickListener {
+            findNavController().navigateUp()
+        }
+
         binding.gorselSec.setOnClickListener {
             if(ContextCompat.checkSelfPermission(requireActivity(),
                     Manifest.permission.READ_EXTERNAL_STORAGE)!= PackageManager.PERMISSION_GRANTED){
@@ -112,7 +116,7 @@ class KampanyaOlusturFragment : Fragment() {
             }
         }
         binding.btnPaylas.setOnClickListener {
-            binding.progressBarKampanya.visibility=View.VISIBLE
+            binding.progressBar.visibility=View.VISIBLE
             binding.gorselSec.visibility=View.GONE
             binding. aciklamaId.visibility=View.GONE
             binding. spinner.visibility=View.GONE
@@ -221,7 +225,7 @@ class KampanyaOlusturFragment : Fragment() {
 
         }
         kampanyaSayisiniGuncelle()
-        binding.progressBarKampanya.visibility=View.GONE
+        binding.progressBar.visibility=View.GONE
         binding.gorselSec.visibility=View.VISIBLE
         binding.aciklamaId.visibility=View.VISIBLE
         binding.spinner.visibility=View.VISIBLE
@@ -233,6 +237,11 @@ class KampanyaOlusturFragment : Fragment() {
 
 
 
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        (activity as AppCompatActivity).supportActionBar?.show()
     }
 
     private fun kampanyaSayisiniGuncelle() {
@@ -250,6 +259,7 @@ class KampanyaOlusturFragment : Fragment() {
 
         })
     }
+
 
 
 
@@ -278,11 +288,14 @@ class KampanyaOlusturFragment : Fragment() {
                 if (Build.VERSION.SDK_INT>=28){
                     val source= ImageDecoder.createSource(requireActivity().contentResolver,secilengorsel!!)
                     secilenbitmap= ImageDecoder.decodeBitmap(source)
+
+
                     binding.gorselSec.setImageBitmap(secilenbitmap)
 
                 }else{
                     secilenbitmap=
                         MediaStore.Images.Media.getBitmap(requireActivity().contentResolver,secilengorsel)
+
                     binding.gorselSec.setImageBitmap(secilenbitmap) }
 
 
@@ -291,6 +304,7 @@ class KampanyaOlusturFragment : Fragment() {
         }
         super.onActivityResult(requestCode, resultCode, data)
     }
+
 
 
 

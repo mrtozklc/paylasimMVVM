@@ -158,7 +158,9 @@ class BildirimlerFragment : Fragment() {
     override fun onStop() {
         super.onStop()
         auth.removeAuthStateListener(mauthLis)
+        (activity as AppCompatActivity).supportActionBar?.show()
     }
+
 
 
 

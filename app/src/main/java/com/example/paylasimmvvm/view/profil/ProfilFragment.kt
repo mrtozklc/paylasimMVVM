@@ -1,6 +1,7 @@
 package com.example.paylasimmvvm.view.profil
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.*
@@ -46,6 +47,7 @@ class ProfilFragment : Fragment() {
     private lateinit var recyclerviewadapter:ProfilFragmentRecyclerAdapter
     var tiklanilanKullanici:String?=null
     private lateinit var profilBadges:BadgeViewModel
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -170,6 +172,7 @@ class ProfilFragment : Fragment() {
                         val action=ProfilFragmentDirections.actionProfilFragmentToProfilEditFragment()
                         Navigation.findNavController(view).navigate(action)
 
+
                     }
                     R.id.bildirimlerbar -> {
 
@@ -292,13 +295,15 @@ class ProfilFragment : Fragment() {
     private fun kullaniciBilgileriVerileriniAl() {
         val user = Firebase.auth.currentUser
         if (user != null) {
-            mref.child("users").child("isletmeler").child(auth.currentUser!!.uid).addValueEventListener(object :
+       mref.child("users").child("isletmeler").child(auth.currentUser!!.uid).addValueEventListener(object :
                 ValueEventListener {
+
                 @SuppressLint("SetTextI18n")
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if (snapshot.value !=null){
                         val okunanKullanici= snapshot.getValue(KullaniciBilgileri::class.java)
                         EventBus.getDefault().postSticky(EventbusData.kullaniciBilgileriniGonder(okunanKullanici))
+
                         tiklanilanKullanici=okunanKullanici!!.user_id
 
 
@@ -326,7 +331,7 @@ class ProfilFragment : Fragment() {
                 }
 
             })
-            mref.child("users").child("kullanicilar").child(auth.currentUser!!.uid).addValueEventListener(object :
+        mref.child("users").child("kullanicilar").child(auth.currentUser!!.uid).addValueEventListener(object :
                 ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if (snapshot.value !=null){
@@ -335,7 +340,14 @@ class ProfilFragment : Fragment() {
 
 
 
+
                         binding.tvKullaniciAdi.text = okunanKullanici!!.user_name
+
+                        binding.menu.visibility=View.GONE
+                        binding.yorumlar.visibility=View.GONE
+                        binding.space1.visibility=View.GONE
+                        binding.space2.visibility=View.GONE
+                        binding.paylasimlar.isClickable=false
 
 
 
@@ -347,22 +359,14 @@ class ProfilFragment : Fragment() {
 
                         }else {
                             Picasso.get().load(R.drawable.ic_baseline_person).placeholder(R.drawable.ic_baseline_person).error(R.drawable.ic_baseline_person).into(binding.profileImage)
-
                         }
-
                     }
                 }
-
                 override fun onCancelled(error: DatabaseError) {
                 }
-
             })
-
         }
-
-
     }
-
 
 
     private fun setupAuthLis() {
@@ -386,6 +390,7 @@ class ProfilFragment : Fragment() {
         super.onStart()
         Log.e("hata","profildesin")
         auth.addAuthStateListener(mauthLis)
+
     }
 
 

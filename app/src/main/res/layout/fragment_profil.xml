@@ -75,6 +75,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tv_kullaniciAdi">
         <Space
+
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1" />
@@ -94,6 +95,7 @@
             android:textStyle="bold" />
 
         <Space
+            android:id="@+id/space2"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1" />
@@ -112,6 +114,7 @@
 
 
         <Space
+            android:id="@+id/space1"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1" />

@@ -66,6 +66,7 @@ class kampanyalarViewModel: ViewModel() {
                     override fun onDataChange(p0: DataSnapshot) {
                         if(p0.value ==null){
                             kampanyaYok.value=true
+                            yukleniyor.value=false
 
                         }else{
                             kampanyalar.value=tumGonderiler

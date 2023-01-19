@@ -9,107 +9,98 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/loginroot"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        tools:layout_editor_absoluteX="38dp"
+        tools:layout_editor_absoluteY="0dp">
 
-        <TextView
-            android:id="@+id/textView_telefon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="68dp"
-            android:layout_marginTop="184dp"
-            android:text="KULLANICI"
-            android:textSize="20sp"
-              app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:id="@+id/textView_eposta"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:id="@+id/linearRegister_id"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="184dp"
-            android:layout_marginEnd="68dp"
-            android:text="İŞLETME"
-            android:textSize="20sp"
+
+            android:layout_marginTop="161dp"
+            android:animateLayoutChanges="true"
+            android:orientation="horizontal"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1" />
+
+            <TextView
+                android:id="@+id/textView_kullanici"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/textview_bg"
+                android:paddingLeft="20dp"
+                android:paddingTop="8dp"
+                android:paddingRight="20dp"
+                android:paddingBottom="8dp"
+                android:text="KULLANICI"
+                android:textSize="20sp" />
 
 
-        <View
-            android:id="@+id/view2"
-            android:layout_width="160dp"
-            android:layout_height="2dp"
-            android:layout_marginTop="17dp"
-            android:background="@color/mavi"
-            app:layout_constraintEnd_toEndOf="@+id/textView_telefon"
-            app:layout_constraintHorizontal_bias="0.461"
-            app:layout_constraintStart_toStartOf="@+id/textView_telefon"
-            app:layout_constraintTop_toBottomOf="@+id/textView_telefon"></View>
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1" />
 
-        <View
-            android:id="@+id/view_eposta"
-            android:layout_width="161dp"
-            android:layout_height="2dp"
-            android:layout_marginTop="17dp"
-            android:background="@color/yesil"
-            app:layout_constraintEnd_toEndOf="@+id/textView_eposta"
-            app:layout_constraintHorizontal_bias="0.481"
-            app:layout_constraintStart_toStartOf="@+id/textView_eposta"
-            app:layout_constraintTop_toBottomOf="@+id/textView_eposta"></View>
+
+            <TextView
+                android:id="@+id/textView_isletme"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/textview_bg"
+
+                android:paddingLeft="20dp"
+                android:paddingTop="8dp"
+                android:paddingRight="20dp"
+                android:paddingBottom="8dp"
+                android:text="İŞLETME"
+                android:textSize="20sp" />
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1" />
+
+
+        </LinearLayout>
+
 
         <EditText
             android:id="@+id/editTextTextPersonName"
-            android:layout_width="0dp"
+            android:layout_width="379dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="16dp"
+            android:layout_marginTop="32dp"
             android:ems="10"
             android:hint="E_POSTA"
             android:inputType="textPersonName"
             android:padding="14dp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.427"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/view2" />
-
-        <View
-            android:id="@+id/hesap_id"
-            android:layout_width="0dp"
-            android:layout_height="20dp"
-            android:layout_marginBottom="50dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"></View>
+            app:layout_constraintTop_toBottomOf="@+id/linearRegister_id" />
 
         <Button
             android:id="@+id/btn_kayit"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="16dp"
+            android:layout_marginTop="32dp"
+            android:background="@drawable/textview_bg"
             android:enabled="false"
             android:text="İleri"
             android:textSize="20sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.482"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/editTextTextPersonName"
+            app:layout_constraintHorizontal_bias="0.498"
+            app:layout_constraintStart_toStartOf="@+id/editTextTextPersonName"
             app:layout_constraintTop_toBottomOf="@+id/editTextTextPersonName" />
-
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-    <FrameLayout
-        android:id="@+id/loginframe"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-    </FrameLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

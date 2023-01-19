@@ -28,7 +28,7 @@
 
     <TextView
         android:id="@+id/kullaniciAdiTepe"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:text="kullanici adı"
@@ -36,7 +36,7 @@
         android:textColor="@color/mavi"
         android:textSize="20sp"
         android:textStyle="bold"
-        app:layout_constraintEnd_toStartOf="@+id/img_begen"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/profil_image"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -57,32 +57,22 @@
         android:id="@+id/tw_mesafe"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="2dp"
+        android:layout_marginEnd="16dp"
         android:text="mesafe"
         app:layout_constraintBottom_toBottomOf="@+id/kampanyaTarihi_id"
-        app:layout_constraintEnd_toStartOf="@+id/img_yorum"
-        app:layout_constraintTop_toTopOf="@+id/kampanyaTarihi_id" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/kampanyaTarihi_id"
+        app:layout_constraintVertical_bias="0.0" />
 
     <ImageView
-        android:id="@+id/img_begen"
-        android:layout_width="69dp"
-        android:layout_height="30dp"
+        android:id="@+id/img_mesaj"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
         android:layout_marginEnd="8dp"
+        app:layout_constraintBottom_toBottomOf="@+id/kampanyaTarihi_id"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/profil_image"
-        app:srcCompat="@drawable/ic_launcher_like_foreground" />
-
-    <ImageView
-        android:id="@+id/img_yorum"
-        android:layout_width="69dp"
-        android:layout_height="30dp"
-
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        app:layout_constraintBottom_toBottomOf="@+id/profil_image"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/img_begen"
-        app:srcCompat="@drawable/ic_launcher_yorum_foreground" />
+        app:srcCompat="@drawable/ic_launcher_mesaj_foreground" />
 
     <TextView
         android:id="@+id/textView21"
@@ -92,7 +82,6 @@
         android:text="isletme türü"
         android:textSize="18sp"
         android:textStyle="normal"
-        app:layout_constraintEnd_toStartOf="@+id/img_yorum"
         app:layout_constraintStart_toEndOf="@+id/profil_image"
         app:layout_constraintTop_toBottomOf="@+id/kullaniciAdiTepe" />
 
