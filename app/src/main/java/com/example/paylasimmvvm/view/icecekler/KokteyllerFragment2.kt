@@ -1,16 +1,28 @@
 package com.example.paylasimmvvm.view.icecekler
 
+import android.content.Context
+import android.graphics.Color
+import android.graphics.Typeface
 import android.os.Bundle
+import android.text.InputType
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
+import android.widget.GridView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.paylasimmvvm.R
+import com.example.paylasimmvvm.adapter.KokteyllerGridAdapter
 
 import com.example.paylasimmvvm.adapter.KokteyllerRecyclerAdapter2
+import com.example.paylasimmvvm.adapter.MenulerGridAdapter
 import com.example.paylasimmvvm.databinding.FragmentKokteyller2Binding
 import com.example.paylasimmvvm.model.Drink
 import com.example.paylasimmvvm.viewmodel.KokteylViewModel
@@ -18,7 +30,6 @@ import com.example.paylasimmvvm.viewmodel.KokteylViewModel
 
 class KokteyllerFragment2 : Fragment() {
     private lateinit var binding:FragmentKokteyller2Binding
-    private lateinit var recyclerAdapter: KokteyllerRecyclerAdapter2
     private lateinit var kokteylViewModeli: KokteylViewModel
     private var tumKokteyller=ArrayList<Drink>()
 
@@ -36,6 +47,8 @@ class KokteyllerFragment2 : Fragment() {
         // Inflate the layout for this fragment
         return binding.root
 
+
+
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -43,16 +56,39 @@ class KokteyllerFragment2 : Fragment() {
 
         kokteylViewModeli= ViewModelProvider(this)[KokteylViewModel::class.java]
 
+        binding.imageViewBack.setOnClickListener {
+            findNavController().navigateUp()
+        }
+
+        binding.searchh.setOnClickListener {
+            binding.icecek.visibility=View.GONE
+            binding.edittextSearch.visibility=view.visibility
+
+        }
+
+
         arguments?.let {
 
             val  icecekOzellik = KokteyllerFragment2Args.fromBundle(it).icecekOzellik
+            binding.icecek.text=icecekOzellik
 
 
-            kokteylViewModeli.getCategoriesItem(icecekOzellik)
+            kokteylViewModeli.getCategoryList("list")
+            kokteylViewModeli.getGlassList("list")
+            kokteylViewModeli.getIngredientList("list")
 
-            kokteylViewModeli.getGlassItem(icecekOzellik)
+            kokteylViewModeli.kokteylKategorileriLiveData.observe(viewLifecycleOwner) {
+                if (icecekOzellik in it) kokteylViewModeli.getCategoriesItem(icecekOzellik)
+            }
 
-            kokteylViewModeli.getIngredientsItem(icecekOzellik)
+            kokteylViewModeli.kokteylBardaklariLiveData.observe(viewLifecycleOwner) {
+                if (icecekOzellik in it) kokteylViewModeli.getGlassItem(icecekOzellik)
+            }
+
+            kokteylViewModeli.kokteylIcerikleriLiveData.observe(viewLifecycleOwner) {
+                if (icecekOzellik in it) kokteylViewModeli.getIngredientsItem(icecekOzellik)
+            }
+
 
 
 
@@ -63,23 +99,30 @@ class KokteyllerFragment2 : Fragment() {
 
         observeLiveData()
 
-        val layoutManager= LinearLayoutManager(activity)
-        binding.recyclerKokteyl2.layoutManager=layoutManager
-        recyclerAdapter= KokteyllerRecyclerAdapter2(tumKokteyller)
-        binding.recyclerKokteyl2.adapter=recyclerAdapter
+
     }
 
 
     private fun observeLiveData(){
+        val gridView = requireActivity().findViewById(R.id.idGRV) as GridView
+
+        val customAdapter = KokteyllerGridAdapter(tumKokteyller)
+
+        gridView.adapter = customAdapter
+
+
+
 
         kokteylViewModeli.kokteyller.observe(viewLifecycleOwner) { Kokteyller ->
             Kokteyller.let {
 
-                binding.recyclerKokteyl2.visibility = View.VISIBLE
+
+                binding.idGRV.visibility = View.VISIBLE
                 if (Kokteyller != null) {
+                    Log.e("observe",""+Kokteyller)
 
 
-                    recyclerAdapter.kokteylListesiniGuncelle(Kokteyller)
+                    customAdapter.kokteylListesiniGuncelle(Kokteyller)
                 }
 
             }
@@ -90,7 +133,7 @@ class KokteyllerFragment2 : Fragment() {
             it.let {
                 if(it){
                     binding.hataMesaji.visibility=View.VISIBLE
-                    binding.recyclerKokteyl2.visibility=View.GONE
+                    binding.idGRV.visibility=View.GONE
 
                 }else{
                     binding.hataMesaji.visibility=View.GONE
@@ -101,11 +144,12 @@ class KokteyllerFragment2 : Fragment() {
 
         }
 
+
         kokteylViewModeli.kokteylYukleniyor.observe(viewLifecycleOwner){
             it.let {
                 if(it){
                     binding.hataMesaji.visibility=View.GONE
-                    binding.recyclerKokteyl2.visibility=View.GONE
+                    binding.idGRV.visibility=View.GONE
                     binding.progresBarKokteyl.visibility=View.VISIBLE
 
                 }else{

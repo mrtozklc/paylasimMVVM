@@ -1,5 +1,6 @@
 package com.example.paylasimmvvm.adapter
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,9 +21,10 @@ class KokteylDetayRecyclerAdapter(var tumKokteyller:ArrayList<DrinkDetay>):Recyc
             val binding= RecyclerRowKokteylDetaylariBinding.bind(itemView)
 
 
+
             binding.isim.text=gelenKokteylDetay.kokteylIsim
             binding.glass.text=gelenKokteylDetay.kokteylbardak
-            binding.malzemeler.text = gelenKokteylDetay.kokteylMalzemeler.joinToString()
+            binding.malzemeler.text = gelenKokteylDetay.kokteylMalzemeler.joinToString("\n")
             binding.tarif.text=gelenKokteylDetay.kokteylTarif
 
             Picasso.get().load(gelenKokteylDetay.kokteylGorsel).into(binding.imageKokteyl)

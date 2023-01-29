@@ -1,12 +1,14 @@
 package com.example.paylasimmvvm.view.icecekler
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.paylasimmvvm.adapter.KokteylDetayRecyclerAdapter
 import com.example.paylasimmvvm.databinding.FragmentKokteylDetayiBinding
@@ -39,12 +41,18 @@ class KokteylDetayiFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         arguments?.let {
 
+
           val  kokteylID = KokteylDetayiFragmentArgs.fromBundle(it).kokteylId
+
+            Log.e("tıklanılan kokteyl",""+kokteylID)
 
             kokteylViewModeli= ViewModelProvider(this)[KokteylDetayiViewModel::class.java]
 
             kokteylViewModeli.verileriInternettenAl(kokteylID)
 
+        }
+        binding.imageViewBack.setOnClickListener {
+            findNavController().navigateUp()
         }
 
 
@@ -65,6 +73,10 @@ class KokteylDetayiFragment : Fragment() {
 
                 binding.recyclerKokteyl.visibility = View.VISIBLE
                 if (Kokteyller != null) {
+
+                    val kokteylIsmi = Kokteyller[0].kokteylIsim
+                    binding.kokteylismi.text=kokteylIsmi
+
 
 
                     recyclerAdapter.kokteylDetayListesiniGuncelle(Kokteyller)

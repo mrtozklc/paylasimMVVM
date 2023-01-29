@@ -12,59 +12,20 @@ import com.example.paylasimmvvm.model.Drink
 import com.example.paylasimmvvm.view.icecekler.KokteyllerFiltreFragmentDirections
 
 
-class KokteyllerRecyclerAdapter(private val tumKokteyller: ArrayList<Drink>):RecyclerView.Adapter<KokteyllerRecyclerAdapter.MViewHolder>() {
+class KokteyllerRecyclerAdapter(private val tumKokteyller: ArrayList<String>):RecyclerView.Adapter<KokteyllerRecyclerAdapter.MViewHolder>() {
 
     class MViewHolder(itemview: View):RecyclerView.ViewHolder(itemview){
 
-
-        fun setData(gelenKokteyl: Drink) {
+        fun setData(gelenKokteyl: String) {
             val binding= RecyclerRowKokteylFiltersBinding.bind(itemView)
 
+                binding.kokteylFilters.text=gelenKokteyl
 
-
-
-            if (gelenKokteyl.kokteyGlass!=null){
-
-                binding.kokteylFilters.text=gelenKokteyl.kokteyGlass
-                binding.tumLayout.setOnClickListener {
-                    val action=KokteyllerFiltreFragmentDirections.actionKokteyllerFragmentToKokteyllerFragment2(
-                        gelenKokteyl.kokteyGlass
-                    )
-                    Navigation.findNavController(it).navigate(action)
-
-                }
-
-            }else if(gelenKokteyl.kokteylicerik!=null){
-                binding.kokteylFilters.text=gelenKokteyl.kokteylicerik
-                binding.tumLayout.setOnClickListener {
-                    val action=KokteyllerFiltreFragmentDirections.actionKokteyllerFragmentToKokteyllerFragment2(
-                        gelenKokteyl.kokteylicerik
-                    )
-                    Navigation.findNavController(it).navigate(action)
-
-                }
-
-            }else if (gelenKokteyl.kokteylKategori!=null){
-
-
-                binding.kokteylFilters.text=gelenKokteyl.kokteylKategori
-                binding.tumLayout.setOnClickListener {
-                    val action=KokteyllerFiltreFragmentDirections.actionKokteyllerFragmentToKokteyllerFragment2(gelenKokteyl.kokteylKategori)
-                    Navigation.findNavController(it).navigate(action)
-
-                }
-
-                var xy = gelenKokteyl.kokteylKategori
-
-
-                when (xy){
-                    "Ordinary Drink"-> binding.kokteylFilters.text = "İÇECEK"
-
-                }
-
+            binding.tumLayout.setOnClickListener {
+                val action=KokteyllerFiltreFragmentDirections.actionKokteyllerFragmentToKokteyllerFragment2(gelenKokteyl)
+                Navigation.findNavController(it).navigate(action)
 
             }
-
 
 
         }
@@ -79,11 +40,8 @@ class KokteyllerRecyclerAdapter(private val tumKokteyller: ArrayList<Drink>):Rec
     }
 
     override fun onBindViewHolder(holder: MViewHolder, position: Int) {
+
         holder.setData(tumKokteyller[position])
-
-        val tiklananIteminPozisyonu = position
-
-        val tiklananItem = tumKokteyller[tiklananIteminPozisyonu]
 
 
 
@@ -93,11 +51,14 @@ class KokteyllerRecyclerAdapter(private val tumKokteyller: ArrayList<Drink>):Rec
         return tumKokteyller.size
     }
 
-    fun kokteylListesiniGuncelle(yeniKokteylListesi: List<Drink>){
+    fun kokteylListesiniGuncelle(yeniKokteylListesi: List<String>){
         tumKokteyller.clear()
         tumKokteyller.addAll(yeniKokteylListesi)
         notifyDataSetChanged()
     }
+
+
+
 
 
 

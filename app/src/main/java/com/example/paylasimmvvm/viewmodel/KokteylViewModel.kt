@@ -17,9 +17,12 @@ class KokteylViewModel:ViewModel() {
     val kokteyller=MutableLiveData<List<Drink>>()
     val kokteylYukleniyor=MutableLiveData<Boolean>()
     val kokteylHataMesaji=MutableLiveData<Boolean>()
-
     val disposable=CompositeDisposable()
     val kokteylApiServis=KokteylApiServis()
+    val kokteylKategorileriLiveData = MutableLiveData<List<String?>>()
+    val kokteylBardaklariLiveData = MutableLiveData<List<String?>>()
+    val kokteylIcerikleriLiveData = MutableLiveData<List<String?>>()
+
 
     fun getCategoryList(category:String) {
         disposable.add(
@@ -34,9 +37,15 @@ class KokteylViewModel:ViewModel() {
                     }
 
                     override fun onSuccess(t: Kokteyl) {
-                        kokteyller.value= t.drinks
+                        val kokteylKategorileri = t.drinks.map { it.kokteylKategori }.distinctBy { it }
+
+                        kokteylKategorileriLiveData.value = kokteylKategorileri
+
+                        Log.e("gelen veri",""+ kokteylKategorileriLiveData.value!!.size)
+
+
                         kokteylYukleniyor.value=false
-                        Log.e("TAG","category ${t.drinks} ")
+
                     }
 
                 })
@@ -56,12 +65,10 @@ class KokteylViewModel:ViewModel() {
                     }
 
                     override fun onSuccess(t: Kokteyl) {
-                        kokteyller.value= t.drinks
+                        val kokteylBardaklari = t.drinks.map { it.kokteyGlass }.distinctBy { it }
+
+                        kokteylBardaklariLiveData.value = kokteylBardaklari
                         kokteylYukleniyor.value=false
-
-                        Log.e("TAG","kjahskda1 ${t.drinks} -- koktyl = ${t.drinks.size}")
-                        Log.e("TAG","kjahskda2 ${t.drinks.size} ")
-
 
 
                     }
@@ -83,10 +90,15 @@ class KokteylViewModel:ViewModel() {
                     }
 
                     override fun onSuccess(t: Kokteyl) {
-                        kokteyller.value= t.drinks
+                        val kokteylIcerikleri = t.drinks.flatMap { listOf(it.kokteylicerik1, it.kokteylicerik2,
+                            it.kokteylicerik3, it.kokteylicerik4, it.kokteylicerik5, it.kokteylicerik6,
+                            it.kokteylicerik7, it.kokteylicerik8, it.kokteylicerik9, it.kokteylicerik10) }.filterNotNull().distinct()
+
+                        kokteylIcerikleriLiveData.value = kokteylIcerikleri
+                        Log.e("geleniceriksayısı",""+kokteylIcerikleri.size)
                         kokteylYukleniyor.value=false
-                        Log.e("TAG","ingredient ${t.drinks.equals("kokteylicerik")} ")
-                        Log.e("TAG","ingredient2 ${t.drinks.listIterator()} ")
+
+
                     }
 
                 })
@@ -106,7 +118,11 @@ class KokteylViewModel:ViewModel() {
                     }
 
                     override fun onSuccess(t: Kokteyl) {
-                        kokteyller.value= t.drinks
+                        kokteyller.value= t.drinks.filter{it.kokteylKategori==c}
+                        Log.e("kategory",""+kokteyller.value)
+
+
+
                         kokteylYukleniyor.value=false
 
                     }
@@ -130,9 +146,13 @@ class KokteylViewModel:ViewModel() {
                     }
 
                     override fun onSuccess(t: Kokteyl) {
-                        kokteyller.value= t.drinks
+                        kokteyller.value= t.drinks.filter{it.kokteyGlass==g}
+                        Log.e("bardak",""+kokteyller.value)
+
+
+
                         kokteylYukleniyor.value=false
-                        Log.e("TAG","g ${t.drinks} ")
+
                     }
 
                 })
@@ -152,7 +172,10 @@ class KokteylViewModel:ViewModel() {
                     }
 
                     override fun onSuccess(t: Kokteyl) {
-                        kokteyller.value= t.drinks
+                        kokteyller.value= t.drinks.filter{it.kokteylicerik1==i||it.kokteylicerik2==i||it.kokteylicerik3==i||it.kokteylicerik4==i
+                                ||it.kokteylicerik5==i||it.kokteylicerik6==i||it.kokteylicerik7==i||it.kokteylicerik8==i
+                                ||it.kokteylicerik9==i||it.kokteylicerik10==i}.distinct()
+                        Log.e("içerik",""+kokteyller.value)
                         kokteylYukleniyor.value=false
 
                     }

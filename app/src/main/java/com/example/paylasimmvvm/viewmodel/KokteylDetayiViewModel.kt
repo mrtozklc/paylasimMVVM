@@ -44,8 +44,14 @@ class KokteylDetayiViewModel:ViewModel() {
 
                     override fun onSuccess(t: KokteylDetay) {
 
-                        kokteyller.value= t.drinks
-                        kokteylYukleniyor.value=false                        }
+
+                      kokteyller.value= t.drinks.filter{it.kokteylID==kokteylId}
+
+
+
+
+                        kokteylYukleniyor.value=false
+                    }
 
                 })
 

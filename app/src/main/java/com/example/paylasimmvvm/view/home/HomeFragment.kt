@@ -24,6 +24,10 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.ktx.Firebase
+import com.google.gson.Gson
+import com.google.gson.JsonObject
+import java.io.File
+import java.io.PrintWriter
 import java.util.*
 
 
@@ -60,7 +64,6 @@ class HomeFragment : Fragment() {
         val view =binding.root
         auth= Firebase.auth
         mref = FirebaseDatabase.getInstance().reference
-
 
 
 

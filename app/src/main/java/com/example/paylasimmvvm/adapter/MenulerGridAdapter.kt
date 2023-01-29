@@ -46,7 +46,6 @@ class MenulerGridAdapter( val tumMenuler: ArrayList<Menuler>) : BaseAdapter() {
          val photoView = PhotoView(parent.context)
          photoView.adjustViewBounds = true
          Picasso.get().load(dataItem.menuler).into(photoView)
-         Log.e("gelendata","")
 
 
          builder.setView(photoView)

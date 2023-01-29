@@ -26,7 +26,7 @@ class KokteyllerFiltreFragment : Fragment() {
 
     private lateinit var recyclerAdapter: KokteyllerRecyclerAdapter
     private lateinit var kokteylViewModeli: KokteylViewModel
-    private var tumKokteyller=ArrayList<Drink>()
+    private var tumKokteyller=ArrayList<String>()
     var secilenFiltre:String?=null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -78,6 +78,9 @@ class KokteyllerFiltreFragment : Fragment() {
 
                 if (secilenFiltre.equals("Category")){
 
+
+
+
                     kokteylViewModeli.getCategoryList("list")
 
                 }else if (secilenFiltre.equals("Glass")){
@@ -102,18 +105,37 @@ class KokteyllerFiltreFragment : Fragment() {
 
     private fun observeLiveData(){
 
-        kokteylViewModeli.kokteyller.observe(viewLifecycleOwner) { Kokteyller ->
-            Kokteyller.let {
 
-                binding.recyclerKokteyl.visibility = View.VISIBLE
-                if (Kokteyller != null) {
+kokteylViewModeli.kokteylKategorileriLiveData.observe(viewLifecycleOwner){
+    it.let {
+        if (it!=null){
 
+            binding.recyclerKokteyl.visibility=View.VISIBLE
+            recyclerAdapter.kokteylListesiniGuncelle(it as List<String>)
 
-                    recyclerAdapter.kokteylListesiniGuncelle(Kokteyller)
+        }
+
+    }
+}
+        kokteylViewModeli.kokteylIcerikleriLiveData.observe(viewLifecycleOwner){
+            it.let {
+                if (it!=null){
+                    binding.recyclerKokteyl.visibility=View.VISIBLE
+                    recyclerAdapter.kokteylListesiniGuncelle(it as List<String>)
+
                 }
 
             }
+        }
+        kokteylViewModeli.kokteylBardaklariLiveData.observe(viewLifecycleOwner){
+            it.let {
+                if (it!=null){
+                    binding.recyclerKokteyl.visibility=View.VISIBLE
+                    recyclerAdapter.kokteylListesiniGuncelle(it as List<String>)
 
+                }
+
+            }
         }
 
         kokteylViewModeli.kokteylHataMesaji.observe(viewLifecycleOwner){

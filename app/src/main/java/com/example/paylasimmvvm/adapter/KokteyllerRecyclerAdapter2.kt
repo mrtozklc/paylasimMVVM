@@ -21,10 +21,10 @@ class KokteyllerRecyclerAdapter2 (private val tumKokteyller: ArrayList<Drink>): 
 
             binding.isim.text=gelenKokteyl.kokteylIsim
 
-            binding.kategoryId.text=gelenKokteyl.kokteylKategori
 
             binding.tumLayout.setOnClickListener {
                 val action=KokteyllerFragment2Directions.actionKokteyllerFragment2ToKokteylDetayiFragment(gelenKokteyl.kokteylID!!)
+
                 Navigation.findNavController(it).navigate(action)
 
             }
