@@ -46,7 +46,6 @@
 
 
 
-
   <ImageView
       android:id="@+id/imageView_back"
       android:layout_width="40dp"
@@ -57,19 +56,15 @@
       app:layout_constraintTop_toTopOf="parent"
       app:srcCompat="@drawable/ic_baseline_arrow_back_24" />
 
-  <EditText
+  <SearchView
       android:id="@+id/edittextSearch"
       android:layout_width="0dp"
       android:layout_height="wrap_content"
       android:layout_marginStart="16dp"
-      android:layout_marginTop="4dp"
       android:layout_marginEnd="16dp"
       android:background="@drawable/textview_bg"
-      android:hint="Kokteyl Ara"
-      android:paddingLeft="20dp"
-      android:paddingTop="4dp"
-      android:paddingRight="20dp"
-      android:paddingBottom="4dp"
+      android:queryHint="Kokteyl Ara"
+      android:iconifiedByDefault="false"
       android:textAlignment="center"
       android:visibility="gone"
       app:layout_constraintBottom_toTopOf="@+id/idGRV"

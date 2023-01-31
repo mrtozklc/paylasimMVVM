@@ -13,11 +13,6 @@ import com.squareup.picasso.Picasso
 
 class KokteyllerGridAdapter(private val tumKokteyller: ArrayList<Drink> ): BaseAdapter() {
 
-
-
-
-
-
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
 
 
@@ -36,11 +31,6 @@ class KokteyllerGridAdapter(private val tumKokteyller: ArrayList<Drink> ): BaseA
             Navigation.findNavController(it).navigate(action)
 
         }
-
-
-
-
-
 
 
 
@@ -64,5 +54,7 @@ class KokteyllerGridAdapter(private val tumKokteyller: ArrayList<Drink> ): BaseA
         tumKokteyller.addAll(yeniKokteylListesi)
         notifyDataSetChanged()
     }
+
+
 
 }

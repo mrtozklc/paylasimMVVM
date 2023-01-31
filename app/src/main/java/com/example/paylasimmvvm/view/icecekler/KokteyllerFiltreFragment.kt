@@ -11,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.SearchView
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
@@ -28,6 +29,7 @@ class KokteyllerFiltreFragment : Fragment() {
     private lateinit var kokteylViewModeli: KokteylViewModel
     private var tumKokteyller=ArrayList<String>()
     var secilenFiltre:String?=null
+    lateinit var searchView: SearchView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,13 +62,14 @@ class KokteyllerFiltreFragment : Fragment() {
         binding.recyclerKokteyl.adapter=recyclerAdapter
 
         val filtre = java.util.ArrayList<String>()
-        filtre.add("Category")
-        filtre.add("Glass")
-        filtre.add("Ingredient")
+        filtre.add("Kategoriler")
+        filtre.add("Bardaklar")
+        filtre.add("İçerikler")
 
 
         val spinnerAdapter = ArrayAdapter(requireActivity(), R.layout.simple_list_item_1, filtre)
         binding.spinner2.adapter = spinnerAdapter
+
 
 
         binding.spinner2.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
@@ -76,21 +79,16 @@ class KokteyllerFiltreFragment : Fragment() {
                 secilenFiltre = binding.spinner2.selectedItem.toString()
 
 
-                if (secilenFiltre.equals("Category")){
-
-
-
+                if (secilenFiltre.equals("Kategoriler")){
 
                     kokteylViewModeli.getCategoryList("list")
 
-                }else if (secilenFiltre.equals("Glass")){
+                }else if (secilenFiltre.equals("Bardaklar")){
 
                     kokteylViewModeli.getGlassList("list")
 
                 }else{
                     kokteylViewModeli.getIngredientList("list")
-
-
 
                 }
 
@@ -101,9 +99,65 @@ class KokteyllerFiltreFragment : Fragment() {
 
         }
 
+        binding.searchh.setOnClickListener {
+            binding.spinner2.visibility=View.INVISIBLE
+            binding.edittextSearch.visibility=View.VISIBLE
+            binding.imageViewBack.visibility=View.VISIBLE
+            kokteylViewModeli.getCocktailNameList("name")
+        }
+        binding.imageViewBack.setOnClickListener {
+            binding.spinner2.visibility=View.VISIBLE
+            binding.edittextSearch.visibility=View.INVISIBLE
+            binding.imageViewBack.visibility=View.INVISIBLE
+
+        }
+
+
+
+
+
     }
 
     private fun observeLiveData(){
+
+        kokteylViewModeli.kokteylIsimleriLiveData.observe(viewLifecycleOwner){
+            it.let {
+                if (it!=null){
+
+                    searchView = requireActivity().findViewById(com.example.paylasimmvvm.R.id.edittextSearch)
+                    searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+                        override fun onQueryTextSubmit(query: String?): Boolean {
+
+                            if(!query.isNullOrEmpty()){
+
+                                val filteredList = it.filter {
+                                    it!!.contains(query, true)
+                                }
+                                recyclerAdapter.kokteylListesiniGuncelle(filteredList as List<String>)
+                                Log.e("gelenfiltreleme",""+filteredList)
+                            }
+
+                            return false
+                        }
+
+                        override fun onQueryTextChange(newText: String?): Boolean {
+                            if (newText.isNullOrEmpty()) {
+                                binding.recyclerKokteyl.visibility=View.VISIBLE
+                                recyclerAdapter.kokteylListesiniGuncelle(it as List<String>)
+
+                            } else {
+                                val filteredList = it.filter { it!!.contains(newText, true) }
+
+
+                                recyclerAdapter.kokteylListesiniGuncelle(filteredList as List<String>)
+                            }
+
+                            return false
+                        }
+                    })
+                }
+            }
+        }
 
 
 kokteylViewModeli.kokteylKategorileriLiveData.observe(viewLifecycleOwner){

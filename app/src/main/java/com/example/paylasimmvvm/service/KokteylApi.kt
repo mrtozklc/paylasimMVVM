@@ -38,6 +38,9 @@ interface KokteylApi {
     fun getIngredientsItem(@Query("i") i: String): Single<Kokteyl>
 
     @GET("mrtozklc/Coctaildb/main/db.json")
+    fun getName(@Query("n") n: String): Single<Kokteyl>
+
+    @GET("mrtozklc/Coctaildb/main/db.json")
 
     fun getKokteylDetayi(@Query("idDrink") kokteylId: String): Single<KokteylDetay>
 

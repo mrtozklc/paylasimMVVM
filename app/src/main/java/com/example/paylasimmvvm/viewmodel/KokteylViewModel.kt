@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import com.example.paylasimmvvm.model.Drink
 import com.example.paylasimmvvm.model.DrinkDetay
 import com.example.paylasimmvvm.model.Kokteyl
+import com.example.paylasimmvvm.model.KokteylDetay
 import com.example.paylasimmvvm.service.KokteylApiServis
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -22,6 +23,65 @@ class KokteylViewModel:ViewModel() {
     val kokteylKategorileriLiveData = MutableLiveData<List<String?>>()
     val kokteylBardaklariLiveData = MutableLiveData<List<String?>>()
     val kokteylIcerikleriLiveData = MutableLiveData<List<String?>>()
+    val kokteylIsimleriLiveData= MutableLiveData<List<String?>>()
+
+    fun getCocktailNameList(name:String){
+        disposable.add(
+            kokteylApiServis.getCategoryList(name)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(object : DisposableSingleObserver<Kokteyl>() {
+
+                    override fun onError(e: Throwable) {
+                        Log.e("hataa","$e")
+                        e.printStackTrace()
+                    }
+
+                    override fun onSuccess(t: Kokteyl) {
+                        val kokteylIsimleri = t.drinks.map { it.kokteylIsim }.distinctBy { it }
+
+                        kokteylIsimleriLiveData.value = kokteylIsimleri
+
+                        Log.e("gelen  isim",""+ kokteylIsimleriLiveData.value!!.size)
+
+
+                        kokteylYukleniyor.value=false
+
+                    }
+
+                })
+        )
+
+    }
+    fun getNameItem(name:String){
+
+        disposable.add(
+            kokteylApiServis.getKokteylName(name)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(object : DisposableSingleObserver<Kokteyl>() {
+
+                    override fun onError(e: Throwable) {
+                        Log.e("hataa","$e")
+
+                        e.printStackTrace()
+                    }
+
+
+
+
+                    override fun onSuccess(t: Kokteyl) {
+
+                        kokteyller.value= t.drinks.filter{it.kokteylIsim==name}
+
+
+                        kokteylYukleniyor.value=false
+                    }
+
+                })
+
+        )
+    }
 
 
     fun getCategoryList(category:String) {
@@ -76,6 +136,7 @@ class KokteylViewModel:ViewModel() {
                 })
         )
     }
+
 
     fun getIngredientList(ingredient:String) {
         disposable.add(

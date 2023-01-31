@@ -12,8 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
-import android.widget.EditText
-import android.widget.GridView
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
@@ -32,6 +31,9 @@ class KokteyllerFragment2 : Fragment() {
     private lateinit var binding:FragmentKokteyller2Binding
     private lateinit var kokteylViewModeli: KokteylViewModel
     private var tumKokteyller=ArrayList<Drink>()
+    lateinit var searchView: SearchView
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,6 +55,9 @@ class KokteyllerFragment2 : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+
+
 
         kokteylViewModeli= ViewModelProvider(this)[KokteylViewModel::class.java]
 
@@ -76,6 +81,13 @@ class KokteyllerFragment2 : Fragment() {
             kokteylViewModeli.getCategoryList("list")
             kokteylViewModeli.getGlassList("list")
             kokteylViewModeli.getIngredientList("list")
+            kokteylViewModeli.getCocktailNameList("name")
+
+            kokteylViewModeli.kokteylIsimleriLiveData.observe(viewLifecycleOwner) {
+                if (icecekOzellik in it) kokteylViewModeli.getNameItem(icecekOzellik)
+
+            }
+
 
             kokteylViewModeli.kokteylKategorileriLiveData.observe(viewLifecycleOwner) {
                 if (icecekOzellik in it) kokteylViewModeli.getCategoriesItem(icecekOzellik)
@@ -91,13 +103,10 @@ class KokteyllerFragment2 : Fragment() {
 
 
 
-
         }
 
-
-
-
         observeLiveData()
+
 
 
     }
@@ -120,9 +129,37 @@ class KokteyllerFragment2 : Fragment() {
                 binding.idGRV.visibility = View.VISIBLE
                 if (Kokteyller != null) {
                     Log.e("observe",""+Kokteyller)
-
-
                     customAdapter.kokteylListesiniGuncelle(Kokteyller)
+                    searchView = requireActivity().findViewById(R.id.edittextSearch)
+                    searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+                        override fun onQueryTextSubmit(query: String?): Boolean {
+
+                            if(!query.isNullOrEmpty()){
+
+                                val filteredList = Kokteyller.filter {
+                                    it.kokteylIsim!!.contains(query, true)
+                                }
+                                customAdapter.kokteylListesiniGuncelle(filteredList)
+                                Log.e("gelenfiltreleme",""+filteredList)
+                            }
+
+                            return false
+                        }
+
+                        override fun onQueryTextChange(newText: String?): Boolean {
+                            if (newText.isNullOrEmpty()) {
+                                customAdapter.kokteylListesiniGuncelle(Kokteyller)
+
+                            } else {
+                                val filteredList = Kokteyller.filter { it.kokteylIsim!!.contains(newText, true) }
+
+
+                                customAdapter.kokteylListesiniGuncelle(filteredList)
+                            }
+                            customAdapter.notifyDataSetChanged()
+                            return false
+                        }
+                    })
                 }
 
             }

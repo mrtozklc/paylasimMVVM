@@ -1,16 +1,12 @@
 package com.example.paylasimmvvm.adapter
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.paylasimmvvm.R
-import com.example.paylasimmvvm.databinding.RecyclerRowKokteylBinding
 import com.example.paylasimmvvm.databinding.RecyclerRowKokteylDetaylariBinding
-import com.example.paylasimmvvm.model.Drink
 import com.example.paylasimmvvm.model.DrinkDetay
-import com.example.paylasimmvvm.model.KokteylDetay
 import com.squareup.picasso.Picasso
 
 class KokteylDetayRecyclerAdapter(var tumKokteyller:ArrayList<DrinkDetay>):RecyclerView.Adapter<KokteylDetayRecyclerAdapter.MviewHolder>() {
@@ -22,7 +18,7 @@ class KokteylDetayRecyclerAdapter(var tumKokteyller:ArrayList<DrinkDetay>):Recyc
 
 
 
-            binding.isim.text=gelenKokteylDetay.kokteylIsim
+            binding.isim.text=gelenKokteylDetay.kokteylTag
             binding.glass.text=gelenKokteylDetay.kokteylbardak
             binding.malzemeler.text = gelenKokteylDetay.kokteylMalzemeler.joinToString("\n")
             binding.tarif.text=gelenKokteylDetay.kokteylTarif

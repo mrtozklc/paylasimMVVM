@@ -35,6 +35,8 @@ class KokteylApiServis {
 
     fun getKokteylDetayi(kokteylId: String) = api.getKokteylDetayi(kokteylId)
 
+    fun getKokteylName(name:String)=api.getName(name)
+
 
 
 

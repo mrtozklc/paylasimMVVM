@@ -44,7 +44,6 @@ class KokteylDetayiFragment : Fragment() {
 
           val  kokteylID = KokteylDetayiFragmentArgs.fromBundle(it).kokteylId
 
-            Log.e("tıklanılan kokteyl",""+kokteylID)
 
             kokteylViewModeli= ViewModelProvider(this)[KokteylDetayiViewModel::class.java]
 

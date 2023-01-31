@@ -14,6 +14,9 @@ data class DrinkDetay(
     @SerializedName("strDrink")
     val kokteylIsim:String?,
 
+    @SerializedName("strTags")
+    val kokteylTag:String?,
+
     @SerializedName("strGlass")
     val kokteylbardak:String?,
 
