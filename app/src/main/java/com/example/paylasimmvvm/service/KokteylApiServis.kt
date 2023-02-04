@@ -23,15 +23,7 @@ class KokteylApiServis {
 
     fun getCategoryList(category: String)=api.getCategories(category)
 
-    fun getGlassList(glass: String) = api.getGlasses(glass)
-
-    fun getIngredientList(ingredient: String) = api.getIngredients(ingredient)
-
     fun getCategoriesItem(c:String)=api.getCategoriesItem(c)
-
-    fun getGlassItem(g:String)=api.getGlassItem(g)
-
-    fun getIngredientsItem(i:String)=api.getIngredientsItem(i)
 
     fun getKokteylDetayi(kokteylId: String) = api.getKokteylDetayi(kokteylId)
 

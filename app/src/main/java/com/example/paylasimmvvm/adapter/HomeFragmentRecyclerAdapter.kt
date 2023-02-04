@@ -43,14 +43,13 @@ class HomeFragmentRecyclerAdapter (var context: Context, private var tumKampanya
         private var userNameTitle = binding.kullaniciAdiTepe
         private var gonderi = binding.kampanyaPhoto
         private var userNameveAciklama = binding.textView21
-        private var kampanyaTarihi = binding.kampanyaTarihiId
+        private var kampanyaTarihi = binding.kampanyaTarihi
         private var yorumYap = binding.imgYorum
         var gonderiBegen = binding.imgBegen
         var begenmeSayisi=binding.begenmeSayisi
         var yorumlariGoster=binding.tvYorumGoster
         private var postMenu=binding.postMesaj
         var geriSayim=binding.geriSayimId
-        var mesafe=binding.twMesafe
         private var delete=binding.delete
 
         @SuppressLint("SetTextI18n")
@@ -58,45 +57,6 @@ class HomeFragmentRecyclerAdapter (var context: Context, private var tumKampanya
 
             delete.visibility=View.GONE
 
-            FirebaseDatabase.getInstance().reference.child("konumlar").child("kullanici_konum").child(
-                FirebaseAuth.getInstance().currentUser?.uid.toString())
-                .child(FirebaseAuth.getInstance().currentUser?.uid.toString()).addValueEventListener(object :
-                    ValueEventListener {
-                    @SuppressLint("SetTextI18n")
-                    override fun onDataChange(snapshot: DataSnapshot) {
-
-                        val latitude = snapshot.child("latitude").value.toString()
-                        val longitude = snapshot.child("longitude").value.toString()
-                        if (snapshot.exists()){
-                            if (anlikGonderi.isletmeLatitude!=0.0 && anlikGonderi.isletmeLongitude!=0.0) {
-
-                                val startPoint = Location("locationA")
-                                startPoint.latitude = anlikGonderi.isletmeLatitude!!
-                                startPoint.longitude = anlikGonderi.isletmeLongitude!!
-
-                                val endPoint = Location("locationA")
-                                endPoint.latitude = latitude.toDouble()
-                                endPoint.longitude = longitude.toDouble()
-
-                                val distance: Int =
-                                    startPoint.distanceTo(endPoint).toDouble().toInt()
-
-                                if (distance>1000){
-                                    val distanceKM=distance.toDouble()/1000
-
-                                    println(BigDecimal(distanceKM))
-                                    val k=  distanceKM.toBigDecimal().setScale(2, RoundingMode.UP).toDouble()
-                                    mesafe.text = "$k   km"
-
-                                }else{
-                                    mesafe.text = "$distance   metre"
-                                }
-                            }
-                        }
-                    }
-                    override fun onCancelled(error: DatabaseError) {
-                    }
-                })
 
             userNameTitle.text = anlikGonderi.userName
 

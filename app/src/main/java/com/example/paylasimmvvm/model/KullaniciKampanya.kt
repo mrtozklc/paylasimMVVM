@@ -11,4 +11,5 @@ package com.example.paylasimmvvm.model
                          var isletmeLatitude: Double? = 0.0,
                          var isletmeLongitude: Double? = 0.0,
                          var muzik_turu:String? ="",
-                         var isletme_turu:String?="")
+                         var isletme_turu:String?="",
+                         var mudavim_sayisi:Int?=null)

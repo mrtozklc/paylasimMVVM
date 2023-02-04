@@ -189,7 +189,7 @@ class IsletmeKayitBilgileriFragment : Fragment() {
                                                     val userID = auth.currentUser!!.uid
                                                     getAddressFromLocation(adres, context, userID)
 
-                                                    val kaydedilecekKullaniciDetaylari = KullaniciBilgiDetaylari("0", "", "", secilenMuzik, secilenIsletmeTuru, adres, null,null)
+                                                    val kaydedilecekKullaniciDetaylari = KullaniciBilgiDetaylari("0", "", "", secilenMuzik, secilenIsletmeTuru, adres, null,null,0)
 
                                                     val kaydedilecekKullanici = KullaniciBilgileri(gelenEmail, sifre, userName, adSoyad, telefon, userID, "", kaydedilecekKullaniciDetaylari)
 
@@ -235,7 +235,7 @@ class IsletmeKayitBilgileriFragment : Fragment() {
                                                 //oturum açan kullanıcın verilerini databaseye kaydet
 
                                                 val kaydedilecekKullaniciDetaylari =
-                                                    KullaniciBilgiDetaylari("0", "", "", secilenMuzik, secilenIsletmeTuru, adres, null,null)
+                                                    KullaniciBilgiDetaylari("0", "", "", secilenMuzik, secilenIsletmeTuru, adres, null,null,0)
 
                                                 val kaydedilecekKullanici = KullaniciBilgileri(gelenEmail, sifre, userName, adSoyad, telefon, userID, "", kaydedilecekKullaniciDetaylari)
 

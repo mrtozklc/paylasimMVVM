@@ -20,6 +20,7 @@ import com.example.paylasimmvvm.adapter.IsletmeListRecyclerAdapter
 import com.example.paylasimmvvm.databinding.FragmentIsletmeListBinding
 import com.example.paylasimmvvm.model.KullaniciKampanya
 import com.example.paylasimmvvm.util.Bildirimler.mref
+import com.example.paylasimmvvm.viewmodel.BadgeViewModel
 import com.example.paylasimmvvm.viewmodel.kampanyalarViewModel
 import com.google.firebase.auth.FirebaseAuth
 
@@ -29,6 +30,7 @@ class IsletmeListFragment : Fragment() {
     private lateinit var kampanyalarViewModeli: kampanyalarViewModel
     private lateinit var recyclerviewadapter: IsletmeListRecyclerAdapter
     private var tumGonderiler= ArrayList<KullaniciKampanya>()
+    private lateinit var badgeViewModeli: BadgeViewModel
 
     lateinit var locationManager: LocationManager
     lateinit var locationListener: LocationListener
@@ -53,6 +55,8 @@ class IsletmeListFragment : Fragment() {
 
 
 
+        badgeViewModeli= ViewModelProvider(this)[BadgeViewModel::class.java]
+        badgeViewModeli.refreshBadge()
 
         locationManager= (requireActivity().getSystemService(Context.LOCATION_SERVICE) as LocationManager)!!
         locationListener=object :LocationListener{

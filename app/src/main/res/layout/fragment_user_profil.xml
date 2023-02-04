@@ -9,21 +9,23 @@
 
     <ImageView
         android:id="@+id/mesajGonder"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_marginEnd="4dp"
-        android:background="@drawable/ic_launcher_mesaj_foreground"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_baseline_mesaj_24" />
 
     <ImageView
         android:id="@+id/imageView_back"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_marginStart="4dp"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_launcher_back_foreground" />
+        app:srcCompat="@drawable/ic_baseline_arrow_back_24" />
 
     <TextView
         android:id="@+id/kullaniciadi_id"
@@ -65,7 +67,7 @@
         android:id="@+id/gonderiYok"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Gösterilecek Bişey Yok."
+        android:text="Henüz hiç gnderi yok."
         android:textSize="18sp"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -98,96 +100,93 @@
 
     <LinearLayout
         android:id="@+id/linear_id"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginStart="2dp"
         android:layout_marginTop="8dp"
-
+        android:layout_marginEnd="2dp"
         android:animateLayoutChanges="true"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/profile_image">
 
-        <Space
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1" />
-
-
         <TextView
             android:id="@+id/paylasimlar"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-
+            android:layout_weight="1"
             android:background="@drawable/textview_bg"
-            android:paddingLeft="20dp"
-            android:paddingTop="8dp"
-            android:paddingRight="20dp"
-            android:paddingBottom="8dp"
+            android:gravity="center"
+            android:padding="4dp"
             android:text="Paylaşımlar"
             android:textStyle="bold" />
 
-        <Space
-            android:id="@+id/spcaID"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1" />
-
         <TextView
             android:id="@+id/menu"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:background="@drawable/textview_bg"
-            android:paddingLeft="20dp"
-            android:paddingTop="8dp"
-            android:paddingRight="20dp"
-            android:paddingBottom="8dp"
+            android:gravity="center"
+            android:padding="4dp"
             android:text="Menu"
             android:textStyle="bold" />
 
-
-        <Space
-            android:id="@+id/spcaID2"
-
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1" />
-
         <TextView
             android:id="@+id/yorumlar"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:background="@drawable/textview_bg"
-            android:paddingLeft="20dp"
-            android:paddingTop="8dp"
-            android:paddingRight="20dp"
-            android:paddingBottom="8dp"
+            android:gravity="center"
+            android:padding="4dp"
             android:text="Yorumlar"
-            android:textAlignment="center"
             android:textStyle="bold" />
 
-
-        <Space
-            android:id="@+id/spcaID3"
-
+        <TextView
+            android:id="@+id/mudavimler"
             android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1" />
-
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/textview_bg"
+            android:gravity="center"
+            android:padding="4dp"
+            android:text="Müdavimler"
+            android:textStyle="bold" />
 
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/mudavimOl"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="2dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="2dp"
+        android:background="@drawable/textview_bg"
+        android:gravity="center"
+        android:padding="8dp"
+        android:text="Müdavim Ol"
+        android:textColor="@color/mavi"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linear_id">
+
+    </TextView>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerProfil"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="8dp"
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linear_id" />
+        app:layout_constraintTop_toBottomOf="@+id/mudavimOl" />
 
 
 
@@ -204,7 +203,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linear_id"
+        app:layout_constraintTop_toBottomOf="@id/mudavimOl"
         app:layout_constraintVertical_bias="0.0" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

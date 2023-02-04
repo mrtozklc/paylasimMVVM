@@ -8,11 +8,13 @@
 
     <ImageView
         android:id="@+id/imageView_back"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_launcher_back_foreground" />
+        app:srcCompat="@drawable/ic_baseline_arrow_back_24" />
 
 
     <TextView

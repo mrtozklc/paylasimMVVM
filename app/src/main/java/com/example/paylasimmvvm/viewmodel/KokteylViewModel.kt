@@ -21,8 +21,6 @@ class KokteylViewModel:ViewModel() {
     val disposable=CompositeDisposable()
     val kokteylApiServis=KokteylApiServis()
     val kokteylKategorileriLiveData = MutableLiveData<List<String?>>()
-    val kokteylBardaklariLiveData = MutableLiveData<List<String?>>()
-    val kokteylIcerikleriLiveData = MutableLiveData<List<String?>>()
     val kokteylIsimleriLiveData= MutableLiveData<List<String?>>()
 
     fun getCocktailNameList(name:String){
@@ -42,7 +40,6 @@ class KokteylViewModel:ViewModel() {
 
                         kokteylIsimleriLiveData.value = kokteylIsimleri
 
-                        Log.e("gelen  isim",""+ kokteylIsimleriLiveData.value!!.size)
 
 
                         kokteylYukleniyor.value=false
@@ -101,9 +98,6 @@ class KokteylViewModel:ViewModel() {
 
                         kokteylKategorileriLiveData.value = kokteylKategorileri
 
-                        Log.e("gelen veri",""+ kokteylKategorileriLiveData.value!!.size)
-
-
                         kokteylYukleniyor.value=false
 
                     }
@@ -112,59 +106,7 @@ class KokteylViewModel:ViewModel() {
         )
     }
 
-    fun getGlassList(glass:String) {
-        disposable.add(
-            kokteylApiServis.getGlassList(glass)
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(object : DisposableSingleObserver<Kokteyl>() {
 
-                    override fun onError(e: Throwable) {
-                        Log.e("hataa","$e")
-                        e.printStackTrace()
-                    }
-
-                    override fun onSuccess(t: Kokteyl) {
-                        val kokteylBardaklari = t.drinks.map { it.kokteyGlass }.distinctBy { it }
-
-                        kokteylBardaklariLiveData.value = kokteylBardaklari
-                        kokteylYukleniyor.value=false
-
-
-                    }
-
-                })
-        )
-    }
-
-
-    fun getIngredientList(ingredient:String) {
-        disposable.add(
-            kokteylApiServis.getIngredientList(ingredient)
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(object : DisposableSingleObserver<Kokteyl>() {
-
-                    override fun onError(e: Throwable) {
-                        Log.e("hataa","$e")
-                        e.printStackTrace()
-                    }
-
-                    override fun onSuccess(t: Kokteyl) {
-                        val kokteylIcerikleri = t.drinks.flatMap { listOf(it.kokteylicerik1, it.kokteylicerik2,
-                            it.kokteylicerik3, it.kokteylicerik4, it.kokteylicerik5, it.kokteylicerik6,
-                            it.kokteylicerik7, it.kokteylicerik8, it.kokteylicerik9, it.kokteylicerik10) }.filterNotNull().distinct()
-
-                        kokteylIcerikleriLiveData.value = kokteylIcerikleri
-                        Log.e("geleniceriksayısı",""+kokteylIcerikleri.size)
-                        kokteylYukleniyor.value=false
-
-
-                    }
-
-                })
-        )
-    }
 
     fun getCategoriesItem(c:String) {
         disposable.add(
@@ -180,37 +122,6 @@ class KokteylViewModel:ViewModel() {
 
                     override fun onSuccess(t: Kokteyl) {
                         kokteyller.value= t.drinks.filter{it.kokteylKategori==c}
-                        Log.e("kategory",""+kokteyller.value)
-
-
-
-                        kokteylYukleniyor.value=false
-
-                    }
-
-
-
-                })
-        )
-    }
-
-    fun getGlassItem(g:String) {
-        disposable.add(
-            kokteylApiServis.getGlassItem(g)
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(object : DisposableSingleObserver<Kokteyl>() {
-
-                    override fun onError(e: Throwable) {
-                        Log.e("hataa","$e")
-                        e.printStackTrace()
-                    }
-
-                    override fun onSuccess(t: Kokteyl) {
-                        kokteyller.value= t.drinks.filter{it.kokteyGlass==g}
-                        Log.e("bardak",""+kokteyller.value)
-
-
 
                         kokteylYukleniyor.value=false
 
@@ -220,30 +131,7 @@ class KokteylViewModel:ViewModel() {
         )
     }
 
-    fun getIngredientsItem(i:String) {
-        disposable.add(
-            kokteylApiServis.getIngredientsItem(i)
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(object : DisposableSingleObserver<Kokteyl>() {
 
-                    override fun onError(e: Throwable) {
-                        Log.e("hataa","$e")
-                        e.printStackTrace()
-                    }
-
-                    override fun onSuccess(t: Kokteyl) {
-                        kokteyller.value= t.drinks.filter{it.kokteylicerik1==i||it.kokteylicerik2==i||it.kokteylicerik3==i||it.kokteylicerik4==i
-                                ||it.kokteylicerik5==i||it.kokteylicerik6==i||it.kokteylicerik7==i||it.kokteylicerik8==i
-                                ||it.kokteylicerik9==i||it.kokteylicerik10==i}.distinct()
-                        Log.e("içerik",""+kokteyller.value)
-                        kokteylYukleniyor.value=false
-
-                    }
-
-                })
-        )
-    }
 
 
 }

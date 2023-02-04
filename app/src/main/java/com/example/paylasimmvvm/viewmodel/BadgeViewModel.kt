@@ -1,6 +1,7 @@
 package com.example.paylasimmvvm.viewmodel
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.paylasimmvvm.model.Mesajlar
@@ -55,6 +56,7 @@ class BadgeViewModel:ViewModel() {
 
 
                 isletmeBadgArray.add(yorumSayisi)
+
 
                 isletmeYorumlarBadgeLive.value=isletmeBadgArray
 

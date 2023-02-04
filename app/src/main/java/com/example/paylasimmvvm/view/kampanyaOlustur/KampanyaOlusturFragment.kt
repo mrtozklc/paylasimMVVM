@@ -171,7 +171,6 @@ class KampanyaOlusturFragment : Fragment() {
 
         mauthLis= FirebaseAuth.AuthStateListener {
             val user=FirebaseAuth.getInstance().currentUser
-            Log.e("auth", "auth çalıstı$user")
 
             if (user==null){
                 findNavController().popBackStack(R.id.kampanyaOlusturFragment,true)

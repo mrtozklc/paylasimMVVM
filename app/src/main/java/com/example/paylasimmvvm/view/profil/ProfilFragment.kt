@@ -69,6 +69,7 @@ class ProfilFragment : Fragment() {
 
         profilBadges= ViewModelProvider(this)[BadgeViewModel::class.java]
         profilBadges.refreshIsletmeYorumlarBadge(auth.currentUser!!.uid)
+        profilBadges.refreshBadge()
         profilKampanyalarViewModeli.getMenus(auth.currentUser!!.uid)
 
 
@@ -161,11 +162,10 @@ class ProfilFragment : Fragment() {
                         Navigation.findNavController(view).navigate(action)
 
                     }
+
                     R.id.sabitkampanyaOlustur_id -> {
 
 
-                        val action=ProfilFragmentDirections.actionProfilFragmentToBiralarFragment()
-                        Navigation.findNavController(view).navigate(action)
                     }
                     R.id.profilDuzenle_id -> {
 

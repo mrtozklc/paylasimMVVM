@@ -17,6 +17,7 @@ import com.example.paylasimmvvm.util.Bildirimler.mref
 import com.example.paylasimmvvm.util.EventbusData
 import com.example.paylasimmvvm.util.TimeAgo
 import com.example.paylasimmvvm.view.profil.ProfilFragmentDirections
+import com.github.chrisbanes.photoview.PhotoView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -52,7 +53,7 @@ class ProfilFragmentRecyclerAdapter (var context: Context, private var tumKampan
         private var userNameTitle = binding.kullaniciAdiTepe
         private var gonderi = binding.kampanyaPhoto
         private var userNameveAciklama = binding.textView21
-        private var kampanyaTarihi = binding.kampanyaTarihiId
+        private var kampanyaTarihi = binding.kampanyaTarihi
         private var yorumYap = binding.imgYorum
         var gonderiBegen = binding.imgBegen
         var begenmeSayisi=binding.begenmeSayisi
@@ -68,7 +69,7 @@ class ProfilFragmentRecyclerAdapter (var context: Context, private var tumKampan
 
 
             userNameTitle.text = anlikGonderi.userName
-            if (anlikGonderi.userPhotoURL!!.isNotEmpty()){
+            if (anlikGonderi.userPhotoURL!=null){
                 Picasso.get().load(anlikGonderi.userPhotoURL).placeholder(R.drawable.ic_baseline_person).error(R.drawable.ic_baseline_person).fit().centerCrop().into(profileImage)
 
 
@@ -85,6 +86,26 @@ class ProfilFragmentRecyclerAdapter (var context: Context, private var tumKampan
 
             begeniKontrolu(anlikGonderi)
             yorumlariGoster(anlikGonderi)
+
+            gonderi.setOnClickListener {
+
+                val builder = android.app.AlertDialog.Builder(itemView.context)
+
+                val imageView = PhotoView(itemView.context)
+                imageView.adjustViewBounds = true
+
+                Picasso.get().load(anlikGonderi.postURL).into(imageView)
+
+                builder.setView(imageView)
+                val alertDialog = builder.create()
+                alertDialog.setCanceledOnTouchOutside(true)
+                imageView.setOnClickListener {
+                    alertDialog.dismiss()
+                }
+                alertDialog.show()
+
+            }
+
 
 
 

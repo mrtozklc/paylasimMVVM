@@ -20,26 +20,26 @@
         app:layout_constraintTop_toTopOf="@+id/sifre_onay"
         app:layout_constraintVertical_bias="0.619" />
 
-    <View
+    <ImageView
         android:id="@+id/sifre_onay"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
-        android:background="@drawable/ic_launcher_check"
+        app:srcCompat="@drawable/ic_baseline_check_24"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <View
+    <ImageView
         android:id="@+id/sifre_back"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
-        android:src="@drawable/ic_launcher_close"
-        android:background="@drawable/ic_launcher_close"
+        app:srcCompat="@drawable/ic_baseline_close_24"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        />
 
     <EditText
         android:id="@+id/mevcutSifre_id"
@@ -52,7 +52,6 @@
         android:ems="10"
         android:hint="mevcut şifre"
         android:inputType="textPassword"
-
         android:padding="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -67,7 +66,7 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         android:ems="10"
-        android:hint="yeni şifre tekrar"
+        android:hint="yeni şifre(tekrar)"
         android:inputType="textPassword"
 
 
@@ -85,7 +84,7 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         android:ems="10"
-        android:hint="yeni Şifre"
+        android:hint="yeni şifre"
 
 
         android:inputType="textPassword"

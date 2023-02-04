@@ -1,24 +1,18 @@
 package com.example.paylasimmvvm.view.icecekler
 
-import android.R
-import android.os.Build
-import android.os.Bundle
-import android.util.Log
 
+import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
 import android.widget.SearchView
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.paylasimmvvm.adapter.KokteyllerRecyclerAdapter
 import com.example.paylasimmvvm.databinding.FragmentKokteyllerFiltreBinding
-import com.example.paylasimmvvm.model.Drink
+import com.example.paylasimmvvm.viewmodel.BadgeViewModel
 import com.example.paylasimmvvm.viewmodel.KokteylViewModel
 
 
@@ -28,8 +22,8 @@ class KokteyllerFiltreFragment : Fragment() {
     private lateinit var recyclerAdapter: KokteyllerRecyclerAdapter
     private lateinit var kokteylViewModeli: KokteylViewModel
     private var tumKokteyller=ArrayList<String>()
-    var secilenFiltre:String?=null
     lateinit var searchView: SearchView
+    private lateinit var badgeViewModeli: BadgeViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,6 +45,8 @@ class KokteyllerFiltreFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         kokteylViewModeli= ViewModelProvider(this)[KokteylViewModel::class.java]
+        badgeViewModeli= ViewModelProvider(this)[BadgeViewModel::class.java]
+        badgeViewModeli.refreshBadge()
 
 
 
@@ -61,54 +57,18 @@ class KokteyllerFiltreFragment : Fragment() {
         recyclerAdapter= KokteyllerRecyclerAdapter(tumKokteyller)
         binding.recyclerKokteyl.adapter=recyclerAdapter
 
-        val filtre = java.util.ArrayList<String>()
-        filtre.add("Kategoriler")
-        filtre.add("Bardaklar")
-        filtre.add("İçerikler")
-
-
-        val spinnerAdapter = ArrayAdapter(requireActivity(), R.layout.simple_list_item_1, filtre)
-        binding.spinner2.adapter = spinnerAdapter
-
-
-
-        binding.spinner2.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
-            @RequiresApi(Build.VERSION_CODES.N)
-            override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
-
-                secilenFiltre = binding.spinner2.selectedItem.toString()
-
-
-                if (secilenFiltre.equals("Kategoriler")){
-
-                    kokteylViewModeli.getCategoryList("list")
-
-                }else if (secilenFiltre.equals("Bardaklar")){
-
-                    kokteylViewModeli.getGlassList("list")
-
-                }else{
-                    kokteylViewModeli.getIngredientList("list")
-
-                }
-
-            }
-
-            override fun onNothingSelected(p0: AdapterView<*>?) {
-            }
-
-        }
+        kokteylViewModeli.getCategoryList("list")
 
         binding.searchh.setOnClickListener {
-            binding.spinner2.visibility=View.INVISIBLE
             binding.edittextSearch.visibility=View.VISIBLE
             binding.imageViewBack.visibility=View.VISIBLE
             kokteylViewModeli.getCocktailNameList("name")
         }
-        binding.imageViewBack.setOnClickListener {
-            binding.spinner2.visibility=View.VISIBLE
+            binding.imageViewBack.setOnClickListener {
             binding.edittextSearch.visibility=View.INVISIBLE
             binding.imageViewBack.visibility=View.INVISIBLE
+            kokteylViewModeli.getCategoryList("list")
+
 
         }
 
@@ -134,7 +94,6 @@ class KokteyllerFiltreFragment : Fragment() {
                                     it!!.contains(query, true)
                                 }
                                 recyclerAdapter.kokteylListesiniGuncelle(filteredList as List<String>)
-                                Log.e("gelenfiltreleme",""+filteredList)
                             }
 
                             return false
@@ -171,26 +130,7 @@ kokteylViewModeli.kokteylKategorileriLiveData.observe(viewLifecycleOwner){
 
     }
 }
-        kokteylViewModeli.kokteylIcerikleriLiveData.observe(viewLifecycleOwner){
-            it.let {
-                if (it!=null){
-                    binding.recyclerKokteyl.visibility=View.VISIBLE
-                    recyclerAdapter.kokteylListesiniGuncelle(it as List<String>)
 
-                }
-
-            }
-        }
-        kokteylViewModeli.kokteylBardaklariLiveData.observe(viewLifecycleOwner){
-            it.let {
-                if (it!=null){
-                    binding.recyclerKokteyl.visibility=View.VISIBLE
-                    recyclerAdapter.kokteylListesiniGuncelle(it as List<String>)
-
-                }
-
-            }
-        }
 
         kokteylViewModeli.kokteylHataMesaji.observe(viewLifecycleOwner){
             it.let {

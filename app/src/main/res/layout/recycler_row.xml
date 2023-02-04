@@ -29,11 +29,10 @@
 
     <ImageView
         android:id="@+id/post_mesaj"
-        android:background="@drawable/ic_launcher_mesaj_foreground"
-
+        android:layout_width="50dp"
+        android:layout_height="50dp"
         android:layout_marginEnd="8dp"
-        android:layout_width="72dp"
-        android:layout_height="60dp"
+        app:srcCompat="@drawable/ic_launcher_mesaj_foreground"
 
         app:layout_constraintBottom_toBottomOf="@+id/kullaniciAdiTepe"
         app:layout_constraintEnd_toEndOf="parent"
@@ -130,7 +129,7 @@
         app:layout_constraintTop_toBottomOf="@+id/begenmeSayisi" />
 
     <TextView
-        android:id="@+id/kampanyaTarihi_id"
+        android:id="@+id/kampanyaTarihi"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -170,8 +169,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
-        app:layout_constraintBottom_toBottomOf="@+id/kampanyaTarihi_id"
-        app:layout_constraintStart_toEndOf="@+id/kampanyaTarihi_id"
-        app:layout_constraintTop_toTopOf="@+id/kampanyaTarihi_id" />
+        app:layout_constraintBottom_toBottomOf="@+id/kampanyaTarihi"
+        app:layout_constraintStart_toEndOf="@+id/kampanyaTarihi"
+        app:layout_constraintTop_toTopOf="@+id/kampanyaTarihi" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

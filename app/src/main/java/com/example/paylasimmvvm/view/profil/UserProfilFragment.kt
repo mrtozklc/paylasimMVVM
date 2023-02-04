@@ -1,6 +1,5 @@
 package com.example.paylasimmvvm.view.profil
 
-import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -15,11 +14,13 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.paylasimmvvm.R
 import com.example.paylasimmvvm.adapter.MenulerGridAdapter
+import com.example.paylasimmvvm.adapter.MudavimlerRecyclerAdapter
 import com.example.paylasimmvvm.adapter.UserProfilRecyclerAdapter
 import com.example.paylasimmvvm.databinding.FragmentUserProfilBinding
 import com.example.paylasimmvvm.model.KullaniciBilgileri
 import com.example.paylasimmvvm.model.KullaniciKampanya
 import com.example.paylasimmvvm.model.Menuler
+import com.example.paylasimmvvm.model.Mudavimler
 import com.example.paylasimmvvm.util.EventbusData
 import com.example.paylasimmvvm.viewmodel.BadgeViewModel
 import com.example.paylasimmvvm.viewmodel.ProfilViewModel
@@ -37,18 +38,19 @@ class UserProfilFragment : Fragment() {
     private lateinit var auth : FirebaseAuth
     lateinit var mref: DatabaseReference
     private var tumGonderiler= ArrayList<KullaniciKampanya>()
+    private var tumMudavimler= ArrayList<Mudavimler>()
     private lateinit var userProfilKampanyalarViewModeli: ProfilViewModel
     private lateinit var recyclerviewadapter: UserProfilRecyclerAdapter
+    private lateinit var recyclerMudavimler:MudavimlerRecyclerAdapter
     private lateinit var profilBadges:BadgeViewModel
     private var tumMenuler=ArrayList<Menuler>()
+    var tiklananUser=""
+    var mudavimSayi=null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         (activity as AppCompatActivity).supportActionBar?.hide()
     }
-
-
-
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -61,29 +63,27 @@ class UserProfilFragment : Fragment() {
         // Inflate the layout for this fragment
         return view
     }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
 
-
-        arguments?.let {
+        arguments?.let { it ->
             val secilenUser=UserProfilFragmentArgs.fromBundle(it).userId
+            tiklananUser=secilenUser
             userProfilKampanyalarViewModeli= ViewModelProvider(this)[ProfilViewModel::class.java]
-            userProfilKampanyalarViewModeli.refreshProfilKampanya(secilenUser)
-
             profilBadges= ViewModelProvider(this)[BadgeViewModel::class.java]
             profilBadges.refreshIsletmeYorumlarBadge(secilenUser)
             userProfilKampanyalarViewModeli.getMenus(secilenUser)
-
-
-            observeliveData()
+            userProfilKampanyalarViewModeli.getMudavimler(secilenUser)
+            userProfilKampanyalarViewModeli.refreshProfilKampanya(secilenUser)
             kullaniciBilgileriVerileriniAl(secilenUser)
-
             binding.paylasimlar.setOnClickListener {
                 binding.paylasimlar.isEnabled=false
                 binding.menu.isEnabled=true
                 binding.yorumlar.isEnabled=true
+                binding.mudavimler.isEnabled=true
+                binding.mudavimOl.visibility=View.VISIBLE
+
                 userProfilKampanyalarViewModeli= ViewModelProvider(this)[ProfilViewModel::class.java]
                 userProfilKampanyalarViewModeli.refreshProfilKampanya(secilenUser)
                 userProfilKampanyalarViewModeli.gonderiYok.observe(viewLifecycleOwner){
@@ -102,7 +102,6 @@ class UserProfilFragment : Fragment() {
                     }
                 }
             }
-
             binding.imageViewBack.setOnClickListener {
                 findNavController().navigateUp()
             }
@@ -111,6 +110,8 @@ class UserProfilFragment : Fragment() {
                 binding.menu.isEnabled=false
                 binding.paylasimlar.isEnabled=true
                 binding.yorumlar.isEnabled=true
+                binding.mudavimler.isEnabled=true
+                binding.mudavimOl.visibility=View.INVISIBLE
 
 
                 userProfilKampanyalarViewModeli.getMenus(secilenUser)
@@ -137,6 +138,8 @@ class UserProfilFragment : Fragment() {
                 binding.yorumlar.isEnabled=false
                 binding.menu.isEnabled=true
                 binding.paylasimlar.isEnabled=true
+                binding.mudavimler.isEnabled=true
+
 
                 EventBus.getDefault()
                     .postSticky(EventbusData.YorumYapilacakGonderininIDsiniGonder(secilenUser))
@@ -149,22 +152,134 @@ class UserProfilFragment : Fragment() {
 
             }
 
+            binding.mudavimOl.setOnClickListener {
+
+                if (binding.mudavimOl.text == "Müdavim Ol") {
+                    userProfilKampanyalarViewModeli.getMudavimler(secilenUser)
+                    val mudavim = HashMap<String, Any>()
+                    mudavim["mudavimOlma_zamani"] = ServerValue.TIMESTAMP
+                    mudavim["mudavim_id"] = auth.currentUser!!.uid
+                    mref.child("mudavimler").child(secilenUser).child(auth.uid!!).setValue(mudavim)
+                    binding.mudavimOl.setText("Takibi Bırak")
+
+                    mref.child("users").child("isletmeler").child(secilenUser).child("user_detail")
+                        .child("mudavim_sayisi")
+                        .addListenerForSingleValueEvent(object : ValueEventListener {
+                            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                                val currentValue = dataSnapshot.getValue(Int::class.java)!!!!
+                                mref.child("users").child("isletmeler").child(secilenUser)
+                                    .child("user_detail").child("mudavim_sayisi")
+                                    .setValue(currentValue + 1)
+                            }
+
+                            override fun onCancelled(databaseError: DatabaseError) {
+                                // Handle error
+                            }
+                        })
+
+
+
+
+                    userProfilKampanyalarViewModeli.mudavimlerMutableLiveData.observe(viewLifecycleOwner){ Mudavimler->
+                        Mudavimler.let {
+                            if (Mudavimler!=null){
+
+                                tumMudavimler.clear()
+                                tumMudavimler.addAll(Mudavimler)
+
+                                Log.e("eklendi",""+Mudavimler.size)
+                                Log.e("eklendiarray",""+tumMudavimler.size)
+                            }
+                        }
+                    }
+                } else {
+                    userProfilKampanyalarViewModeli.getMudavimler(secilenUser)
+                    mref.child("mudavimler").child(secilenUser).child(auth.uid!!).removeValue()
+                    binding.mudavimOl.setText("Müdavim Ol")
+
+                    mref.child("users").child("isletmeler").child(secilenUser).child("user_detail")
+                        .child("mudavim_sayisi")
+                        .addListenerForSingleValueEvent(object : ValueEventListener {
+                            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                                val currentValue = dataSnapshot.getValue(Int::class.java)!!!!
+                                mref.child("users").child("isletmeler").child(secilenUser)
+                                    .child("user_detail").child("mudavim_sayisi")
+                                    .setValue(currentValue - 1)
+                            }
+
+                            override fun onCancelled(databaseError: DatabaseError) {
+                                // Handle error
+                            }
+                        })
+
+
+                    userProfilKampanyalarViewModeli.mudavimlerMutableLiveData.observe(viewLifecycleOwner){ Mudavimler->
+                        Mudavimler.let {
+                            if (Mudavimler!=null){
+
+                                tumMudavimler.clear()
+                                tumMudavimler.addAll(Mudavimler)
+                            }
+                        }
+                    }
+                }
+            }
+            binding.mudavimler.setOnClickListener {
+
+                binding.mudavimler.isEnabled=false
+                binding.menu.isEnabled=true
+                binding.paylasimlar.isEnabled=true
+                binding.yorumlar.isEnabled=true
+                binding.mudavimOl.visibility=View.INVISIBLE
+                userProfilKampanyalarViewModeli.getMudavimler(secilenUser)
+                val layoutManager= LinearLayoutManager(activity)
+                binding.recyclerProfil.layoutManager=layoutManager
+                recyclerMudavimler= MudavimlerRecyclerAdapter(tumMudavimler)
+                binding.recyclerProfil.adapter=recyclerMudavimler
+                binding.recyclerProfil.visibility = View.VISIBLE
+                binding.gridId.visibility=View.GONE
+
+                userProfilKampanyalarViewModeli.mudavimYok.observe(viewLifecycleOwner){
+                    it.let {
+                        if(it){
+                            binding.gonderiYok.text = "Henüz hiç müdavim yok."
+                            binding.gonderiYok.visibility=View.VISIBLE
+                            binding.gridId.visibility=View.GONE
+                            binding.recyclerProfil.visibility=View.GONE
+
+                        }else{
+                            binding.gonderiYok.visibility=View.GONE
+
+                        }
+                    }
+                }
+                userProfilKampanyalarViewModeli.mudavimlerMutableLiveData.observe(viewLifecycleOwner){
+                    it.let {
+                        if (it!=null){
+                            val layoutManager= LinearLayoutManager(activity)
+                            binding.recyclerProfil.layoutManager=layoutManager
+                            binding.recyclerProfil.adapter=recyclerMudavimler
+                            binding.recyclerProfil.visibility = View.VISIBLE
+                            binding.gridId.visibility=View.GONE
+                            binding.gonderiYok.visibility=View.GONE
+                            recyclerMudavimler= MudavimlerRecyclerAdapter(tumMudavimler)
+                            recyclerMudavimler.mudavimListesiniGuncelle(it)
+                        }
+                    }
+                }
+            }
             binding.mesajGonder.setOnClickListener {
                 val action=UserProfilFragmentDirections.actionUserProfilFragmentToChatFragment(secilenUser)
                 Navigation.findNavController(it).navigate(action)
             }
-
         }
-
+        observeliveData()
 
         val layoutManager= LinearLayoutManager(activity)
         binding.recyclerProfil.layoutManager=layoutManager
         recyclerviewadapter= UserProfilRecyclerAdapter(requireActivity(),tumGonderiler)
         binding.recyclerProfil.adapter=recyclerviewadapter
-
-
     }
-
     private fun kullaniciBilgileriVerileriniAl(secilenUser:String) {
         val user = Firebase.auth.currentUser
         if (user != null) {
@@ -177,20 +292,6 @@ class UserProfilFragment : Fragment() {
 
                       //  binding.tvMesaj.isEnabled=true
                         binding.kullaniciadiId.text = okunanKullanici!!.user_name
-
-
-
-                      //  binding.tvPostt.text = okunanKullanici.user_detail!!.post
-
-
-                        if (!okunanKullanici.user_detail!!.biography.isNullOrEmpty()){
-
-                           // binding.tvBioo.text = okunanKullanici.user_detail!!.biography
-
-
-                        }
-
-
 
 
                         val imgUrl:String= okunanKullanici.user_detail!!.profile_picture!!
@@ -219,17 +320,16 @@ class UserProfilFragment : Fragment() {
                      //   binding.tvMesaj.isEnabled=true
 
                         binding.kullaniciadiId.text = okunanKullanici!!.user_name
-                      //  binding.tvPostt.text = okunanKullanici.user_detail!!.post
 
                         if (!okunanKullanici.user_detail!!.biography.isNullOrEmpty()){
-                        //    binding.tvBioo.text = okunanKullanici.user_detail!!.biography
 
 
                         }
                         binding.menu.visibility=View.GONE
                         binding.yorumlar.visibility=View.GONE
-                        binding.spcaID.visibility=View.GONE
-                        binding.spcaID2.visibility=View.GONE
+                        binding.mudavimler.visibility=View.GONE
+                        binding.mudavimOl.visibility=View.GONE
+
                         binding.paylasimlar.isClickable=false
 
                         val imgUrl:String= okunanKullanici.user_detail!!.profile_picture!!
@@ -251,14 +351,9 @@ class UserProfilFragment : Fragment() {
     }
 
     private fun observeliveData(){
-
-
         val gridView = requireActivity().findViewById(R.id.grid_id) as GridView
-
         val customAdapter = MenulerGridAdapter(tumMenuler)
-
         gridView.adapter = customAdapter
-
         userProfilKampanyalarViewModeli.profilKampanya.observe(viewLifecycleOwner, androidx.lifecycle.Observer { profilKampanya->
             profilKampanya.let {
                 Collections.sort(profilKampanya,object : Comparator<KullaniciKampanya> {
@@ -267,16 +362,17 @@ class UserProfilFragment : Fragment() {
                             return -1
                         }else return 1
                     }
-
                 })
-
+                val layoutManager= LinearLayoutManager(activity)
+                binding.recyclerProfil.layoutManager=layoutManager
+                recyclerviewadapter= UserProfilRecyclerAdapter(requireActivity(),tumGonderiler)
+                binding.recyclerProfil.adapter=recyclerviewadapter
                 binding.recyclerProfil.visibility = View.VISIBLE
                 binding.gridId.visibility=View.GONE
                 recyclerviewadapter.kampanyalariGuncelle(profilKampanya)
-                binding.paylasimlar.text = "Paylaşımlar [${profilKampanya.size}]"
+                binding.paylasimlar.text = "Paylaşımlar \n[${profilKampanya.size}]"
             }
         })
-
         userProfilKampanyalarViewModeli.profilMenu.observe(viewLifecycleOwner) { profilMenu ->
             profilMenu.let {
                 if (profilMenu!=null){
@@ -284,24 +380,50 @@ class UserProfilFragment : Fragment() {
                     customAdapter.menuleriGuncelle(profilMenu)
                     binding.recyclerProfil.visibility=View.GONE
                     binding.gonderiYok.visibility=View.GONE
-                    binding.menu.text = "Menu [${profilMenu.size}]"
+                    binding.menu.text = "Menu \n[${profilMenu.size}]"
                 }
             }
         }
-
         profilBadges.isletmeYorumlarBadgeLive.observe(viewLifecycleOwner) {yorumSayisi ->
             yorumSayisi.let {
 
                 if (yorumSayisi!=null){
 
-                    binding.yorumlar.text = "Yorumlar $yorumSayisi"
-
+                    binding.yorumlar.text = "Yorumlar \n$yorumSayisi"
                 }
-
             }
-
         }
 
+        userProfilKampanyalarViewModeli.mudavimSayisiMutableLiveData.observe(viewLifecycleOwner){ Mudavimler->
+            Mudavimler.let {
+                if (Mudavimler!=null){
+                    binding.mudavimler.text="Müdavim \n${Mudavimler}"
+                }
+            }
+        }
+
+        userProfilKampanyalarViewModeli.mudavimlerMutableLiveData.observe(viewLifecycleOwner){ Mudavimler->
+            Mudavimler.let {
+                if (Mudavimler!=null){
+                    var isMudavim = false
+                    for (mudavim in Mudavimler) {
+                        if (auth.currentUser != null && auth.currentUser!!.uid == mudavim.mudavim_id) {
+                            isMudavim = true
+                            break
+                        }
+                    }
+
+                    if (isMudavim) {
+                        binding.mudavimOl.setText("Takibi Bırak")
+                    } else {
+                        binding.mudavimOl.setText("Müdavim Ol")
+                    }
+                    recyclerMudavimler= MudavimlerRecyclerAdapter(tumMudavimler)
+                    recyclerMudavimler.mudavimListesiniGuncelle(Mudavimler)
+
+                }
+            }
+        }
         userProfilKampanyalarViewModeli.gonderiYok.observe(viewLifecycleOwner){
             it.let {
                 if(it){
@@ -312,13 +434,9 @@ class UserProfilFragment : Fragment() {
 
                 }else{
                     binding.gonderiYok.visibility=View.GONE
-
-
                 }
             }
-
         }
-
         userProfilKampanyalarViewModeli.yukleniyor.observe(viewLifecycleOwner){
             it.let {
                 if(it){
@@ -329,24 +447,16 @@ class UserProfilFragment : Fragment() {
 
                 }else{
                     binding.progresBarKokteyl.visibility=View.GONE
-
                 }
             }
         }
-
     }
-
     override fun onResume() {
         super.onResume()
         (activity as AppCompatActivity?)!!.supportActionBar!!.hide()
     }
-
     override fun onStop() {
         super.onStop()
         (activity as AppCompatActivity?)!!.supportActionBar!!.show()
-
-
     }
-
-
 }

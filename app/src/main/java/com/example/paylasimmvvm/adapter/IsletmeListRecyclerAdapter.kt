@@ -36,14 +36,11 @@ class IsletmeListRecyclerAdapter(var context: Context, private var tumKampanyala
         private var profileImage = binding.profilImage
         private var userNameTitle = binding.kullaniciAdiTepe
         private var isletmeTuru = binding.textView21
-        private var kampanyaTarihi = binding.kampanyaTarihiId
         var mesajGonder = binding.imgMesaj
         private var tumLayout=binding.tumLayout
-        // var begenmeSayisi=binding.begenmeSayisi
-        //  var yorumlariGoster=binding.tvYorumGoster
-        //  private var postMenu=binding.postMesaj
         var muzikTuru=binding.geriSayimId
         var mesafe=binding.twMesafe
+        var mudavimSayisi=binding.mudavimSayisi
 
 
         @SuppressLint("SetTextI18n")
@@ -60,7 +57,6 @@ class IsletmeListRecyclerAdapter(var context: Context, private var tumKampanyala
 
                         val latitude = snapshot.child("latitude").value.toString()
                         val longitude = snapshot.child("longitude").value.toString()
-                        Log.e("gelenisletrme",""+latitude)
                         if (snapshot.exists()){
                             if (anlikGonderi.isletmeLatitude!=0.0 && anlikGonderi.isletmeLongitude!=0.0) {
 
@@ -92,6 +88,8 @@ class IsletmeListRecyclerAdapter(var context: Context, private var tumKampanyala
                     }
                 })
 
+
+
             userNameTitle.text = anlikGonderi.userName
 
 
@@ -111,18 +109,14 @@ class IsletmeListRecyclerAdapter(var context: Context, private var tumKampanyala
 
             muzikTuru.text=anlikGonderi.muzik_turu
 
+            mudavimSayisi.text="Müdavim Sayısı: ${anlikGonderi.mudavim_sayisi.toString()}"
+
+
             tumLayout.setOnClickListener {
 
-                if (anlikGonderi.userID!! == FirebaseAuth.getInstance().currentUser!!.uid){
-
-                    val action=IsletmeListFragmentDirections.actionIsletmeListFragmentToProfilFragment()
-                     Navigation.findNavController(it).navigate(action)
-
-                }else{
-                   val action= IsletmeListFragmentDirections.actionIsletmeListFragmentToUserProfilFragment(anlikGonderi.userID!!)
-                   Navigation.findNavController(it).navigate(action)
-
-
+                if (anlikGonderi.userID!! != FirebaseAuth.getInstance().currentUser!!.uid){
+                    val action= IsletmeListFragmentDirections.actionIsletmeListFragmentToUserProfilFragment(anlikGonderi.userID!!)
+                    Navigation.findNavController(it).navigate(action)
 
                 }
             }

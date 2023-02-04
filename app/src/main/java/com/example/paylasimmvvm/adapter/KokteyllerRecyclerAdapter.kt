@@ -20,10 +20,8 @@ class KokteyllerRecyclerAdapter(private val tumKokteyller: ArrayList<String>):Re
             val binding= RecyclerRowKokteylFiltersBinding.bind(itemView)
 
                 binding.kokteylFilters.text=gelenKokteyl
-            Log.e("gelenadapterbilgisi",""+gelenKokteyl)
 
             binding.tumLayout.setOnClickListener {
-                Log.e("gelenadapterbilgisi",""+gelenKokteyl)
                 val action=KokteyllerFiltreFragmentDirections.actionKokteyllerFragmentToKokteyllerFragment2(gelenKokteyl)
                 Navigation.findNavController(it).navigate(action)
 

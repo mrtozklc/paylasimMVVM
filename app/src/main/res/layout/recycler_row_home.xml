@@ -9,59 +9,59 @@
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/profil_image"
-        android:layout_width="69dp"
+        android:layout_width="80dp"
         android:layout_height="80dp"
         android:layout_marginStart="8dp"
-        app:layout_constraintBottom_toBottomOf="@+id/geri_sayim_id"
+        android:layout_marginTop="8dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/kullaniciAdiTepe" />
+        app:layout_constraintTop_toBottomOf="@+id/kullaniciAdiTepe" />
 
     <TextView
-        android:id="@+id/kampanyaTarihi_id"
+        android:id="@+id/mudavimSayisi"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
+
         android:layout_marginTop="8dp"
-        android:text=".. kişi burdaydı"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/cizgi"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/geri_sayim_id" />
+        app:layout_constraintTop_toBottomOf="@+id/profil_image" />
 
     <TextView
         android:id="@+id/kullaniciAdiTepe"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:text="kullanici adı"
+
         android:textAlignment="center"
         android:textColor="@color/mavi"
-        android:textSize="20sp"
+        android:textSize="22sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/profil_image"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/geri_sayim_id"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
 
-        android:layout_margin="10dp"
-        android:layout_marginTop="12dp"
-        android:text="muzik türü"
-        app:layout_constraintEnd_toStartOf="@+id/tw_mesafe"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/profil_image"
-        app:layout_constraintTop_toBottomOf="@+id/textView21" />
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintBottom_toBottomOf="@+id/profil_image"
+        app:layout_constraintEnd_toStartOf="@+id/img_mesaj"
+        app:layout_constraintStart_toEndOf="@+id/profil_image" />
 
     <TextView
         android:id="@+id/tw_mesafe"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
-        android:text="mesafe"
-        app:layout_constraintBottom_toBottomOf="@+id/kampanyaTarihi_id"
+
+        app:layout_constraintBottom_toBottomOf="@+id/mudavimSayisi"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/kampanyaTarihi_id"
+        app:layout_constraintTop_toTopOf="@+id/mudavimSayisi"
         app:layout_constraintVertical_bias="0.0" />
 
     <ImageView
@@ -69,7 +69,7 @@
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_marginEnd="8dp"
-        app:layout_constraintBottom_toBottomOf="@+id/kampanyaTarihi_id"
+        app:layout_constraintBottom_toBottomOf="@+id/profil_image"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/profil_image"
         app:srcCompat="@drawable/ic_launcher_mesaj_foreground" />
@@ -78,21 +78,23 @@
         android:id="@+id/textView21"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:text="isletme türü"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
         android:textSize="18sp"
         android:textStyle="normal"
-        app:layout_constraintStart_toEndOf="@+id/profil_image"
-        app:layout_constraintTop_toBottomOf="@+id/kullaniciAdiTepe" />
+        app:layout_constraintBottom_toTopOf="@+id/geri_sayim_id"
+        app:layout_constraintEnd_toStartOf="@+id/img_mesaj"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toEndOf="@+id/profil_image" />
 
     <View
         android:id="@+id/cizgi"
         android:layout_width="match_parent"
         android:layout_height="2dp"
-        android:layout_marginTop="2dp"
         android:background="@color/koyugri"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/kampanyaTarihi_id" />
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

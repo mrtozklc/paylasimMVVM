@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.paylasimmvvm.adapter.MesajlarRecyclerAdapter
 import com.example.paylasimmvvm.databinding.FragmentMesajlarBinding
 import com.example.paylasimmvvm.model.Mesajlar
+import com.example.paylasimmvvm.viewmodel.BadgeViewModel
 import com.example.paylasimmvvm.viewmodel.MesajlarViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
@@ -29,6 +30,7 @@ class MesajlarFragment : Fragment() {
     private lateinit var recyclerAdapter:MesajlarRecyclerAdapter
     private lateinit var mesajlarViewModeli:MesajlarViewModel
     var tumMesajlar=ArrayList<Mesajlar>()
+    private lateinit var badgeViewModeli: BadgeViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,6 +58,8 @@ class MesajlarFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         mesajlarViewModeli= ViewModelProvider(this)[MesajlarViewModel::class.java]
         mesajlarViewModeli.refreshMesajlar()
+        badgeViewModeli= ViewModelProvider(this)[BadgeViewModel::class.java]
+        badgeViewModeli.refreshBadge()
 
 
 

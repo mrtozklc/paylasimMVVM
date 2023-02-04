@@ -1,27 +1,18 @@
 package com.example.paylasimmvvm.view.icecekler
 
-import android.content.Context
-import android.graphics.Color
-import android.graphics.Typeface
 import android.os.Bundle
-import android.text.InputType
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.EditorInfo
-import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.paylasimmvvm.R
 import com.example.paylasimmvvm.adapter.KokteyllerGridAdapter
 
-import com.example.paylasimmvvm.adapter.KokteyllerRecyclerAdapter2
-import com.example.paylasimmvvm.adapter.MenulerGridAdapter
 import com.example.paylasimmvvm.databinding.FragmentKokteyller2Binding
 import com.example.paylasimmvvm.model.Drink
 import com.example.paylasimmvvm.viewmodel.KokteylViewModel
@@ -79,8 +70,6 @@ class KokteyllerFragment2 : Fragment() {
 
 
             kokteylViewModeli.getCategoryList("list")
-            kokteylViewModeli.getGlassList("list")
-            kokteylViewModeli.getIngredientList("list")
             kokteylViewModeli.getCocktailNameList("name")
 
             kokteylViewModeli.kokteylIsimleriLiveData.observe(viewLifecycleOwner) {
@@ -88,17 +77,8 @@ class KokteyllerFragment2 : Fragment() {
 
             }
 
-
             kokteylViewModeli.kokteylKategorileriLiveData.observe(viewLifecycleOwner) {
                 if (icecekOzellik in it) kokteylViewModeli.getCategoriesItem(icecekOzellik)
-            }
-
-            kokteylViewModeli.kokteylBardaklariLiveData.observe(viewLifecycleOwner) {
-                if (icecekOzellik in it) kokteylViewModeli.getGlassItem(icecekOzellik)
-            }
-
-            kokteylViewModeli.kokteylIcerikleriLiveData.observe(viewLifecycleOwner) {
-                if (icecekOzellik in it) kokteylViewModeli.getIngredientsItem(icecekOzellik)
             }
 
 
@@ -140,7 +120,6 @@ class KokteyllerFragment2 : Fragment() {
                                     it.kokteylIsim!!.contains(query, true)
                                 }
                                 customAdapter.kokteylListesiniGuncelle(filteredList)
-                                Log.e("gelenfiltreleme",""+filteredList)
                             }
 
                             return false

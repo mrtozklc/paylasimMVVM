@@ -122,9 +122,6 @@ class YorumlarFragment : Fragment() {
                 binding.recyclerviewYorumlar.smoothScrollToPosition(binding.recyclerviewYorumlar.adapter!!.itemCount)
 
 
-
-
-
             }
         }
 
@@ -191,9 +188,14 @@ class YorumlarFragment : Fragment() {
                             sonuc= Html.fromHtml(userNameveYorum)
                         }
                         kullaniciAdiveYorum.text = sonuc
-                        Picasso.get().load(snapshot.getValue(KullaniciBilgileri::class.java)!!.user_detail!!.profile_picture!!.toString()).placeholder(R.drawable.ic_baseline_person).error(R.drawable.ic_baseline_person).into(yorumYapanUserPhoto)
+                        Log.e("gelenprofil",""+snapshot.getValue(KullaniciBilgileri::class.java)!!.user_detail!!.profile_picture)
+                        if (snapshot.getValue(KullaniciBilgileri::class.java)!!.user_detail!!.profile_picture!!.isNotEmpty()){
+                            Picasso.get().load(snapshot.getValue(KullaniciBilgileri::class.java)!!.user_detail!!.profile_picture!!.toString()).placeholder(R.drawable.ic_baseline_person).error(R.drawable.ic_baseline_person).into(yorumYapanUserPhoto)
 
-                    }else{
+                        }else{
+                            Picasso.get().load(R.drawable.ic_baseline_person).placeholder(R.drawable.ic_baseline_person).error(R.drawable.ic_baseline_person).into(yorumYapanUserPhoto)
+
+                        }
 
                     }
 
@@ -217,23 +219,15 @@ class YorumlarFragment : Fragment() {
                             Html.fromHtml(userNameveYorum)
                         }
                         kullaniciAdiveYorum.text = sonuc
-                        if (!snapshot.getValue(KullaniciBilgileri::class.java)!!.user_detail!!.profile_picture!!.toString().isEmpty())
+                        if (snapshot.getValue(KullaniciBilgileri::class.java)!!.user_detail!!.profile_picture!!.toString().isNotEmpty())
                          {
                              Picasso.get().load(snapshot.getValue(KullaniciBilgileri::class.java)!!.user_detail!!.profile_picture!!.toString()).placeholder(R.drawable.ic_baseline_person).error(R.drawable.ic_baseline_person).into(yorumYapanUserPhoto)
-
-
 
                          }else {
 
                            Picasso.get().load(R.drawable.ic_baseline_person).placeholder(R.drawable.ic_baseline_person).error(R.drawable.ic_baseline_person).into(yorumYapanUserPhoto)
-
-
-
                         }
-
-
                     }
-
                 }
 
                 override fun onCancelled(error: DatabaseError) {

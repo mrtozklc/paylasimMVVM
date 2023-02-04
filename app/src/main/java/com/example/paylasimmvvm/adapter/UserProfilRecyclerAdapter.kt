@@ -47,7 +47,7 @@ class UserProfilRecyclerAdapter(var context: Context, private var tumKampanyalar
         private var userNameTitle = binding.kullaniciAdiTepe
         private var gonderi = binding.kampanyaPhoto
         private var userNameveAciklama = binding.textView21
-        private var kampanyaTarihi = binding.kampanyaTarihiId
+        private var kampanyaTarihi = binding.kampanyaTarihi
         private var yorumYap = binding.imgYorum
         var gonderiBegen = binding.imgBegen
         var begenmeSayisi=binding.begenmeSayisi
@@ -55,8 +55,6 @@ class UserProfilRecyclerAdapter(var context: Context, private var tumKampanyalar
         private var postMenu=binding.postMesaj
         private var delete=binding.delete
 
-
-        private var myprofilActivity =profil
 
         @SuppressLint("SetTextI18n")
         fun setData(anlikGonderi: KullaniciKampanya) {
