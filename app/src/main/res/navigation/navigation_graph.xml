@@ -153,9 +153,7 @@
         <action
             android:id="@+id/action_profilFragment_to_kampanyaOlusturFragment"
             app:destination="@id/kampanyaOlusturFragment" />
-        <action
-            android:id="@+id/action_profilFragment_to_biralarFragment"
-            app:destination="@id/biralarFragment" />
+
         <action
             android:id="@+id/action_profilFragment_to_profilEditFragment"
             app:destination="@id/profilEditFragment" />
@@ -216,6 +214,9 @@
         <action
             android:id="@+id/action_homeFragment_to_isletmeListFragment"
             app:destination="@id/isletmeListFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_algoliaFragment"
+            app:destination="@id/algoliaFragment" />
 
     </fragment>
     <fragment
@@ -263,6 +264,9 @@
         <action
             android:id="@+id/action_kampanyaOlusturFragment_to_homeFragment"
             app:destination="@id/homeFragment" />
+        <action
+            android:id="@+id/action_kampanyaOlusturFragment_to_profilFragment"
+            app:destination="@id/profilFragment" />
 
 
     </fragment>
@@ -300,11 +304,7 @@
             android:name="kokteyl_id"
             app:argType="string" />
     </fragment>
-    <fragment
-        android:id="@+id/biralarFragment"
-        android:name="com.example.paylasimmvvm.view.icecekler.BiralarFragment"
-        android:label="fragment_biralar"
-        tools:layout="@layout/fragment_biralar" />
+
     <fragment
         android:id="@+id/kokteyllerFragment2"
         android:name="com.example.paylasimmvvm.view.icecekler.KokteyllerFragment2"
@@ -340,5 +340,13 @@
         <action
             android:id="@+id/action_isletmeMenuFragment_to_profilFragment"
             app:destination="@id/profilFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/algoliaFragment"
+        android:name="com.example.paylasimmvvm.util.AlgoliaFragment"
+        android:label="AlgoliaFragment" >
+        <action
+            android:id="@+id/action_algoliaFragment_to_userProfilFragment"
+            app:destination="@id/userProfilFragment" />
     </fragment>
 </navigation>

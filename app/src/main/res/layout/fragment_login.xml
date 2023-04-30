@@ -38,7 +38,8 @@
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView6" />
+        app:layout_constraintTop_toBottomOf="@+id/textView6"
+        />
 
     <EditText
         android:id="@+id/tv_sifre"
@@ -72,38 +73,35 @@
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tv_sifre" />
-    <View
-        android:id="@+id/golgelik1"
+
+    <LinearLayout
+
         android:layout_width="0dp"
-        android:layout_height="2dp"
-        android:layout_marginBottom="50dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"></View>
-
-    <TextView
-        android:id="@+id/textView17"
-        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="Hesabın yok mu?"
+        android:animateLayoutChanges="true"
+        android:gravity="center"
+        android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.45"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/golgelik1" />
+        app:layout_constraintTop_toBottomOf="@+id/btn_login">
 
-    <TextView
-        android:id="@+id/tvKaydoll"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="KAYDOL"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.11"
-        app:layout_constraintStart_toEndOf="@+id/textView17"
-        app:layout_constraintTop_toBottomOf="@+id/golgelik1" />
+
+        <TextView
+            android:id="@+id/textView17"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Hesabın yok mu?" />
+
+        <TextView
+            android:id="@+id/tvKaydoll"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="KAYDOL"
+            android:padding="10dp"
+            android:textStyle="bold" />
+
+    </LinearLayout>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -76,29 +76,6 @@ class KampanyaOlusturFragment : Fragment() {
 
         setupAuthLis()
 
-        val timer = ArrayList<String>()
-        timer.add("Geri Sayım Süresi Seciniz")
-        timer.add("1 saat")
-        timer.add("2 saat")
-        timer.add("3 saat")
-
-
-        val spinnerAdapter = ArrayAdapter(requireActivity(), android.R.layout.simple_list_item_1, timer)
-        binding.spinner.adapter = spinnerAdapter
-
-
-        binding.spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
-            override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
-
-                secilenSure = binding.spinner.selectedItem.toString()
-
-
-            }
-
-            override fun onNothingSelected(p0: AdapterView<*>?) {
-            }
-
-        }
 
         binding.imageViewBack.setOnClickListener {
             findNavController().navigateUp()
@@ -115,19 +92,9 @@ class KampanyaOlusturFragment : Fragment() {
                 startActivityForResult(galeriintent,2)
             }
         }
+
         binding.btnPaylas.setOnClickListener {
-            binding.progressBar.visibility=View.VISIBLE
-            binding.gorselSec.visibility=View.GONE
-            binding. aciklamaId.visibility=View.GONE
-            binding. spinner.visibility=View.GONE
-            binding.btnPaylas.visibility=View.GONE
-            secilenSure = binding.spinner.selectedItem.toString()
-
-            val intent=Intent(requireActivity(), HomeFragmentRecyclerAdapter::class.java)
-            intent.putExtra("time", secilenSure)
-
-
-
+            binding.btnPaylas.isEnabled=false
 
             val uuid = UUID.randomUUID()
             val gorselismi = "${uuid}.jpg"
@@ -136,6 +103,7 @@ class KampanyaOlusturFragment : Fragment() {
 
 
             if (secilengorsel!=null){
+                binding.progressBar.visibility=View.VISIBLE
                 gorselreference.putFile(secilengorsel!!).addOnSuccessListener {
                     val yuklenengorselreference=
                         FirebaseStorage.getInstance().reference.child("kampanyalar").child(gorselismi)
@@ -146,20 +114,16 @@ class KampanyaOlusturFragment : Fragment() {
 
                     }.addOnFailureListener {  exception->
                         Toast.makeText(requireActivity(), exception.localizedMessage, Toast.LENGTH_LONG).show()
+                        binding.progressBar.visibility=View.INVISIBLE
+                        binding.btnPaylas.isEnabled=true
+
 
                     }
-
-
-
                 }
-
-
-
             }else{
+
                 Toast.makeText(requireActivity(),"Lütfen Fotoğraf Yükleyiniz", Toast.LENGTH_LONG).show()
-
-
-
+                binding.btnPaylas.isEnabled=true
 
             }
 
@@ -227,10 +191,9 @@ class KampanyaOlusturFragment : Fragment() {
         binding.progressBar.visibility=View.GONE
         binding.gorselSec.visibility=View.VISIBLE
         binding.aciklamaId.visibility=View.VISIBLE
-        binding.spinner.visibility=View.VISIBLE
         binding.btnPaylas.visibility=View.VISIBLE
 
-        val action=KampanyaOlusturFragmentDirections.actionKampanyaOlusturFragmentToHomeFragment()
+        val action=KampanyaOlusturFragmentDirections.actionKampanyaOlusturFragmentToProfilFragment()
         Navigation.findNavController(requireView()).navigate(action)
 
 

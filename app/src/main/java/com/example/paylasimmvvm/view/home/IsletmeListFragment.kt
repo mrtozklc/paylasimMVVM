@@ -7,6 +7,7 @@ import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,6 +22,7 @@ import com.example.paylasimmvvm.databinding.FragmentIsletmeListBinding
 import com.example.paylasimmvvm.model.KullaniciKampanya
 import com.example.paylasimmvvm.util.Bildirimler.mref
 import com.example.paylasimmvvm.viewmodel.BadgeViewModel
+import com.example.paylasimmvvm.viewmodel.ProfilViewModel
 import com.example.paylasimmvvm.viewmodel.kampanyalarViewModel
 import com.google.firebase.auth.FirebaseAuth
 
@@ -31,6 +33,7 @@ class IsletmeListFragment : Fragment() {
     private lateinit var recyclerviewadapter: IsletmeListRecyclerAdapter
     private var tumGonderiler= ArrayList<KullaniciKampanya>()
     private lateinit var badgeViewModeli: BadgeViewModel
+    private lateinit var viewModel:ProfilViewModel
 
     lateinit var locationManager: LocationManager
     lateinit var locationListener: LocationListener
@@ -107,12 +110,13 @@ class IsletmeListFragment : Fragment() {
 
     private fun observeliveData() {
 
-        kampanyalarViewModeli.kampanyalar.observe(viewLifecycleOwner) { kampanyalar ->
-            kampanyalar.let {
+        kampanyalarViewModeli.kampanyalar.observe(viewLifecycleOwner) { Isletmeler ->
+            Isletmeler.let {
 
                 binding.recyclerIsletmeList.visibility = View.VISIBLE
 
-                recyclerviewadapter.kampanyalariGuncelle(kampanyalar)
+
+                recyclerviewadapter.IsletmeleriGuncelle(Isletmeler)
             }
 
         }
@@ -131,6 +135,7 @@ class IsletmeListFragment : Fragment() {
             }
 
         }
+
     }
 
 

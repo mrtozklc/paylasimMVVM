@@ -21,6 +21,7 @@ class MesajlarViewModel:ViewModel() {
 
         mesajlarMutable.value=mesajlarArray
         yukleniyor.value=false
+        
          mref.child("konusmalar").child(auth.currentUser!!.uid).orderByChild("gonderilmeZamani").addChildEventListener(mListener)
 
 

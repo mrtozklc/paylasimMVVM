@@ -21,15 +21,13 @@ class KokteyllerRecyclerAdapter(private val tumKokteyller: ArrayList<String>):Re
 
                 binding.kokteylFilters.text=gelenKokteyl
 
+
             binding.tumLayout.setOnClickListener {
                 val action=KokteyllerFiltreFragmentDirections.actionKokteyllerFragmentToKokteyllerFragment2(gelenKokteyl)
                 Navigation.findNavController(it).navigate(action)
 
             }
-
-
         }
-
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MViewHolder {
@@ -43,8 +41,6 @@ class KokteyllerRecyclerAdapter(private val tumKokteyller: ArrayList<String>):Re
 
         holder.setData(tumKokteyller[position])
 
-
-
     }
 
     override fun getItemCount(): Int {
@@ -56,10 +52,6 @@ class KokteyllerRecyclerAdapter(private val tumKokteyller: ArrayList<String>):Re
         tumKokteyller.addAll(yeniKokteylListesi)
         notifyDataSetChanged()
     }
-
-
-
-
 
 
 }

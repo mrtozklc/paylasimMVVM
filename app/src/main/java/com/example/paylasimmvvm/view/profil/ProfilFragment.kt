@@ -1,7 +1,6 @@
 package com.example.paylasimmvvm.view.profil
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.*
@@ -17,11 +16,13 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.paylasimmvvm.R
 import com.example.paylasimmvvm.adapter.MenulerGridAdapter
+import com.example.paylasimmvvm.adapter.MudavimlerRecyclerAdapter
 import com.example.paylasimmvvm.adapter.ProfilFragmentRecyclerAdapter
 import com.example.paylasimmvvm.databinding.FragmentProfilBinding
 import com.example.paylasimmvvm.model.KullaniciBilgileri
 import com.example.paylasimmvvm.model.KullaniciKampanya
 import com.example.paylasimmvvm.model.Menuler
+import com.example.paylasimmvvm.model.Mudavimler
 import com.example.paylasimmvvm.util.EventbusData
 import com.example.paylasimmvvm.view.login.SignOutFragment
 import com.example.paylasimmvvm.viewmodel.BadgeViewModel
@@ -42,11 +43,14 @@ class ProfilFragment : Fragment() {
     private lateinit var mauthLis: FirebaseAuth.AuthStateListener
     lateinit var mref: DatabaseReference
     private var tumMenuler=ArrayList<Menuler>()
+    private var tumMudavimler= ArrayList<Mudavimler>()
+
     private var tumGonderiler=ArrayList<KullaniciKampanya>()
     private lateinit var profilKampanyalarViewModeli:ProfilViewModel
     private lateinit var recyclerviewadapter:ProfilFragmentRecyclerAdapter
-    var tiklanilanKullanici:String?=null
+    private lateinit var recyclerMudavimler: MudavimlerRecyclerAdapter
     private lateinit var profilBadges:BadgeViewModel
+    var tiklanilanKullanici:String?=null
 
 
 
@@ -60,6 +64,13 @@ class ProfilFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+
+        binding.menu.visibility=View.INVISIBLE
+        binding.paylasimlar.visibility=View.INVISIBLE
+        binding.yorumlar.visibility=View.INVISIBLE
+        binding.mudavimler.visibility=View.INVISIBLE
+        binding.recyclerProfil.visibility=View.INVISIBLE
+
         mref= FirebaseDatabase.getInstance().reference
 
         setupAuthLis()
@@ -71,10 +82,9 @@ class ProfilFragment : Fragment() {
         profilBadges.refreshIsletmeYorumlarBadge(auth.currentUser!!.uid)
         profilBadges.refreshBadge()
         profilKampanyalarViewModeli.getMenus(auth.currentUser!!.uid)
+        profilKampanyalarViewModeli.getMudavimler(auth.currentUser!!.uid)
 
-
-
-       kullaniciBilgileriVerileriniAl()
+        kullaniciBilgileriVerileriniAl()
         observeliveData()
 
         binding.paylasimlar.isEnabled=false
@@ -91,8 +101,26 @@ class ProfilFragment : Fragment() {
             binding.paylasimlar.isEnabled=false
             binding.menu.isEnabled=true
             binding.yorumlar.isEnabled=true
+            binding.mudavimler.isEnabled=true
+
             profilKampanyalarViewModeli= ViewModelProvider(this)[ProfilViewModel::class.java]
             profilKampanyalarViewModeli.refreshProfilKampanya(auth.currentUser!!.uid)
+
+            profilKampanyalarViewModeli.gonderiYok.observe(viewLifecycleOwner){
+                it.let {
+                    if(it){
+                        binding.gonderiYok.text = "Henüz hiç gönderi yok."
+                        binding.gonderiYok.visibility=View.VISIBLE
+                        binding.gridId.visibility=View.GONE
+                        binding.recyclerProfil.visibility=View.GONE
+
+                    }else{
+                        binding.gonderiYok.visibility=View.GONE
+
+
+                    }
+                }
+            }
 
 
         }
@@ -101,7 +129,7 @@ class ProfilFragment : Fragment() {
             binding.menu.isEnabled=false
             binding.paylasimlar.isEnabled=true
             binding.yorumlar.isEnabled=true
-
+            binding.mudavimler.isEnabled=true
 
             profilKampanyalarViewModeli.getMenus(auth.currentUser!!.uid)
             profilKampanyalarViewModeli.gonderiYok.observe(viewLifecycleOwner){
@@ -126,6 +154,7 @@ class ProfilFragment : Fragment() {
             binding.yorumlar.isEnabled=false
             binding.menu.isEnabled=true
             binding.paylasimlar.isEnabled=true
+            binding.mudavimler.isEnabled=true
 
             EventBus.getDefault()
                 .postSticky(EventbusData.YorumYapilacakGonderininIDsiniGonder(tiklanilanKullanici))
@@ -136,6 +165,51 @@ class ProfilFragment : Fragment() {
 
 
 
+        }
+
+        binding.mudavimler.setOnClickListener {
+
+            binding.mudavimler.isEnabled=false
+            binding.menu.isEnabled=true
+            binding.paylasimlar.isEnabled=true
+            binding.yorumlar.isEnabled=true
+            profilKampanyalarViewModeli.getMudavimler(auth.currentUser!!.uid)
+
+            val layoutManager= LinearLayoutManager(activity)
+            binding.recyclerProfil.layoutManager=layoutManager
+            recyclerMudavimler= MudavimlerRecyclerAdapter(tumMudavimler)
+            binding.recyclerProfil.adapter=recyclerMudavimler
+            binding.recyclerProfil.visibility = View.VISIBLE
+            binding.gridId.visibility=View.GONE
+
+            profilKampanyalarViewModeli.mudavimYok.observe(viewLifecycleOwner){
+                it.let {
+                    if(it){
+                        binding.gonderiYok.text = "Henüz hiç müdavim yok."
+                        binding.gonderiYok.visibility=View.VISIBLE
+                        binding.gridId.visibility=View.GONE
+                        binding.recyclerProfil.visibility=View.GONE
+
+                    }else{
+                        binding.gonderiYok.visibility=View.GONE
+
+                    }
+                }
+            }
+            profilKampanyalarViewModeli.mudavimlerMutableLiveData.observe(viewLifecycleOwner){
+                it.let {
+                    if (it!=null){
+                        val layoutManager= LinearLayoutManager(activity)
+                        binding.recyclerProfil.layoutManager=layoutManager
+                        binding.recyclerProfil.adapter=recyclerMudavimler
+                        binding.recyclerProfil.visibility = View.VISIBLE
+                        binding.gridId.visibility=View.GONE
+                        binding.gonderiYok.visibility=View.GONE
+                        recyclerMudavimler= MudavimlerRecyclerAdapter(tumMudavimler)
+                        recyclerMudavimler.mudavimListesiniGuncelle(it)
+                    }
+                }
+            }
         }
 
         val menuHost: MenuHost = requireActivity()
@@ -163,10 +237,7 @@ class ProfilFragment : Fragment() {
 
                     }
 
-                    R.id.sabitkampanyaOlustur_id -> {
 
-
-                    }
                     R.id.profilDuzenle_id -> {
 
                         val action=ProfilFragmentDirections.actionProfilFragmentToProfilEditFragment()
@@ -195,7 +266,7 @@ class ProfilFragment : Fragment() {
 
         val gridView = requireActivity().findViewById(R.id.grid_id) as GridView
 
-        val customAdapter = MenulerGridAdapter(tumMenuler)
+        val customAdapter = MenulerGridAdapter(tumMenuler,true)
 
         gridView.adapter = customAdapter
 
@@ -206,7 +277,15 @@ class ProfilFragment : Fragment() {
                     customAdapter.menuleriGuncelle(profilMenu)
                     binding.recyclerProfil.visibility=View.GONE
                     binding.gonderiYok.visibility=View.GONE
-                    binding.menu.text = "Menu [${profilMenu.size}]"
+
+                }
+            }
+        }
+        profilKampanyalarViewModeli.menuSayisiMutable.observe(viewLifecycleOwner) { profilMenu ->
+            profilMenu.let {
+                if (profilMenu!=null){
+
+                    binding.menu.text = "Menu\n${profilMenu}"
                 }
             }
         }
@@ -216,14 +295,13 @@ class ProfilFragment : Fragment() {
 
                 if (yorumSayisi!=null){
 
-                    binding.yorumlar.text = "Yorumlar $yorumSayisi"
+                    binding.yorumlar.text = "Yorumlar \n$yorumSayisi"
 
                 }
 
             }
 
         }
-
 
         profilKampanyalarViewModeli.gonderiYok.observe(viewLifecycleOwner){
             it.let {
@@ -275,6 +353,25 @@ class ProfilFragment : Fragment() {
             }
         }
 
+        profilKampanyalarViewModeli.mudavimSayisiMutableLiveData.observe(viewLifecycleOwner){ Mudavimler->
+            Mudavimler.let {
+                if (Mudavimler!=null){
+                    binding.mudavimler.text="Müdavim \n${Mudavimler}"
+                }
+            }
+        }
+
+        profilKampanyalarViewModeli.mudavimlerMutableLiveData.observe(viewLifecycleOwner){ Mudavimler->
+            Mudavimler.let {
+                if (Mudavimler!=null){
+
+                    recyclerMudavimler= MudavimlerRecyclerAdapter(tumMudavimler)
+                    recyclerMudavimler.mudavimListesiniGuncelle(Mudavimler)
+
+                }
+            }
+        }
+
     }
 
     override fun onCreateView(
@@ -301,13 +398,16 @@ class ProfilFragment : Fragment() {
                 @SuppressLint("SetTextI18n")
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if (snapshot.value !=null){
+
+                        binding.menu.visibility=View.VISIBLE
+                        binding.paylasimlar.visibility=View.VISIBLE
+                        binding.yorumlar.visibility=View.VISIBLE
+                        binding.mudavimler.visibility=View.VISIBLE
+
                         val okunanKullanici= snapshot.getValue(KullaniciBilgileri::class.java)
                         EventBus.getDefault().postSticky(EventbusData.kullaniciBilgileriniGonder(okunanKullanici))
 
                         tiklanilanKullanici=okunanKullanici!!.user_id
-
-
-
 
                         binding.tvKullaniciAdi.text = okunanKullanici.user_name
 
@@ -338,16 +438,8 @@ class ProfilFragment : Fragment() {
                         val okunanKullanici= snapshot.getValue(KullaniciBilgileri::class.java)
                         EventBus.getDefault().postSticky(EventbusData.kullaniciBilgileriniGonder(okunanKullanici))
 
-
-
-
                         binding.tvKullaniciAdi.text = okunanKullanici!!.user_name
 
-                        binding.menu.visibility=View.GONE
-                        binding.yorumlar.visibility=View.GONE
-                        binding.space1.visibility=View.GONE
-                        binding.space2.visibility=View.GONE
-                        binding.paylasimlar.isClickable=false
 
 
 
@@ -392,6 +484,7 @@ class ProfilFragment : Fragment() {
         auth.addAuthStateListener(mauthLis)
 
     }
+
 
 
 }

@@ -174,7 +174,7 @@ class kampanyalarViewModel: ViewModel() {
         yukleniyor.value=true
         tumGonderiler.clear()
 
-        
+
 
 
         mref=FirebaseDatabase.getInstance().reference
@@ -186,33 +186,47 @@ class kampanyalarViewModel: ViewModel() {
                     if (snapshot.hasChildren()) {
 
                         for (ds in snapshot.children) {
-                            val userID=ds.getValue(KullaniciBilgileri::class.java)!!.user_id
-                            val kullaniciadi=ds.getValue(KullaniciBilgileri::class.java)!!.user_name
-                            val photoURL=ds.getValue(KullaniciBilgileri::class.java)!!.user_detail!!.profile_picture
-                            val isletmeLati=ds.getValue(KullaniciBilgileri::class.java)!!.user_detail!!.latitude
-                            val isletmeLongi=ds.getValue(KullaniciBilgileri::class.java)!!.user_detail!!.longitude
-                            val isletmeTuru=ds.getValue(KullaniciBilgileri::class.java)!!.user_detail!!.isletme_turu
-                            val muzikTuru=ds.getValue(KullaniciBilgileri::class.java)!!.user_detail!!.muzik_turu
-                            val mudavimSayisi=ds.getValue(KullaniciBilgileri::class.java)!!.user_detail!!.mudavim_sayisi
+                            ds.key?.let {
+                                mref.child("mudavimler").child(it).addListenerForSingleValueEvent(object :ValueEventListener{
+                                    override fun onDataChange(snapshot: DataSnapshot) {
+                                        val mudavimSayisi=snapshot.childrenCount.toInt()
+                                        val userID=ds.getValue(KullaniciBilgileri::class.java)!!.user_id
+                                        val kullaniciadi=ds.getValue(KullaniciBilgileri::class.java)!!.user_name
+                                        val photoURL=ds.getValue(KullaniciBilgileri::class.java)!!.user_detail!!.profile_picture
+                                        val isletmeLati=ds.getValue(KullaniciBilgileri::class.java)!!.user_detail!!.latitude
+                                        val isletmeLongi=ds.getValue(KullaniciBilgileri::class.java)!!.user_detail!!.longitude
+                                        val isletmeTuru=ds.getValue(KullaniciBilgileri::class.java)!!.user_detail!!.isletme_turu
+                                        val muzikTuru=ds.getValue(KullaniciBilgileri::class.java)!!.user_detail!!.muzik_turu
 
 
-                            val eklenecekUserPost = KullaniciKampanya()
 
-                            eklenecekUserPost.userID = userID
-                            eklenecekUserPost.userName = kullaniciadi
-                            eklenecekUserPost.userPhotoURL = photoURL
-                            eklenecekUserPost.isletmeLatitude = isletmeLati
-                            eklenecekUserPost.isletmeLongitude = isletmeLongi
-                            eklenecekUserPost.isletme_turu=isletmeTuru
-                            eklenecekUserPost.muzik_turu=muzikTuru
-                            eklenecekUserPost.mudavim_sayisi=mudavimSayisi
+                                        val eklenecekUserPost = KullaniciKampanya()
 
-                            tumGonderiler.add(eklenecekUserPost)
+                                        eklenecekUserPost.userID = userID
+                                        eklenecekUserPost.userName = kullaniciadi
+                                        eklenecekUserPost.userPhotoURL = photoURL
+                                        eklenecekUserPost.isletmeLatitude = isletmeLati
+                                        eklenecekUserPost.isletmeLongitude = isletmeLongi
+                                        eklenecekUserPost.isletme_turu=isletmeTuru
+                                        eklenecekUserPost.muzik_turu=muzikTuru
+                                        eklenecekUserPost.mudavim_sayisi=mudavimSayisi
 
-                            kampanyaYok.value=false
-                            yukleniyor.value=true
-                            kampanyalar.value= tumGonderiler
-                            yukleniyor.value=false
+                                        tumGonderiler.add(eklenecekUserPost)
+
+                                        kampanyaYok.value=false
+                                        yukleniyor.value=true
+                                        kampanyalar.value= tumGonderiler
+                                        yukleniyor.value=false
+                                    }
+
+                                    override fun onCancelled(error: DatabaseError) {
+                                    }
+
+                                })
+                            }
+
+
+
 
 
                         }

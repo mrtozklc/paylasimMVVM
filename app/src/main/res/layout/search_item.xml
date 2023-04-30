@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_marginBottom="0.5dp"
+    app:cardCornerRadius="0dp"
+    android:layout_margin="0dp"
+    android:id="@+id/tumLayout"
+   android:layout_height="wrap_content">
+
+
+    <ImageView
+        android:id="@+id/close"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintBottom_toBottomOf="@+id/adiSoyadi"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/username"
+        app:srcCompat="@drawable/ic_baseline_close_24" />
+
+    <TextView
+        android:id="@+id/username"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginStart="16dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textAppearance="?attr/textAppearanceBody1"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toStartOf="@+id/close"
+        app:layout_constraintStart_toEndOf="@+id/profilImage"
+        app:layout_constraintTop_toTopOf="@+id/profilImage"
+        tools:text="@tools:sample/lorem/random" />
+
+    <TextView
+        android:id="@+id/adiSoyadi"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginStart="16dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textAppearance="?attr/textAppearanceBody1"
+
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="@+id/profilImage"
+        app:layout_constraintEnd_toEndOf="@+id/username"
+        app:layout_constraintStart_toEndOf="@+id/profilImage"
+        app:layout_constraintTop_toBottomOf="@+id/username"
+        tools:text="@tools:sample/lorem/random" />
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/profilImage"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        app:civ_border_color="#6C6A6A"
+        app:civ_border_width="1dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

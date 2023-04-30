@@ -19,12 +19,12 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
 
-            android:layout_marginTop="161dp"
+            android:layout_marginTop="50dp"
             android:animateLayoutChanges="true"
             android:orientation="horizontal"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toBottomOf="@+id/golgelik">
 
             <Space
                 android:layout_width="0dp"
@@ -70,6 +70,39 @@
 
 
         </LinearLayout>
+
+        <ImageView
+            android:id="@+id/imageView_back"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_baseline_arrow_back_24" />
+
+        <TextView
+            android:id="@+id/kayit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="KAYDOL"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@+id/imageView_back"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/imageView_back"
+            app:layout_constraintVertical_bias="0.533" />
+
+
+        <View
+            android:id="@+id/golgelik"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@drawable/register_edit_text"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/imageView_back" />
 
 
         <EditText

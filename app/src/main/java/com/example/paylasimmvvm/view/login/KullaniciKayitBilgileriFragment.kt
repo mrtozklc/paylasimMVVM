@@ -60,9 +60,9 @@ class KullaniciKayitBilgileriFragment : Fragment() {
         if (auth.currentUser != null) {
             auth.signOut()
         }
-        binding.tvKaydoll.setOnClickListener {
-            val action=KullaniciKayitBilgileriFragmentDirections.actionKullaniciKayitBilgileriFragmentToRegisterFragment()
-            Navigation.findNavController(it).navigate(action)
+
+        binding.imageViewBack.setOnClickListener {
+            findNavController().navigateUp()
         }
 
         binding.etAdSoyad.addTextChangedListener(watcher)

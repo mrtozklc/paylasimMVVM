@@ -36,6 +36,7 @@ class ProfilEditFragment : Fragment() {
 
     lateinit var mDataRef:DatabaseReference
     private lateinit var mStorage:StorageReference
+
     private lateinit var storage: FirebaseStorage
 
     private var secilengorsel: Uri? = null
@@ -323,12 +324,7 @@ class ProfilEditFragment : Fragment() {
                                 }
 
                             }
-                            if(!gelenKullaniciBilgileri.user_detail!!.biography.equals( binding.editTextTextPersonName5.text.toString())){
-                                mDataRef.child("users").child("isletmeler").child(gelenKullaniciBilgileri.user_id!!).child("user_detail").child("biography").setValue( binding.editTextTextPersonName5.text.toString())
-                                profilGuncel=true
 
-
-                            }
 
                             if (profilResmiGuncellendi==null&&profilBilgileriGuncellendi==null&&profilGuncel==null){
                                 Toast.makeText(activity, "Lütfen Bilgileri Güncelleyiniz",Toast.LENGTH_LONG).show()
@@ -365,12 +361,7 @@ class ProfilEditFragment : Fragment() {
                                 }
 
                             }
-                            if(!gelenKullaniciBilgileri.user_detail!!.biography.equals( binding.editTextTextPersonName5.text.toString())){
-                                mDataRef.child("users").child("kullanicilar").child(gelenKullaniciBilgileri.user_id!!).child("user_detail").child("biography").setValue( binding.editTextTextPersonName5.text.toString())
-                                profilGuncel=true
 
-
-                            }
 
                             if (profilResmiGuncellendi==null&&profilBilgileriGuncellendi==null&&profilGuncel==null){
                                 Toast.makeText(activity, "Lütfen Bilgileri Güncelleyiniz",Toast.LENGTH_LONG).show()
@@ -414,10 +405,7 @@ class ProfilEditFragment : Fragment() {
                               binding.twMenuEkle.visibility=View.GONE
                               binding.editTextTextPersonName2.setText(gelenKullaniciBilgileri.adi_soyadi)
                               binding.editTextTextPersonName3.setText(gelenKullaniciBilgileri.user_name)
-                              if (!gelenKullaniciBilgileri.user_detail!!.biography.isNullOrEmpty()){
-                                  binding.editTextTextPersonName5.setText(gelenKullaniciBilgileri.user_detail!!.biography)
 
-                              }
 
                               val imgUrl:String= gelenKullaniciBilgileri.user_detail!!.profile_picture!!
                               if (imgUrl.isNotEmpty()){
@@ -431,10 +419,7 @@ class ProfilEditFragment : Fragment() {
                           binding.twMenuEkle.visibility=View.VISIBLE
                           binding.editTextTextPersonName2.setText(gelenKullaniciBilgileri.adi_soyadi)
                           binding.editTextTextPersonName3.setText(gelenKullaniciBilgileri.user_name)
-                          if (!gelenKullaniciBilgileri.user_detail!!.biography.isNullOrEmpty()){
-                              binding.editTextTextPersonName5.setText(gelenKullaniciBilgileri.user_detail!!.biography)
 
-                          }
 
                           val imgUrl:String= gelenKullaniciBilgileri.user_detail!!.profile_picture!!
                           if (imgUrl.isNotEmpty()){

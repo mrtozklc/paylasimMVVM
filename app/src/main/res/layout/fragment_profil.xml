@@ -10,7 +10,6 @@
         android:id="@+id/progresBarKokteyl"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
@@ -62,85 +61,65 @@
         app:layout_constraintBottom_toTopOf="@+id/linear_id"
         app:layout_constraintStart_toStartOf="parent" />
 
-
     <LinearLayout
         android:id="@+id/linear_id"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginStart="2dp"
         android:layout_marginTop="8dp"
+        android:layout_marginEnd="2dp"
         android:animateLayoutChanges="true"
-
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tv_kullaniciAdi">
-        <Space
-
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1" />
-
 
         <TextView
             android:id="@+id/paylasimlar"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-
-            android:background="@drawable/textview_bg"
-            android:paddingLeft="20dp"
-            android:paddingTop="8dp"
-            android:paddingRight="20dp"
-            android:paddingBottom="8dp"
+            android:layout_weight="1"
+            android:background="@drawable/textview_bg2"
+            android:gravity="center"
+            android:padding="4dp"
             android:text="Paylaşımlar"
             android:textStyle="bold" />
 
-        <Space
-            android:id="@+id/space2"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1" />
         <TextView
             android:id="@+id/menu"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:background="@drawable/textview_bg"
-            android:paddingLeft="20dp"
-            android:paddingTop="8dp"
-            android:paddingRight="20dp"
-            android:paddingBottom="8dp"
+            android:layout_weight="1"
+            android:background="@drawable/textview_bg2"
+            android:gravity="center"
+            android:padding="4dp"
             android:text="Menu"
             android:textStyle="bold" />
 
-
-
-        <Space
-            android:id="@+id/space1"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1" />
-
         <TextView
             android:id="@+id/yorumlar"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:background="@drawable/textview_bg"
-            android:paddingLeft="20dp"
-            android:paddingTop="8dp"
-            android:paddingRight="20dp"
-            android:paddingBottom="8dp"
+            android:layout_weight="1"
+            android:background="@drawable/textview_bg2"
+            android:gravity="center"
+            android:padding="4dp"
             android:text="Yorumlar"
-            android:textAlignment="center"
             android:textStyle="bold" />
 
-
-        <Space
+        <TextView
+            android:id="@+id/mudavimler"
             android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1" />
-
-
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/textview_bg2"
+            android:gravity="center"
+            android:padding="4dp"
+            android:text="Müdavimler"
+            android:textStyle="bold" />
 
     </LinearLayout>
+
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerProfil"

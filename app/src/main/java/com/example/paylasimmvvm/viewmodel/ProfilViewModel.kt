@@ -15,6 +15,8 @@ class ProfilViewModel:ViewModel() {
     lateinit var mref: DatabaseReference
     val profilMenu=MutableLiveData<List<Menuler>>()
     val menuArray=ArrayList<Menuler>()
+    val menuSayisiMutable=MutableLiveData<List<Int>>()
+    val menuSayisiArray=ArrayList<Int>()
     val mudavimlerMutableLiveData=MutableLiveData<List<Mudavimler>>()
     val mudavimlerArray=ArrayList<Mudavimler>()
     val mudavimSayisiMutableLiveData=MutableLiveData<List<Int>>()
@@ -30,7 +32,7 @@ class ProfilViewModel:ViewModel() {
         val user = Firebase.auth.currentUser
         if (user != null) {
             kampanyalarArray.clear()
-            mref.child("users").child("isletmeler").child(secilenUser).addValueEventListener(object :
+            mref.child("users").child("isletmeler").child(secilenUser).addListenerForSingleValueEvent(object :
                 ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
 
@@ -39,7 +41,7 @@ class ProfilViewModel:ViewModel() {
                         val kullaniciadi=snapshot.getValue(KullaniciBilgileri::class.java)!!.user_name
                        val photoURL=snapshot.getValue(KullaniciBilgileri::class.java)!!.user_detail!!.profile_picture
 
-                        mref.child("kampanya").child(secilenUser).addValueEventListener(object :
+                        mref.child("kampanya").child(secilenUser).addListenerForSingleValueEvent(object :
                             ValueEventListener {
                             override fun onDataChange(snapshot: DataSnapshot) {
                                 if (snapshot.value !=null){
@@ -60,6 +62,7 @@ class ProfilViewModel:ViewModel() {
                                             kampanyalarArray.add(eklenecekUserPost)
                                         }
                                     }
+
                                     profilKampanya.value=kampanyalarArray
                                     gonderiYok.value=false
                                 }else{
@@ -131,12 +134,16 @@ class ProfilViewModel:ViewModel() {
     fun getMenus(secilenUser:String){
         yukleniyor.value=true
         menuArray.clear()
+        menuSayisiArray.clear()
         mref= FirebaseDatabase.getInstance().reference
 
         mref.child("menuler").child(secilenUser) .addValueEventListener(object :
             ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 menuArray.clear()
+
+                menuSayisiArray.add(snapshot.childrenCount.toInt())
+                menuSayisiMutable.value=menuSayisiArray
 
                 if (snapshot.value !=null){
 
@@ -175,12 +182,104 @@ class ProfilViewModel:ViewModel() {
 
     }
 
+    fun getMudavimSayisi(secilenUser: String){
+        mudavimlerArray.clear()
+        mudavimSayisiArray.clear()
+        mref= FirebaseDatabase.getInstance().reference
+        mref.child("mudavimler").child(secilenUser).addListenerForSingleValueEvent(object :ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                mudavimSayisiArray.clear()
+
+                mudavimSayisiArray.add(snapshot.childrenCount.toInt())
+                mudavimSayisiMutableLiveData.value = mudavimSayisiArray
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+            }
+
+        })
+    }
+
+
     fun getMudavimler(secilenUser:String) {
         mudavimlerArray.clear()
         mudavimSayisiArray.clear()
         mref= FirebaseDatabase.getInstance().reference
 
-        mref.child("mudavimler").child(secilenUser).addListenerForSingleValueEvent(object :
+     /*   mref.child("mudavimler").child(secilenUser).addChildEventListener(object :ChildEventListener{
+            override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+                mudavimSayisiArray.clear()
+
+                mudavimSayisiArray.add(snapshot.childrenCount.toInt())
+                mudavimSayisiMutableLiveData.value = mudavimSayisiArray
+
+
+                if (snapshot.childrenCount.toInt()>0) {
+                    for (ds in snapshot.children) {
+
+                        if (ds.value != null) {
+                            mref.child("users")
+                                .addValueEventListener(object : ValueEventListener {
+                                    override fun onDataChange(dataSnapshot: DataSnapshot) {
+
+                                        for (userTypeSnapshot in dataSnapshot.children) {
+                                            for (userSnapshot in userTypeSnapshot.children) {
+                                                val userID = userSnapshot.key
+                                                if (userID == ds.value) {
+                                                    val kullaniciadi =
+                                                        userSnapshot.getValue(KullaniciBilgileri::class.java)!!.user_name
+                                                    val photoURL =
+                                                        userSnapshot.getValue(KullaniciBilgileri::class.java)!!.user_detail!!.profile_picture
+                                                    val eklenecekMudavim = Mudavimler()
+                                                    eklenecekMudavim.mudavim_id = userID
+                                                    eklenecekMudavim.mudavim_photo = photoURL
+                                                    eklenecekMudavim.mudavim_userName = kullaniciadi
+
+                                                    mudavimlerArray.add(eklenecekMudavim)
+
+                                                }
+
+                                            }
+                                        }
+                                        mudavimlerMutableLiveData.value = mudavimlerArray
+
+                                    }
+
+                                    override fun onCancelled(error: DatabaseError) {}
+                                })
+                        }
+                    }
+
+
+                }else{
+
+                    mudavimYok.value=true
+                }
+
+            }
+
+            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
+
+            }
+
+            override fun onChildRemoved(snapshot: DataSnapshot) {
+
+            }
+
+            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
+
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+
+            }
+
+        })*/
+
+
+
+
+     mref.child("mudavimler").child(secilenUser).addListenerForSingleValueEvent(object :
             ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
 
@@ -211,14 +310,17 @@ class ProfilViewModel:ViewModel() {
                                                     eklenecekMudavim.mudavim_userName = kullaniciadi
 
                                                     mudavimlerArray.add(eklenecekMudavim)
-                                                    mudavimlerMutableLiveData.value =
-                                                        mudavimlerArray
+
 
 
                                                 }
 
                                             }
                                         }
+
+                                        mudavimlerMutableLiveData.value = mudavimlerArray
+
+
 
                                     }
 

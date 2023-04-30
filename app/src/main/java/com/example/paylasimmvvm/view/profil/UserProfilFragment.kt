@@ -1,7 +1,7 @@
 package com.example.paylasimmvvm.view.profil
 
+import android.annotation.SuppressLint
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -45,13 +45,10 @@ class UserProfilFragment : Fragment() {
     private lateinit var profilBadges:BadgeViewModel
     private var tumMenuler=ArrayList<Menuler>()
     var tiklananUser=""
-    var mudavimSayi=null
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         (activity as AppCompatActivity).supportActionBar?.hide()
     }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -65,7 +62,12 @@ class UserProfilFragment : Fragment() {
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        binding.menu.visibility=View.GONE
+        binding.yorumlar.visibility=View.GONE
+        binding.mudavimler.visibility=View.GONE
+        binding.mudavimOl.visibility=View.GONE
+        binding.paylasimlar.visibility=View.GONE
+        binding.recyclerProfil.visibility=View.GONE
 
         arguments?.let { it ->
             val secilenUser=UserProfilFragmentArgs.fromBundle(it).userId
@@ -77,6 +79,8 @@ class UserProfilFragment : Fragment() {
             userProfilKampanyalarViewModeli.getMudavimler(secilenUser)
             userProfilKampanyalarViewModeli.refreshProfilKampanya(secilenUser)
             kullaniciBilgileriVerileriniAl(secilenUser)
+            binding.paylasimlar.isEnabled=false
+
             binding.paylasimlar.setOnClickListener {
                 binding.paylasimlar.isEnabled=false
                 binding.menu.isEnabled=true
@@ -84,27 +88,26 @@ class UserProfilFragment : Fragment() {
                 binding.mudavimler.isEnabled=true
                 binding.mudavimOl.visibility=View.VISIBLE
 
-                userProfilKampanyalarViewModeli= ViewModelProvider(this)[ProfilViewModel::class.java]
+
                 userProfilKampanyalarViewModeli.refreshProfilKampanya(secilenUser)
+
                 userProfilKampanyalarViewModeli.gonderiYok.observe(viewLifecycleOwner){
+
                     it.let {
                         if(it){
                             binding.gonderiYok.text = "Henüz hiç gönderi yok."
                             binding.gonderiYok.visibility=View.VISIBLE
                             binding.gridId.visibility=View.GONE
                             binding.recyclerProfil.visibility=View.GONE
-
                         }else{
                             binding.gonderiYok.visibility=View.GONE
-
-
                         }
                     }
                 }
+
             }
-            binding.imageViewBack.setOnClickListener {
-                findNavController().navigateUp()
-            }
+
+            binding.imageViewBack.setOnClickListener { findNavController().navigateUp() }
 
             binding.menu.setOnClickListener {
                 binding.menu.isEnabled=false
@@ -112,26 +115,17 @@ class UserProfilFragment : Fragment() {
                 binding.yorumlar.isEnabled=true
                 binding.mudavimler.isEnabled=true
                 binding.mudavimOl.visibility=View.INVISIBLE
-
-
                 userProfilKampanyalarViewModeli.getMenus(secilenUser)
-
                 userProfilKampanyalarViewModeli.gonderiYok.observe(viewLifecycleOwner){
-                    it.let {
-                        if(it){
-                            binding.gonderiYok.text = "Henüz menü yüklenmemiş."
+                    it.let { if(it){ binding.gonderiYok.text = "Henüz menü yüklenmemiş."
                             binding.gonderiYok.visibility=View.VISIBLE
                             binding.gridId.visibility=View.GONE
                             binding.recyclerProfil.visibility=View.GONE
-
                         }else{
                             binding.gonderiYok.visibility=View.GONE
-
                         }
                     }
                 }
-
-
             }
 
             binding.yorumlar.setOnClickListener {
@@ -139,106 +133,37 @@ class UserProfilFragment : Fragment() {
                 binding.menu.isEnabled=true
                 binding.paylasimlar.isEnabled=true
                 binding.mudavimler.isEnabled=true
-
-
-                EventBus.getDefault()
-                    .postSticky(EventbusData.YorumYapilacakGonderininIDsiniGonder(secilenUser))
-
+                EventBus.getDefault().postSticky(EventbusData.YorumYapilacakGonderininIDsiniGonder(secilenUser))
                 val action=UserProfilFragmentDirections.actionUserProfilFragmentToYorumlarFragment()
                 Navigation.findNavController(it).navigate(action)
-
-
-
-
             }
 
             binding.mudavimOl.setOnClickListener {
 
+
+
                 if (binding.mudavimOl.text == "Müdavim Ol") {
-                    userProfilKampanyalarViewModeli.getMudavimler(secilenUser)
+
                     val mudavim = HashMap<String, Any>()
                     mudavim["mudavimOlma_zamani"] = ServerValue.TIMESTAMP
                     mudavim["mudavim_id"] = auth.currentUser!!.uid
                     mref.child("mudavimler").child(secilenUser).child(auth.uid!!).setValue(mudavim)
                     binding.mudavimOl.setText("Takibi Bırak")
-
-                    mref.child("users").child("isletmeler").child(secilenUser).child("user_detail")
-                        .child("mudavim_sayisi")
-                        .addListenerForSingleValueEvent(object : ValueEventListener {
-                            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                                val currentValue = dataSnapshot.getValue(Int::class.java)!!!!
-                                mref.child("users").child("isletmeler").child(secilenUser)
-                                    .child("user_detail").child("mudavim_sayisi")
-                                    .setValue(currentValue + 1)
-                            }
-
-                            override fun onCancelled(databaseError: DatabaseError) {
-                                // Handle error
-                            }
-                        })
-
-
-
-
-                    userProfilKampanyalarViewModeli.mudavimlerMutableLiveData.observe(viewLifecycleOwner){ Mudavimler->
-                        Mudavimler.let {
-                            if (Mudavimler!=null){
-
-                                tumMudavimler.clear()
-                                tumMudavimler.addAll(Mudavimler)
-
-                                Log.e("eklendi",""+Mudavimler.size)
-                                Log.e("eklendiarray",""+tumMudavimler.size)
-                            }
-                        }
-                    }
                 } else {
-                    userProfilKampanyalarViewModeli.getMudavimler(secilenUser)
                     mref.child("mudavimler").child(secilenUser).child(auth.uid!!).removeValue()
                     binding.mudavimOl.setText("Müdavim Ol")
 
-                    mref.child("users").child("isletmeler").child(secilenUser).child("user_detail")
-                        .child("mudavim_sayisi")
-                        .addListenerForSingleValueEvent(object : ValueEventListener {
-                            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                                val currentValue = dataSnapshot.getValue(Int::class.java)!!!!
-                                mref.child("users").child("isletmeler").child(secilenUser)
-                                    .child("user_detail").child("mudavim_sayisi")
-                                    .setValue(currentValue - 1)
-                            }
-
-                            override fun onCancelled(databaseError: DatabaseError) {
-                                // Handle error
-                            }
-                        })
-
-
-                    userProfilKampanyalarViewModeli.mudavimlerMutableLiveData.observe(viewLifecycleOwner){ Mudavimler->
-                        Mudavimler.let {
-                            if (Mudavimler!=null){
-
-                                tumMudavimler.clear()
-                                tumMudavimler.addAll(Mudavimler)
-                            }
-                        }
-                    }
                 }
+                    userProfilKampanyalarViewModeli.getMudavimSayisi(secilenUser)
             }
-            binding.mudavimler.setOnClickListener {
 
+            binding.mudavimler.setOnClickListener {
                 binding.mudavimler.isEnabled=false
                 binding.menu.isEnabled=true
                 binding.paylasimlar.isEnabled=true
                 binding.yorumlar.isEnabled=true
                 binding.mudavimOl.visibility=View.INVISIBLE
                 userProfilKampanyalarViewModeli.getMudavimler(secilenUser)
-                val layoutManager= LinearLayoutManager(activity)
-                binding.recyclerProfil.layoutManager=layoutManager
-                recyclerMudavimler= MudavimlerRecyclerAdapter(tumMudavimler)
-                binding.recyclerProfil.adapter=recyclerMudavimler
-                binding.recyclerProfil.visibility = View.VISIBLE
-                binding.gridId.visibility=View.GONE
-
                 userProfilKampanyalarViewModeli.mudavimYok.observe(viewLifecycleOwner){
                     it.let {
                         if(it){
@@ -246,10 +171,8 @@ class UserProfilFragment : Fragment() {
                             binding.gonderiYok.visibility=View.VISIBLE
                             binding.gridId.visibility=View.GONE
                             binding.recyclerProfil.visibility=View.GONE
-
                         }else{
                             binding.gonderiYok.visibility=View.GONE
-
                         }
                     }
                 }
@@ -257,12 +180,12 @@ class UserProfilFragment : Fragment() {
                     it.let {
                         if (it!=null){
                             val layoutManager= LinearLayoutManager(activity)
+                            recyclerMudavimler= MudavimlerRecyclerAdapter(tumMudavimler)
                             binding.recyclerProfil.layoutManager=layoutManager
                             binding.recyclerProfil.adapter=recyclerMudavimler
                             binding.recyclerProfil.visibility = View.VISIBLE
                             binding.gridId.visibility=View.GONE
                             binding.gonderiYok.visibility=View.GONE
-                            recyclerMudavimler= MudavimlerRecyclerAdapter(tumMudavimler)
                             recyclerMudavimler.mudavimListesiniGuncelle(it)
                         }
                     }
@@ -274,7 +197,6 @@ class UserProfilFragment : Fragment() {
             }
         }
         observeliveData()
-
         val layoutManager= LinearLayoutManager(activity)
         binding.recyclerProfil.layoutManager=layoutManager
         recyclerviewadapter= UserProfilRecyclerAdapter(requireActivity(),tumGonderiler)
@@ -287,10 +209,17 @@ class UserProfilFragment : Fragment() {
                 ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if (snapshot.value !=null){
+
+                        binding.menu.visibility=View.VISIBLE
+                        binding.yorumlar.visibility=View.VISIBLE
+                        binding.mudavimler.visibility=View.VISIBLE
+                        binding.mudavimOl.visibility=View.VISIBLE
+                        binding.paylasimlar.visibility=View.VISIBLE
+                        binding.recyclerProfil.visibility=View.VISIBLE
+
                         val okunanKullanici= snapshot.getValue(KullaniciBilgileri::class.java)
 
 
-                      //  binding.tvMesaj.isEnabled=true
                         binding.kullaniciadiId.text = okunanKullanici!!.user_name
 
 
@@ -314,10 +243,10 @@ class UserProfilFragment : Fragment() {
                 ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if (snapshot.value !=null){
+
+
                         val okunanKullanici= snapshot.getValue(KullaniciBilgileri::class.java)
 
-
-                     //   binding.tvMesaj.isEnabled=true
 
                         binding.kullaniciadiId.text = okunanKullanici!!.user_name
 
@@ -325,15 +254,17 @@ class UserProfilFragment : Fragment() {
 
 
                         }
-                        binding.menu.visibility=View.GONE
-                        binding.yorumlar.visibility=View.GONE
-                        binding.mudavimler.visibility=View.GONE
-                        binding.mudavimOl.visibility=View.GONE
 
-                        binding.paylasimlar.isClickable=false
+
 
                         val imgUrl:String= okunanKullanici.user_detail!!.profile_picture!!
-                        Picasso.get().load(imgUrl).placeholder(R.drawable.ic_baseline_person).error(R.drawable.ic_baseline_person).into(binding.profileImage)
+                        if (imgUrl.isNotEmpty()){
+                            Picasso.get().load(imgUrl).placeholder(R.drawable.ic_baseline_person).error(R.drawable.ic_baseline_person).into(binding.profileImage)
+
+                        }else{
+                            Picasso.get().load(R.drawable.ic_baseline_person).placeholder(R.drawable.ic_baseline_person).error(R.drawable.ic_baseline_person).into(binding.profileImage)
+
+                        }
 
 
                     }
@@ -350,12 +281,15 @@ class UserProfilFragment : Fragment() {
 
     }
 
+    @SuppressLint("SetTextI18n")
     private fun observeliveData(){
         val gridView = requireActivity().findViewById(R.id.grid_id) as GridView
-        val customAdapter = MenulerGridAdapter(tumMenuler)
+        val customAdapter = MenulerGridAdapter(tumMenuler,false)
         gridView.adapter = customAdapter
+
         userProfilKampanyalarViewModeli.profilKampanya.observe(viewLifecycleOwner, androidx.lifecycle.Observer { profilKampanya->
             profilKampanya.let {
+
                 Collections.sort(profilKampanya,object : Comparator<KullaniciKampanya> {
                     override fun compare(p0: KullaniciKampanya?, p1: KullaniciKampanya?): Int {
                         if (p0!!.postYuklenmeTarih!!>p1!!.postYuklenmeTarih!!){
@@ -380,7 +314,6 @@ class UserProfilFragment : Fragment() {
                     customAdapter.menuleriGuncelle(profilMenu)
                     binding.recyclerProfil.visibility=View.GONE
                     binding.gonderiYok.visibility=View.GONE
-                    binding.menu.text = "Menu \n[${profilMenu.size}]"
                 }
             }
         }
@@ -393,7 +326,13 @@ class UserProfilFragment : Fragment() {
                 }
             }
         }
-
+        userProfilKampanyalarViewModeli.menuSayisiMutable.observe(viewLifecycleOwner) { profilMenu ->
+            profilMenu.let {
+                if (profilMenu!=null){
+                    binding.menu.text = "Menu\n${profilMenu}"
+                }
+            }
+        }
         userProfilKampanyalarViewModeli.mudavimSayisiMutableLiveData.observe(viewLifecycleOwner){ Mudavimler->
             Mudavimler.let {
                 if (Mudavimler!=null){
@@ -401,10 +340,10 @@ class UserProfilFragment : Fragment() {
                 }
             }
         }
-
         userProfilKampanyalarViewModeli.mudavimlerMutableLiveData.observe(viewLifecycleOwner){ Mudavimler->
             Mudavimler.let {
                 if (Mudavimler!=null){
+
                     var isMudavim = false
                     for (mudavim in Mudavimler) {
                         if (auth.currentUser != null && auth.currentUser!!.uid == mudavim.mudavim_id) {
@@ -412,15 +351,12 @@ class UserProfilFragment : Fragment() {
                             break
                         }
                     }
-
                     if (isMudavim) {
                         binding.mudavimOl.setText("Takibi Bırak")
                     } else {
+
                         binding.mudavimOl.setText("Müdavim Ol")
                     }
-                    recyclerMudavimler= MudavimlerRecyclerAdapter(tumMudavimler)
-                    recyclerMudavimler.mudavimListesiniGuncelle(Mudavimler)
-
                 }
             }
         }
@@ -450,13 +386,5 @@ class UserProfilFragment : Fragment() {
                 }
             }
         }
-    }
-    override fun onResume() {
-        super.onResume()
-        (activity as AppCompatActivity?)!!.supportActionBar!!.hide()
-    }
-    override fun onStop() {
-        super.onStop()
-        (activity as AppCompatActivity?)!!.supportActionBar!!.show()
     }
 }

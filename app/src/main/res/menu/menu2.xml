@@ -9,9 +9,7 @@
         app:showAsAction="ifRoom" />
 
 
-    <item
-        android:id="@+id/sabitkampanyaOlustur_id"
-        android:title="sabit Kampanya Oluştur" />
+
 
     <item
         android:id="@+id/kampanyaOlustur_id"

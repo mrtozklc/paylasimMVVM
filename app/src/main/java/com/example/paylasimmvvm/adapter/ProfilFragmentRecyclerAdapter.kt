@@ -69,15 +69,19 @@ class ProfilFragmentRecyclerAdapter (var context: Context, private var tumKampan
 
 
             userNameTitle.text = anlikGonderi.userName
-            if (anlikGonderi.userPhotoURL!=null){
-                Picasso.get().load(anlikGonderi.userPhotoURL).placeholder(R.drawable.ic_baseline_person).error(R.drawable.ic_baseline_person).fit().centerCrop().into(profileImage)
+
+            if (anlikGonderi.userPhotoURL!!.isNotEmpty()){
+                Picasso.get().load(anlikGonderi.userPhotoURL).placeholder(R.drawable.ic_baseline_person).error(
+                    R.drawable.ic_baseline_person).fit().centerCrop().into(profileImage)
 
 
             }else {
-                Picasso.get().load(R.drawable.ic_baseline_person).placeholder(R.drawable.ic_baseline_person).error(R.drawable.ic_baseline_person).fit().centerCrop().into(profileImage)
+                Picasso.get().load(R.drawable.ic_baseline_person).placeholder(R.drawable.ic_baseline_person).error(
+                    R.drawable.ic_baseline_person).fit().centerCrop().into(profileImage)
 
 
             }
+
 
             userNameveAciklama.text = anlikGonderi.userName.toString()+" "+anlikGonderi.postAciklama.toString()
             Picasso.get().load(anlikGonderi.postURL).into(gonderi)

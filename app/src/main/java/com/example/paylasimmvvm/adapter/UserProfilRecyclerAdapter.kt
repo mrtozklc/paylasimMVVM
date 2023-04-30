@@ -2,11 +2,9 @@ package com.example.paylasimmvvm.adapter
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AlertDialog
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.RecyclerView
 import com.example.paylasimmvvm.R
@@ -15,7 +13,6 @@ import com.example.paylasimmvvm.model.KullaniciKampanya
 import com.example.paylasimmvvm.util.Bildirimler
 import com.example.paylasimmvvm.util.EventbusData
 import com.example.paylasimmvvm.util.TimeAgo
-import com.example.paylasimmvvm.view.profil.ProfilFragmentDirections
 import com.example.paylasimmvvm.view.profil.UserProfilFragmentDirections
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
@@ -38,7 +35,7 @@ class UserProfilRecyclerAdapter(var context: Context, private var tumKampanyalar
     }
 
 
-    class MyViewHolder(itemView: View, profil: Context) : RecyclerView.ViewHolder(itemView) {
+    class MyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val binding = RecyclerRowBinding.bind(itemView)
 
 
@@ -120,7 +117,7 @@ class UserProfilRecyclerAdapter(var context: Context, private var tumKampanyalar
                             } else {
                                 ref.child("begeniler").child(anlikGonderi.postID!!).child(currentID)
                                     .setValue(currentID)
-                                Log.e("bildirim",""+anlikGonderi)
+
                                 if (anlikGonderi.userID!= FirebaseAuth.getInstance().currentUser!!.uid){
                                     Bildirimler.bildirimKaydet(anlikGonderi.userID!!,
                                         Bildirimler.KAMPANYA_BEGENILDI,anlikGonderi.postID!!)
@@ -231,7 +228,7 @@ class UserProfilRecyclerAdapter(var context: Context, private var tumKampanyalar
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         val viewHolder = LayoutInflater.from(context).inflate(R.layout.recycler_row, parent, false)
 
-        return MyViewHolder(viewHolder,context)
+        return MyViewHolder(viewHolder)
 
 
     }

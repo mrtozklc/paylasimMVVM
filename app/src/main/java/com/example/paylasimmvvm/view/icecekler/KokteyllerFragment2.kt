@@ -108,7 +108,6 @@ class KokteyllerFragment2 : Fragment() {
 
                 binding.idGRV.visibility = View.VISIBLE
                 if (Kokteyller != null) {
-                    Log.e("observe",""+Kokteyller)
                     customAdapter.kokteylListesiniGuncelle(Kokteyller)
                     searchView = requireActivity().findViewById(R.id.edittextSearch)
                     searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {

@@ -109,6 +109,7 @@ class IsletmeListRecyclerAdapter(var context: Context, private var tumKampanyala
 
             muzikTuru.text=anlikGonderi.muzik_turu
 
+
             mudavimSayisi.text="Müdavim Sayısı: ${anlikGonderi.mudavim_sayisi.toString()}"
 
 
@@ -151,9 +152,9 @@ class IsletmeListRecyclerAdapter(var context: Context, private var tumKampanyala
 
     }
     @SuppressLint("NotifyDataSetChanged")
-    fun kampanyalariGuncelle(yeniKampanyaListesi:List<KullaniciKampanya>){
+    fun IsletmeleriGuncelle(yeniIsletmeListesi:List<KullaniciKampanya>){
         tumKampanyalar.clear()
-        tumKampanyalar.addAll(yeniKampanyaListesi)
+        tumKampanyalar.addAll(yeniIsletmeListesi)
         notifyDataSetChanged()
     }
 }

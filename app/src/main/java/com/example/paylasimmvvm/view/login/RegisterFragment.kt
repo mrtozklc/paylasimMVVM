@@ -71,6 +71,14 @@ class RegisterFragment : Fragment() {
         }
 
     }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        binding.imageViewBack.setOnClickListener {
+            findNavController().navigateUp()
+        }
+    }
     override fun onStart() {
         super.onStart()
         Log.e("hata","registedasın")

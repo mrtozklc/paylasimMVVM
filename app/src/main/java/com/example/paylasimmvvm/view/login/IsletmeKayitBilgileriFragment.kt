@@ -17,6 +17,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.Navigation
+import androidx.navigation.fragment.findNavController
 import com.example.paylasimmvvm.R
 import com.example.paylasimmvvm.databinding.FragmentIsletmeKayitBilgileriBinding
 import com.example.paylasimmvvm.model.KullaniciBilgiDetaylari
@@ -102,6 +103,9 @@ class IsletmeKayitBilgileriFragment : Fragment() {
             }
 
         }
+        binding.imageViewBack.setOnClickListener {
+            findNavController().navigateUp()
+        }
 
 
         binding.spinner3.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
@@ -118,10 +122,6 @@ class IsletmeKayitBilgileriFragment : Fragment() {
             auth.signOut()
         }
 
-        binding.tvKaydoll.setOnClickListener {
-            val action=IsletmeKayitBilgileriFragmentDirections.actionIsletmeKayitBilgileriFragmentToRegisterFragment()
-            Navigation.findNavController(it).navigate(action)
-        }
 
         binding.etAdSoyadISletme.addTextChangedListener(watcher)
         binding.etKullaniciAdiISletme.addTextChangedListener(watcher)
@@ -314,9 +314,9 @@ class IsletmeKayitBilgileriFragment : Fragment() {
     ) {
         val thread: Thread = object : Thread() {
             override fun run() {
-                val geocoder = Geocoder(context, Locale.getDefault())
+                val geocoder = context?.let { Geocoder(it, Locale.getDefault()) }
                 try {
-                    val addressList: List<*>? = geocoder.getFromLocationName(locationAddress, 1)
+                    val addressList: List<*>? = geocoder?.getFromLocationName(locationAddress, 1)
                     if (addressList != null && addressList.isNotEmpty()) {
                         val address = addressList[0] as Address
 

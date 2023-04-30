@@ -1,7 +1,6 @@
 package com.example.paylasimmvvm.adapter
 
 import android.app.AlertDialog
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,11 +18,7 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.squareup.picasso.Picasso
 
-class MenulerGridAdapter( val tumMenuler: ArrayList<Menuler>) : BaseAdapter() {
-
-
-
-
+class MenulerGridAdapter(val tumMenuler: ArrayList<Menuler>, private val isProfilPage:Boolean) : BaseAdapter() {
 
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
@@ -35,69 +30,90 @@ class MenulerGridAdapter( val tumMenuler: ArrayList<Menuler>) : BaseAdapter() {
         val binding= RecyclerRowMenuBinding.bind(view)
 
 
-        Picasso.get().load(dataItem.menuler).into(binding.imgMenu);
+        Picasso.get().load(dataItem.menuler).into(binding.imgMenu)
 
 
 
      binding.imgMenu.setOnClickListener {
 
-         val builder = AlertDialog.Builder(parent!!.context)
+         if (isProfilPage){
+             val builder = AlertDialog.Builder(parent!!.context)
 
-         val photoView = PhotoView(parent.context)
-         photoView.adjustViewBounds = true
-         Picasso.get().load(dataItem.menuler).into(photoView)
+             val photoView = PhotoView(parent.context)
+             photoView.adjustViewBounds = true
+             Picasso.get().load(dataItem.menuler).into(photoView)
 
 
-         builder.setView(photoView)
+             builder.setView(photoView)
 
-         val mref = FirebaseDatabase.getInstance().reference
-         mref.child("users").child("isletmeler").addValueEventListener(object : ValueEventListener {
-             override fun onDataChange(snapshot: DataSnapshot) {
-                 if (snapshot!!.getValue() != null) {
-                     for (user in snapshot!!.children) {
-                         val okunanKullanici = user.getValue(KullaniciBilgileri::class.java)!!
-                         if (okunanKullanici!!.user_id.equals(FirebaseAuth.getInstance().currentUser!!.uid)) {
-                             val silinicekMenu=dataItem.menuler
+             val mref = FirebaseDatabase.getInstance().reference
+             mref.child("users").child("isletmeler").addValueEventListener(object : ValueEventListener {
+                 override fun onDataChange(snapshot: DataSnapshot) {
+                     if (snapshot.value != null) {
+                         for (user in snapshot.children) {
+                             val okunanKullanici = user.getValue(KullaniciBilgileri::class.java)!!
+                             if (okunanKullanici.user_id.equals(FirebaseAuth.getInstance().currentUser!!.uid)) {
+                                 val silinicekMenu=dataItem.menuler
 
-                             builder.setNeutralButton("MENÜ SİLİNSİN Mİ?"){dialog, _ ->
+                                 builder.setNeutralButton("MENÜ SİLİNSİN Mİ?"){ _, _ ->
 
-                             }
-                             builder.setPositiveButton("VAZGEÇ") { dialog, _ ->
-                                 dialog.dismiss()
-                             }
-                             builder.setNegativeButton("SİL"){dialog,_->
+                                 }
+                                 builder.setPositiveButton("VAZGEÇ") { dialog, _ ->
+                                     dialog.dismiss()
+                                 }
+                                 builder.setNegativeButton("SİL"){dialog,_->
 
-                                 mref.child("menuler").child(FirebaseAuth.getInstance().currentUser!!.uid).orderByChild("menuler").equalTo(silinicekMenu).addListenerForSingleValueEvent(object :ValueEventListener{
-                                     override fun onDataChange(snapshot: DataSnapshot) {
-                                         for (ds in snapshot.children) {
-                                            var kley=ds.key
-                                             mref.child("menuler").child(FirebaseAuth.getInstance().currentUser!!.uid).child(kley!!).removeValue()
+                                     mref.child("menuler").child(FirebaseAuth.getInstance().currentUser!!.uid).orderByChild("menuler").equalTo(silinicekMenu).addListenerForSingleValueEvent(object :ValueEventListener{
+                                         override fun onDataChange(snapshot: DataSnapshot) {
+                                             for (ds in snapshot.children) {
+                                                 val kley=ds.key
+                                                 mref.child("menuler").child(FirebaseAuth.getInstance().currentUser!!.uid).child(kley!!).removeValue()
 
-                                             Toast.makeText(parent.context,"Menü silindi",Toast.LENGTH_LONG).show()
+                                                 Toast.makeText(parent.context,"Menü silindi",Toast.LENGTH_LONG).show()
+                                             }
                                          }
-                                     }
-                                     override fun onCancelled(error: DatabaseError) {
-                                     }
-                                 })
-                                 notifyDataSetChanged()
+                                         override fun onCancelled(error: DatabaseError) {
+                                         }
+                                     })
+                                     notifyDataSetChanged()
 
-                                 dialog.dismiss()
+                                     dialog.dismiss()
+                                 }
                              }
                          }
-                     }
-                     val alertDialog = builder.create()
-                     alertDialog.setCanceledOnTouchOutside(true)
+                         val alertDialog = builder.create()
+                         alertDialog.setCanceledOnTouchOutside(true)
 
-                     photoView.setOnClickListener {
-                         alertDialog.dismiss()
+                         photoView.setOnClickListener {
+                             alertDialog.dismiss()
+                         }
+                         alertDialog.show()
                      }
-                     alertDialog.show()
                  }
-             }
 
-             override fun onCancelled(error: DatabaseError) {
+                 override fun onCancelled(error: DatabaseError) {
+                 }
+             })
+
+         }else {
+             val builder = AlertDialog.Builder(parent!!.context)
+
+             val photoView = PhotoView(parent.context)
+             photoView.adjustViewBounds = true
+             Picasso.get().load(dataItem.menuler).into(photoView)
+             builder.setView(photoView)
+
+             val alertDialog = builder.create()
+             alertDialog.setCanceledOnTouchOutside(true)
+
+
+             photoView.setOnClickListener {
+                 alertDialog.dismiss()
              }
-         })
+             alertDialog.show()
+         }
+
+
      }
 
 
