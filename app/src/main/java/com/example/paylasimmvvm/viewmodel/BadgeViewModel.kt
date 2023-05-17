@@ -19,27 +19,29 @@ class BadgeViewModel:ViewModel() {
 
 
 
-    fun refreshBadge(){
+    fun refreshBadge() {
 
-        badgeLive.value=badgeArray
-        var gorulmeyenKonusmaSayisi=0
-
-       mref.child("konusmalar").child(mauth.currentUser!!.uid).addValueEventListener(object :ValueEventListener{
+        var gorulmeyenKonusmaSayisi = 0
+        mref.child("konusmalar").child(mauth.currentUser!!.uid).addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 badgeArray.clear()
-               snapshot.children.forEach {
-
-                  if(it.child("goruldu").value?.equals(false) == true){
-                      gorulmeyenKonusmaSayisi++
-                      val eklenecekKonusma=snapshot.getValue(Mesajlar::class.java)
-                      eklenecekKonusma!!.goruldu_sayisi=gorulmeyenKonusmaSayisi
-                     badgeArray.add(eklenecekKonusma)
-                      badgeLive.value=badgeArray
-                  }
-               }
+                snapshot.children.forEach { dataSnapshot ->
+                    val konusma = dataSnapshot.getValue(Mesajlar::class.java)
+                    if (konusma != null && konusma.goruldu == false) {
+                        gorulmeyenKonusmaSayisi++
+                        konusma.goruldu_sayisi = gorulmeyenKonusmaSayisi
+                        badgeArray.add(konusma)
+                    } else if (konusma != null && konusma.goruldu == true) {
+                        gorulmeyenKonusmaSayisi--
+                        val konusmaIndex = badgeArray.indexOfFirst { it.son_mesaj == konusma.son_mesaj }
+                        if (konusmaIndex != -1) {
+                            badgeArray.removeAt(konusmaIndex)
+                        }
+                    }
+                    badgeLive.value = badgeArray
+                }
             }
-            override fun onCancelled(error: DatabaseError) {
-            }
+            override fun onCancelled(error: DatabaseError) {}
         })
     }
 

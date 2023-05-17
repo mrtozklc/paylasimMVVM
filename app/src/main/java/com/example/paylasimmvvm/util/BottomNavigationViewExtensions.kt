@@ -10,10 +10,8 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 
     fun BottomNavigationView.setBadge(tabResId: Int, badgeValue: Int) {
         getOrCreateBadge(this, tabResId)?.let { badge ->
-            badge.visibility = if (badgeValue > 0) {
-                badge.text = "$badgeValue"
-                View.VISIBLE
-            } else {
+            badge.visibility = if (badgeValue > 0) { badge.text = "$badgeValue"
+                View.VISIBLE } else {
                 View.GONE
             }
         }

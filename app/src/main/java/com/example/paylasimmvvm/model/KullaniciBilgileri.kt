@@ -7,6 +7,6 @@ data class KullaniciBilgileri (
     var adi_soyadi: String? = null,
     var phone_number: String? = null,
     var user_id: String? = null,
-    var FCM:String?=null,
+    var FCM_TOKEN:String?=null,
     var user_detail: KullaniciBilgiDetaylari?=null){
 }

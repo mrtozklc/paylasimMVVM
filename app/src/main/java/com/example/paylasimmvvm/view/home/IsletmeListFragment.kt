@@ -17,13 +17,16 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.paylasimmvvm.R
 import com.example.paylasimmvvm.adapter.IsletmeListRecyclerAdapter
 import com.example.paylasimmvvm.databinding.FragmentIsletmeListBinding
 import com.example.paylasimmvvm.model.KullaniciKampanya
 import com.example.paylasimmvvm.util.Bildirimler.mref
+import com.example.paylasimmvvm.util.setBadge
 import com.example.paylasimmvvm.viewmodel.BadgeViewModel
 import com.example.paylasimmvvm.viewmodel.ProfilViewModel
 import com.example.paylasimmvvm.viewmodel.kampanyalarViewModel
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 
 
@@ -66,13 +69,16 @@ class IsletmeListFragment : Fragment() {
             override fun onLocationChanged(p0: Location) {
 
 
-                var konum=HashMap<String,Any>()
-                konum.put("latitude",p0.latitude)
-                konum.put("longitude",p0.longitude)
-                konum.put("konumkullaniciId",FirebaseAuth.getInstance().currentUser!!.uid)
 
-                mref.child("konumlar").child("kullanici_konum").child(FirebaseAuth.getInstance().currentUser!!.uid)
-                    .child(FirebaseAuth.getInstance().currentUser!!.uid).setValue(konum)
+
+                FirebaseAuth.getInstance().currentUser?.let { currentUser ->
+                    val konum=HashMap<String,Any>()
+                    konum.put("latitude",p0.latitude)
+                    konum.put("longitude",p0.longitude)
+                    konum.put("konumkullaniciId",FirebaseAuth.getInstance().currentUser!!.uid)
+
+                    mref.child("konumlar").child("kullanici_konum").child(currentUser.uid).child(currentUser.uid).setValue(konum)
+                }
 
             }
 
@@ -121,16 +127,14 @@ class IsletmeListFragment : Fragment() {
 
         }
 
-        kampanyalarViewModeli.kampanyaYok.observe(viewLifecycleOwner) { kampanyaYok ->
-            kampanyaYok.let {
+        badgeViewModeli.badgeLive.observe(viewLifecycleOwner) {gorulmeyenMesajSayisi ->
+            gorulmeyenMesajSayisi.let {
 
+                val navView: BottomNavigationView = requireActivity().findViewById(R.id.bottomNavigationView)
+                if (gorulmeyenMesajSayisi != null) {
+                    navView.setBadge(R.id.mesajlarFragment, gorulmeyenMesajSayisi.size)
 
-            }
-
-        }
-        kampanyalarViewModeli.yukleniyor.observe(viewLifecycleOwner) { yukleniyor ->
-            yukleniyor.let {
-
+                }
 
             }
 

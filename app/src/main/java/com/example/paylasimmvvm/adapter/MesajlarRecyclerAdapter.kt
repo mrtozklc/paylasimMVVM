@@ -2,6 +2,7 @@ package com.example.paylasimmvvm.adapter
 
 import android.annotation.SuppressLint
 import android.graphics.Typeface
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -44,9 +45,9 @@ class MesajlarRecyclerAdapter(private var tumMesajlar:ArrayList<Mesajlar>):Recyc
                 sonAtilanmesajText=sonAtilanmesajText.replace("\n"," ")
                 sonAtilanmesajText=sonAtilanmesajText.trim()
 
-                if(sonAtilanmesajText.length>25){
+                if(sonAtilanmesajText.length>40){
 
-                    sonAtilanmesaj.text=sonAtilanmesajText.substring(0,25)+"..."
+                    sonAtilanmesaj.text=sonAtilanmesajText.substring(0,40)+"..."
                 }else{
                     sonAtilanmesaj.text=sonAtilanmesajText
                 }
@@ -77,7 +78,6 @@ class MesajlarRecyclerAdapter(private var tumMesajlar:ArrayList<Mesajlar>):Recyc
             binding. tumLayout.setOnClickListener {
                 val action= MesajlarFragmentDirections.actionMesajlarFragmentToChatFragment(oankiKonusmalar.user_id!!)
 
-
                 FirebaseDatabase.getInstance().reference
                     .child("konusmalar")
                     .child(FirebaseAuth.getInstance().currentUser!!.uid)
@@ -88,6 +88,7 @@ class MesajlarRecyclerAdapter(private var tumMesajlar:ArrayList<Mesajlar>):Recyc
                             .setPopUpTo(R.id.chatFragment, true)
                             .build()
                         Navigation.findNavController(binding.tumLayout).navigate(action, navOptions)
+
 
                     }
 
@@ -159,8 +160,18 @@ class MesajlarRecyclerAdapter(private var tumMesajlar:ArrayList<Mesajlar>):Recyc
 
 
                         userName.text=snapshot.child("user_name").value.toString()
+                        if (snapshot.child("user_detail").child("profile_picture").value.toString().isNotEmpty()){
+                            Picasso.get().load(snapshot.child("user_detail").child("profile_picture").value.toString()).error(R.drawable.ic_baseline_person).placeholder(R.drawable.ic_baseline_person).into(userpp)
+                        }
 
-                        Picasso.get().load(snapshot.child("user_detail").child("profile_picture").value.toString()).error(R.drawable.ic_baseline_person).placeholder(R.drawable.ic_baseline_person).into(userpp)
+                        else {
+
+                            Picasso.get().load(R.drawable.ic_baseline_person).placeholder(R.drawable.ic_baseline_person).error(
+                                R.drawable.ic_baseline_person).fit().centerCrop().into(userpp)
+
+                        }
+
+
 
                     }
                 }
@@ -215,4 +226,5 @@ class MesajlarRecyclerAdapter(private var tumMesajlar:ArrayList<Mesajlar>):Recyc
         tumMesajlar.addAll(yeniMesajListesi)
         notifyDataSetChanged()
     }
+
 }

@@ -3,68 +3,71 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/profilPhotoYorumlar"
         android:layout_width="30dp"
-        android:layout_height="30dp" app:civ_border_color="#6C6A6A"
-        app:civ_border_width="1dp"
+        android:layout_height="30dp"
         android:layout_marginStart="16dp"
-        app:layout_constraintBottom_toBottomOf="@+id/tv_aciklama"
+        android:layout_marginTop="16dp"
+        app:civ_border_color="#6C6A6A"
+        app:civ_border_width="1dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/tv_aciklama" />
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/username"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:textSize="16sp"
+        app:layout_constraintStart_toEndOf="@+id/profilPhotoYorumlar"
+        app:layout_constraintTop_toTopOf="@+id/profilPhotoYorumlar" />
 
     <TextView
         android:id="@+id/tv_aciklama"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-
-
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="4dp"
         android:textSize="14sp"
         app:layout_constraintStart_toEndOf="@+id/profilPhotoYorumlar"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/username"
         app:layout_constraintWidth_max="300dp" />
 
     <ImageView
         android:id="@+id/like"
-        android:layout_width="36dp"
-        android:layout_height="35dp"
-        android:layout_marginEnd="16dp"
-        android:background="@drawable/ic_launcher_like_foreground"
-        app:layout_constraintBottom_toBottomOf="@+id/tv_aciklama"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:layout_margin="8dp"
+        android:background="@drawable/ic_baseline_favorite"
+        app:layout_constraintBottom_toBottomOf="@+id/profilPhotoYorumlar"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/tv_aciklama" />
+        app:layout_constraintTop_toTopOf="@+id/profilPhotoYorumlar"
+       />
 
     <TextView
         android:id="@+id/tv_yorumZamani"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        app:layout_constraintStart_toStartOf="@+id/tv_aciklama"
-        app:layout_constraintTop_toBottomOf="@+id/tv_aciklama"
-        app:layout_constraintWidth_max="220dp" />
+        android:layout_marginStart="8dp"
+        app:layout_constraintBottom_toBottomOf="@+id/username"
+        app:layout_constraintStart_toEndOf="@+id/username"
+        app:layout_constraintTop_toTopOf="@+id/username"
+      />
 
     <TextView
         android:id="@+id/tv_begeni"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        app:layout_constraintBottom_toBottomOf="@+id/tv_yorumZamani"
-        app:layout_constraintStart_toEndOf="@+id/tv_yorumZamani"
-        app:layout_constraintTop_toTopOf="@+id/tv_yorumZamani" />
+        android:layout_marginTop="4dp"
+        app:layout_constraintEnd_toEndOf="@+id/like"
+        app:layout_constraintStart_toStartOf="@+id/like"
+        app:layout_constraintTop_toBottomOf="@+id/like" />
 
-    <View
-        android:id="@+id/golgelik0"
-        android:layout_width="0dp"
-        android:layout_height="1dp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_begeni" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

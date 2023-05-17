@@ -10,15 +10,20 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.paylasimmvvm.R
 import com.example.paylasimmvvm.adapter.KokteylDetayRecyclerAdapter
 import com.example.paylasimmvvm.databinding.FragmentKokteylDetayiBinding
 import com.example.paylasimmvvm.model.DrinkDetay
+import com.example.paylasimmvvm.util.setBadge
+import com.example.paylasimmvvm.viewmodel.BadgeViewModel
 import com.example.paylasimmvvm.viewmodel.KokteylDetayiViewModel
+import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class KokteylDetayiFragment : Fragment() {
     private lateinit var binding:FragmentKokteylDetayiBinding
     private lateinit var recyclerAdapter: KokteylDetayRecyclerAdapter
     private lateinit var kokteylViewModeli: KokteylDetayiViewModel
+    private lateinit var badgeViewModeli: BadgeViewModel
     private var tumKokteyller=ArrayList<DrinkDetay>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,6 +44,10 @@ class KokteylDetayiFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        badgeViewModeli= ViewModelProvider(this)[BadgeViewModel::class.java]
+        badgeViewModeli.refreshBadge()
+
         arguments?.let {
 
 
@@ -113,6 +122,23 @@ class KokteylDetayiFragment : Fragment() {
 
                 }
             }
+        }
+
+        badgeViewModeli.badgeLive.observe(viewLifecycleOwner) {gorulmeyenMesajSayisi ->
+            Log.e("hoomeegelenbadge",""+gorulmeyenMesajSayisi.size)
+            gorulmeyenMesajSayisi.let {
+
+
+
+                val navView: BottomNavigationView = requireActivity().findViewById(R.id.bottomNavigationView)
+                if (gorulmeyenMesajSayisi != null) {
+                    navView.setBadge(R.id.mesajlarFragment, gorulmeyenMesajSayisi.size)
+
+
+                }
+
+            }
+
         }
 
     }

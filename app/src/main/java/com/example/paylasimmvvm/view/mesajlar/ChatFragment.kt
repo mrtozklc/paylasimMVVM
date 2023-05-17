@@ -9,16 +9,23 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.paylasimmvvm.R
 import com.example.paylasimmvvm.adapter.ChatFragmentRecyclerAdapter
 import com.example.paylasimmvvm.databinding.FragmentChatBinding
 import com.example.paylasimmvvm.model.ChatModel
 import com.example.paylasimmvvm.model.KullaniciBilgileri
+import com.example.paylasimmvvm.util.setBadge
 import com.example.paylasimmvvm.view.profil.UserProfilFragmentArgs
+import com.example.paylasimmvvm.viewmodel.BadgeViewModel
 import com.example.paylasimmvvm.viewmodel.ChatViewModel
+import com.example.paylasimmvvm.viewmodel.MesajlarViewModel
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.*
@@ -31,6 +38,7 @@ class ChatFragment : Fragment() {
     lateinit var mref: DatabaseReference
     private lateinit var recyclerAdapter: ChatFragmentRecyclerAdapter
     private lateinit var chatViewModeli: ChatViewModel
+    private lateinit var badgeViewModeli: BadgeViewModel
     var tumMesajlar=ArrayList<ChatModel>()
     private lateinit var mesajGonderenId:String
     lateinit var myRecyclerview: RecyclerView
@@ -41,6 +49,12 @@ class ChatFragment : Fragment() {
     var refreshMesajPosition=0
     var getirilenMesajId=""
     var zatenListedeOlanMesajID=""
+    var listenerAtandiMi=false
+
+
+    companion object {
+        var fragmentAcikMi=false
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -66,63 +80,29 @@ class ChatFragment : Fragment() {
 
         arguments?.let {
             val sohbetEdilcekKisi= UserProfilFragmentArgs.fromBundle(it).userId
-            sohbetEdilenUserName(sohbetEdilcekKisi)
-            mesajGonderenId=FirebaseAuth.getInstance().currentUser!!.uid
-
+            val konusulacakKisi = arguments?.getString("konusulacakKisi")
             chatViewModeli= ViewModelProvider(this)[ChatViewModel::class.java]
-            chatViewModeli.refreshChat(sohbetEdilcekKisi)
+            badgeViewModeli= ViewModelProvider(this)[BadgeViewModel::class.java]
 
-            observeLiveData()
+            if (konusulacakKisi != null) {
+                sohbetEdilenUserName(konusulacakKisi)
+                chatViewModeli.refreshChat(konusulacakKisi)
+                badgeViewModeli.refreshBadge()
+                mesajGonder(konusulacakKisi)
 
-            binding.tvvMesajGonder.setOnClickListener {
-
-                val mesaj= binding.etMesajEkle.text.toString().trim()
-
-                if(!TextUtils.isEmpty(mesaj)){
-
-                    val mesajAtan=HashMap<String,Any>()
-                    mesajAtan["mesaj"] = binding.etMesajEkle.text.toString()
-                    mesajAtan["gonderilmeZamani"] = ServerValue.TIMESTAMP
-                    mesajAtan["type"] = "text"
-                    mesajAtan["goruldu"] = true
-                    mesajAtan["user_id"] = auth.currentUser!!.uid
-                    val mesajKey = mref.child("mesajlar").child(auth.currentUser!!.uid).child(sohbetEdilcekKisi).push().key
-
-
-                    mref.child("mesajlar").child(auth.currentUser!!.uid).child(sohbetEdilcekKisi).child(mesajKey!!).setValue(mesajAtan)
-
-                    val mesajAlan=HashMap<String,Any>()
-                    mesajAlan["mesaj"] = binding.etMesajEkle.text.toString()
-                    mesajAlan["gonderilmeZamani"] = ServerValue.TIMESTAMP
-                    mesajAlan["type"] = "text"
-                    mesajAlan["goruldu"] = false
-                    mesajAlan["user_id"] = auth.currentUser!!.uid
-                    mref.child("mesajlar").child(sohbetEdilcekKisi).child(auth.currentUser!!.uid).child(mesajKey).setValue(mesajAlan)
-
-
-                    val KonusmamesajAtan=HashMap<String,Any>()
-                    KonusmamesajAtan["son_mesaj"] = binding.etMesajEkle.text.toString()
-                    KonusmamesajAtan["gonderilmeZamani"] = ServerValue.TIMESTAMP
-                    KonusmamesajAtan["goruldu"] = true
-
-                    mref.child("konusmalar").child(auth.currentUser!!.uid).child(sohbetEdilcekKisi).setValue(KonusmamesajAtan)
-
-                    val KonusmamesajAlan=HashMap<String,Any>()
-                    KonusmamesajAlan["son_mesaj"] = binding.etMesajEkle.text.toString()
-                    KonusmamesajAlan["gonderilmeZamani"] = ServerValue.TIMESTAMP
-                    KonusmamesajAlan["goruldu"] = false
-
-                    mref.child("konusmalar").child(sohbetEdilcekKisi).child(auth.currentUser!!.uid).setValue(KonusmamesajAlan)
-
-                    binding.etMesajEkle.setText("")
-
-
-                }
-
+            }else{
+                sohbetEdilenUserName(sohbetEdilcekKisi)
+                mesajGonderenId=FirebaseAuth.getInstance().currentUser!!.uid
+                chatViewModeli.refreshChat(sohbetEdilcekKisi)
+                badgeViewModeli.refreshBadge()
+                mesajGonder(sohbetEdilcekKisi)
 
 
 
             }
+
+            observeLiveData()
+
 
             binding.refreshId.setOnRefreshListener {
                 mref.child("mesajlar").child(mesajGonderenId).child(sohbetEdilcekKisi)
@@ -154,7 +134,7 @@ class ChatFragment : Fragment() {
 
             binding.imageViewBack.setOnClickListener {
 
-                findNavController().navigateUp()
+                 findNavController().navigateUp()
             }
 
 
@@ -172,6 +152,60 @@ class ChatFragment : Fragment() {
 
     }
 
+    private fun mesajGonder(mesajGonderilecekKisi:String){
+
+        binding.tvvMesajGonder.setOnClickListener {
+
+            val mesaj= binding.etMesajEkle.text.toString().trim()
+
+            if(!TextUtils.isEmpty(mesaj)){
+
+                val mesajAtan=HashMap<String,Any>()
+                mesajAtan["mesaj"] = binding.etMesajEkle.text.toString()
+                mesajAtan["gonderilmeZamani"] = ServerValue.TIMESTAMP
+                mesajAtan["type"] = "text"
+                mesajAtan["goruldu"] = true
+                mesajAtan["user_id"] = auth.currentUser!!.uid
+                val mesajKey = mref.child("mesajlar").child(auth.currentUser!!.uid).child(mesajGonderilecekKisi).push().key
+
+
+                mref.child("mesajlar").child(auth.currentUser!!.uid).child(mesajGonderilecekKisi).child(mesajKey!!).setValue(mesajAtan)
+
+                val mesajAlan=HashMap<String,Any>()
+                mesajAlan["mesaj"] = binding.etMesajEkle.text.toString()
+                mesajAlan["gonderilmeZamani"] = ServerValue.TIMESTAMP
+                mesajAlan["type"] = "text"
+                mesajAlan["goruldu"] = false
+                mesajAlan["user_id"] = auth.currentUser!!.uid
+                mref.child("mesajlar").child(mesajGonderilecekKisi).child(auth.currentUser!!.uid).child(mesajKey).setValue(mesajAlan)
+
+
+                val KonusmamesajAtan=HashMap<String,Any>()
+                KonusmamesajAtan["son_mesaj"] = binding.etMesajEkle.text.toString()
+                KonusmamesajAtan["gonderilmeZamani"] = ServerValue.TIMESTAMP
+                KonusmamesajAtan["goruldu"] = true
+
+                mref.child("konusmalar").child(auth.currentUser!!.uid).child(mesajGonderilecekKisi).setValue(KonusmamesajAtan)
+
+                val KonusmamesajAlan=HashMap<String,Any>()
+                KonusmamesajAlan["son_mesaj"] = binding.etMesajEkle.text.toString()
+                KonusmamesajAlan["gonderilmeZamani"] = ServerValue.TIMESTAMP
+                KonusmamesajAlan["goruldu"] = false
+
+                mref.child("konusmalar").child(mesajGonderilecekKisi).child(auth.currentUser!!.uid).setValue(KonusmamesajAlan)
+
+                binding.etMesajEkle.setText("")
+
+
+            }
+
+
+
+
+        }
+
+    }
+
     private fun observeLiveData() {
 
         chatViewModeli.chatMutable.observe(viewLifecycleOwner) {sohbet->
@@ -179,6 +213,11 @@ class ChatFragment : Fragment() {
 
                 binding.sohbetRecycler.visibility = View.VISIBLE
                 recyclerAdapter.mesajlariGuncelle(sohbet)
+
+                if (recyclerAdapter.itemCount > 0) {
+                    binding.sohbetRecycler.scrollToPosition(recyclerAdapter.itemCount - 1)
+                }
+
             }
 
         }
@@ -192,6 +231,18 @@ class ChatFragment : Fragment() {
                     binding.progressBarChat.visibility=View.GONE
 
                 }
+            }
+
+        }
+        badgeViewModeli.badgeLive.observe(viewLifecycleOwner) {gorulmeyenMesajSayisi ->
+            gorulmeyenMesajSayisi.let {
+
+                val navView: BottomNavigationView = requireActivity().findViewById(R.id.bottomNavigationView)
+                if (gorulmeyenMesajSayisi != null) {
+                    navView.setBadge(R.id.mesajlarFragment, gorulmeyenMesajSayisi.size)
+
+                }
+
             }
 
         }
@@ -242,7 +293,7 @@ class ChatFragment : Fragment() {
 
     private fun refreshMesajlar(){
 
-        Log.e("refresh","mesajlarzatenlisetedeolan")
+
 
 
         arguments?.let {
@@ -328,6 +379,64 @@ class ChatFragment : Fragment() {
             })
 
         }
+
+
+    }
+
+    override fun onStart() {
+        super.onStart()
+
+        fragmentAcikMi = if(!fragmentAcikMi){
+            true
+        }else{
+            true
+        }
+        chatViewModeli.addListeners()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Log.e("onresumechat","")
+        fragmentAcikMi = if(!fragmentAcikMi){
+            true
+        }else{
+            true
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        Log.e("onpausechat","")
+
+        fragmentAcikMi = if(fragmentAcikMi){
+            false
+        }else{
+            false
+        }
+
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.e("ondestroychat","")
+
+
+    }
+
+    override fun onStop() {
+        Log.e("onStop", "ChatViewModel state: ${chatViewModeli.toString()}")
+        Log.e("onstopcalıschat","")
+        super.onStop()
+        fragmentAcikMi = if(fragmentAcikMi){
+            false
+        }else{
+            false
+        }
+        Log.e("lifesycle",""+viewLifecycleOwner.lifecycle.currentState.toString())
+
+
+
+       chatViewModeli.removeListener()
 
 
     }

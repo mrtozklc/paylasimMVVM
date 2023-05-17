@@ -1,5 +1,6 @@
 package com.example.paylasimmvvm.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.paylasimmvvm.model.ChatModel
@@ -17,50 +18,58 @@ class ChatViewModel:ViewModel() {
     var refreshMesajPosition=0
     var getirilenMesajId=""
     var zatenListedeOlanMesajID=""
+    var sohbetEdilcekKisi: String = ""
     lateinit var mref: DatabaseReference
+    var childEventListener: ChildEventListener? = null
+    val mesajGonderenId=FirebaseAuth.getInstance().currentUser!!.uid
+    private var isChildEventListenerActive = false
 
     fun refreshChat(sohbetEdilcekKisi:String) {
+
         mref = FirebaseDatabase.getInstance().reference
-        var mesajGonderenId=FirebaseAuth.getInstance().currentUser!!.uid
+
 
 
         chatMutable.value = chatArray
         yukleniyor.value = false
 
 
-        mref.child("mesajlar").child(mesajGonderenId).child(sohbetEdilcekKisi).limitToLast(gosterilecekMesajSayisi).addChildEventListener(object :
+      childEventListener=  mref.child("mesajlar").child(mesajGonderenId).child(sohbetEdilcekKisi).limitToLast(gosterilecekMesajSayisi).addChildEventListener(object :
             ChildEventListener {
             override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
-                var okunanMesaj=snapshot.getValue(ChatModel::class.java)
-                chatArray.add(okunanMesaj!! as ChatModel)
+                if (isChildEventListenerActive) {
+                    Log.e("chataddedcalıstı","")
+                    val okunanMesaj=snapshot.getValue(ChatModel::class.java)
+                    chatArray.add(okunanMesaj!!)
 
-                if (mesajPosition==0){
+                    if (mesajPosition==0){
 
-                    getirilenMesajId= snapshot!!.key!!
-                    zatenListedeOlanMesajID=snapshot!!.key!!
+                        getirilenMesajId= snapshot.key!!
+                        zatenListedeOlanMesajID= snapshot.key!!
 
+                    }
+                    mesajPosition++
+
+
+
+                    snapshot.key?.let { it ->
+
+                        FirebaseDatabase.getInstance().reference
+                            .child("mesajlar").child(mesajGonderenId).child(sohbetEdilcekKisi).child(snapshot.key!!)
+                            .child("goruldu").setValue(true)
+                            .addOnCompleteListener {
+
+                                FirebaseDatabase.getInstance().reference.child("konusmalar")
+                                    .child(mesajGonderenId).child(sohbetEdilcekKisi).child("goruldu").setValue(true)
+
+                            }
+
+                    }
+
+                    chatMutable.value = chatArray
+                    yukleniyor.value = false
                 }
-                mesajPosition++
 
-
-                var mesajGonderenId=FirebaseAuth.getInstance().currentUser!!.uid
-                snapshot!!.key?.let {
-                    FirebaseDatabase.getInstance().getReference()
-                        .child("mesajlar").child(mesajGonderenId).child(sohbetEdilcekKisi).child(it)
-                        .child("goruldu").setValue(true)
-                        .addOnCompleteListener {
-                            FirebaseDatabase.getInstance().getReference().child("konusmalar")
-
-                                .child(mesajGonderenId).child(sohbetEdilcekKisi).child("goruldu").setValue(true)
-                        }
-                }
-
-
-
-
-
-                chatMutable.value = chatArray
-                yukleniyor.value = false
 
 
             }
@@ -80,5 +89,19 @@ class ChatViewModel:ViewModel() {
 
         })
     }
+
+
+
+    fun addListeners() {
+        isChildEventListenerActive = true
+
+    }
+    fun removeListener() {
+        isChildEventListenerActive = false
+    }
+
+
+
+
 
 }

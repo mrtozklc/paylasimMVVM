@@ -45,32 +45,23 @@
         android:id="@+id/golgelik"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@drawable/register_edit_text"
+        android:background="@color/secondary_text_color"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageView_back" />
 
-    <View
-        android:id="@+id/golgelik2"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@drawable/register_edit_text"
-        app:layout_constraintBottom_toTopOf="@+id/et_mesajEkle"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent" />
 
     <EditText
         android:id="@+id/et_mesajEkle"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="4dp"
-        android:layout_marginEnd="4dp"
-        android:layout_marginBottom="4dp"
-
+        android:layout_height="48dp"
+        android:background="@drawable/textview_bg2"
+        android:padding="12dp"
         android:ems="10"
-        android:hint="Mesaj.."
+        android:hint="Mesaj..."
+        android:layout_margin="6dp"
         android:inputType="textMultiLine"
+        android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/tvv_mesajGonder"
         app:layout_constraintHorizontal_bias="0.0"
@@ -80,12 +71,10 @@
 
     <TextView
         android:id="@+id/tvv_mesajGonder"
-        android:layout_width="112dp"
-        android:layout_height="44dp"
-        android:layout_marginEnd="4dp"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
         android:text="Gönder"
-        android:textAlignment="center"
-
+        android:padding="12dp"
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="@+id/et_mesajEkle"
         app:layout_constraintEnd_toEndOf="parent"
@@ -98,8 +87,8 @@
         android:layout_marginStart="2dp"
         android:layout_marginTop="2dp"
         android:layout_marginEnd="2dp"
-        android:layout_marginBottom="2dp"
-        app:layout_constraintBottom_toTopOf="@+id/golgelik2"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/tvv_mesajGonder"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/golgelik">
@@ -108,7 +97,7 @@
             android:id="@+id/sohbetRecycler"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:layout_constraintBottom_toTopOf="@+id/golgelik2"
+            app:layout_constraintBottom_toTopOf="@+id/tvv_mesajGonder"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/golgelik"

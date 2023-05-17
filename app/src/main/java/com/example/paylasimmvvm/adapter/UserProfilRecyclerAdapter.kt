@@ -112,7 +112,7 @@ class UserProfilRecyclerAdapter(var context: Context, private var tumKampanyalar
 
 
                                 }
-                                gonderiBegen.setImageResource(R.drawable.ic_launcher_like_foreground)
+                                gonderiBegen.setImageResource(R.drawable.ic_baseline_favorite)
 
                             } else {
                                 ref.child("begeniler").child(anlikGonderi.postID!!).child(currentID)
@@ -122,7 +122,7 @@ class UserProfilRecyclerAdapter(var context: Context, private var tumKampanyalar
                                     Bildirimler.bildirimKaydet(anlikGonderi.userID!!,
                                         Bildirimler.KAMPANYA_BEGENILDI,anlikGonderi.postID!!)
                                 }
-                                gonderiBegen.setImageResource(R.drawable.ic_launcher_like_red_foreground)
+                                gonderiBegen.setImageResource(R.drawable.baseline_favorite_red_24)
                                 begenmeSayisi.visibility= View.VISIBLE
                                 begenmeSayisi.text = ""+ snapshot.childrenCount.toString()+" beğeni"
 
@@ -144,10 +144,9 @@ class UserProfilRecyclerAdapter(var context: Context, private var tumKampanyalar
         private fun yorumlarFragmentiniBaslat(anlikGonderi: KullaniciKampanya) {
 
 
-            EventBus.getDefault()
-                .postSticky(EventbusData.YorumYapilacakGonderininIDsiniGonder(anlikGonderi.postID))
 
-            val action= UserProfilFragmentDirections.actionUserProfilFragmentToYorumlarFragment()
+
+            val action= UserProfilFragmentDirections.actionUserProfilFragmentToCommentFragment(anlikGonderi.postID!!,true)
             Navigation.findNavController(itemView).navigate(action)
 
         }
@@ -207,9 +206,9 @@ class UserProfilRecyclerAdapter(var context: Context, private var tumKampanyalar
                     }
 
                     if (snapshot.hasChild(userID)) {
-                        gonderiBegen.setImageResource(R.drawable.ic_launcher_like_red_foreground)
+                        gonderiBegen.setImageResource(R.drawable.baseline_favorite_red_24)
                     } else {
-                        gonderiBegen.setImageResource(R.drawable.ic_launcher_like_foreground)
+                        gonderiBegen.setImageResource(R.drawable.ic_baseline_favorite)
                     }
                 }
 

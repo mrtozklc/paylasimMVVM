@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import androidx.appcompat.app.AlertDialog
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.RecyclerView
@@ -66,6 +67,7 @@ class ProfilFragmentRecyclerAdapter (var context: Context, private var tumKampan
 
         @SuppressLint("SetTextI18n")
         fun setData(anlikGonderi: KullaniciKampanya) {
+            Log.e("gelenadapter",""+anlikGonderi.postID)
 
 
             userNameTitle.text = anlikGonderi.userName
@@ -92,17 +94,26 @@ class ProfilFragmentRecyclerAdapter (var context: Context, private var tumKampan
             yorumlariGoster(anlikGonderi)
 
             gonderi.setOnClickListener {
-
-                val builder = android.app.AlertDialog.Builder(itemView.context)
-
+                val builder = AlertDialog.Builder(itemView.context)
                 val imageView = PhotoView(itemView.context)
                 imageView.adjustViewBounds = true
 
                 Picasso.get().load(anlikGonderi.postURL).into(imageView)
 
+
+
                 builder.setView(imageView)
                 val alertDialog = builder.create()
                 alertDialog.setCanceledOnTouchOutside(true)
+
+                // Ekranı kaplayacak şekilde ayarla
+                alertDialog.window?.setLayout(
+                    WindowManager.LayoutParams.MATCH_PARENT,
+                    WindowManager.LayoutParams.MATCH_PARENT
+                )
+
+
+
                 imageView.setOnClickListener {
                     alertDialog.dismiss()
                 }
@@ -199,7 +210,7 @@ class ProfilFragmentRecyclerAdapter (var context: Context, private var tumKampan
 
 
                                 }
-                                gonderiBegen.setImageResource(R.drawable.ic_launcher_like_foreground)
+                                gonderiBegen.setImageResource(R.drawable.ic_baseline_favorite)
 
                             } else {
                                 ref.child("begeniler").child(anlikGonderi.postID!!).child(currentID)
@@ -209,7 +220,7 @@ class ProfilFragmentRecyclerAdapter (var context: Context, private var tumKampan
                                  Bildirimler.bildirimKaydet(anlikGonderi.userID!!,Bildirimler.KAMPANYA_BEGENILDI,anlikGonderi.postID!!)
                                 }
 
-                                gonderiBegen.setImageResource(R.drawable.ic_launcher_like_red_foreground)
+                                gonderiBegen.setImageResource(R.drawable.baseline_favorite_red_24)
                                 begenmeSayisi.visibility= View.VISIBLE
                                 begenmeSayisi.text = ""+ snapshot.childrenCount.toString()+" beğeni"
 
@@ -232,10 +243,9 @@ class ProfilFragmentRecyclerAdapter (var context: Context, private var tumKampan
 
 
 
-            EventBus.getDefault()
-                .postSticky(EventbusData.YorumYapilacakGonderininIDsiniGonder(anlikGonderi.postID))
 
-            val action=ProfilFragmentDirections.actionProfilFragmentToYorumlarFragment()
+
+            val action=ProfilFragmentDirections.actionProfilFragmentToCommentFragment(anlikGonderi.postID!!,true)
             Navigation.findNavController(itemView).navigate(action)
 
         }
@@ -295,9 +305,9 @@ class ProfilFragmentRecyclerAdapter (var context: Context, private var tumKampan
                     }
 
                     if (snapshot.hasChild(userID)) {
-                        gonderiBegen.setImageResource(R.drawable.ic_launcher_like_red_foreground)
+                        gonderiBegen.setImageResource(R.drawable.baseline_favorite_red_24)
                     } else {
-                        gonderiBegen.setImageResource(R.drawable.ic_launcher_like_foreground)
+                        gonderiBegen.setImageResource(R.drawable.ic_baseline_favorite)
                     }
                 }
 

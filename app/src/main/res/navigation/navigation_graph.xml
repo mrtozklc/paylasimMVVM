@@ -5,6 +5,7 @@
     android:id="@+id/navigation_graph"
     app:startDestination="@id/loginFragment">
 
+
     <fragment
         android:id="@+id/registerFragment"
         android:name="com.example.paylasimmvvm.view.login.RegisterFragment"
@@ -125,15 +126,16 @@
             android:name="userId"
             app:argType="string"
             android:defaultValue='userId' />
-        <action
-            android:id="@+id/action_userProfilFragment_to_yorumlarFragment"
-            app:destination="@id/yorumlarFragment" />
+
         <action
             android:id="@+id/action_userProfilFragment_to_chatFragment"
             app:destination="@id/chatFragment" />
         <action
             android:id="@+id/action_userProfilFragment_self"
             app:destination="@id/userProfilFragment" />
+        <action
+            android:id="@+id/action_userProfilFragment_to_comment_fragment"
+            app:destination="@id/comment_fragment" />
     </fragment>
     <fragment
         android:id="@+id/profilFragment"
@@ -144,9 +146,7 @@
             android:id="@+id/action_profilFragment_to_homeFragment"
             app:destination="@id/homeFragment" />
 
-        <action
-            android:id="@+id/action_profilFragment_to_yorumlarFragment"
-            app:destination="@id/yorumlarFragment" />
+
         <action
             android:id="@+id/action_profilFragment_to_kokteyllerFragment"
             app:destination="@id/kokteyllerFragment" />
@@ -160,6 +160,15 @@
         <action
             android:id="@+id/action_profilFragment_to_bildirimlerFragment"
             app:destination="@id/bildirimlerFragment" />
+        <action
+            android:id="@+id/action_profilFragment_to_comment_fragment"
+            app:destination="@id/comment_fragment" />
+        <action
+            android:id="@+id/action_profilFragment_to_userProfilFragment"
+            app:destination="@id/userProfilFragment" />
+        <action
+            android:id="@+id/action_profilFragment_to_userProfilFragment2"
+            app:destination="@id/userProfilFragment" />
     </fragment>
     <fragment
         android:id="@+id/loginFragment"
@@ -205,9 +214,7 @@
         <action
             android:id="@+id/action_homeFragment_to_chatFragment"
             app:destination="@id/chatFragment" />
-        <action
-            android:id="@+id/action_homeFragment_to_yorumlarFragment"
-            app:destination="@id/yorumlarFragment" />
+
         <action
             android:id="@+id/action_homeFragment_to_kokteyllerFragment"
             app:destination="@id/kokteyllerFragment" />
@@ -215,8 +222,9 @@
             android:id="@+id/action_homeFragment_to_isletmeListFragment"
             app:destination="@id/isletmeListFragment" />
         <action
-            android:id="@+id/action_homeFragment_to_algoliaFragment"
-            app:destination="@id/algoliaFragment" />
+            android:id="@+id/action_homeFragment_to_comment_fragment"
+            app:destination="@id/comment_fragment" />
+
 
     </fragment>
     <fragment
@@ -227,9 +235,7 @@
         <action
             android:id="@+id/action_bildirimlerFragment_to_homeFragment"
             app:destination="@id/homeFragment" />
-        <action
-            android:id="@+id/action_bildirimlerFragment_to_yorumlarFragment"
-            app:destination="@id/yorumlarFragment" />
+
         <action
             android:id="@+id/action_bildirimlerFragment_to_profilFragment"
             app:destination="@id/profilFragment" />
@@ -242,6 +248,9 @@
         <action
             android:id="@+id/action_bildirimlerFragment_to_userProfilFragment"
             app:destination="@id/userProfilFragment" />
+        <action
+            android:id="@+id/action_bildirimlerFragment_to_comment_fragment"
+            app:destination="@id/comment_fragment" />
 
     </fragment>
     <fragment
@@ -270,18 +279,8 @@
 
 
     </fragment>
-    <fragment
-        android:id="@+id/yorumlarFragment"
-        android:name="com.example.paylasimmvvm.view.yorumlar.YorumlarFragment"
-        android:label="fragment_yorumlar"
-        tools:layout="@layout/fragment_yorumlar" >
-        <action
-            android:id="@+id/action_yorumlarFragment_to_profilFragment"
-            app:destination="@id/profilFragment" />
-        <action
-            android:id="@+id/action_yorumlarFragment_to_userProfilFragment"
-            app:destination="@id/userProfilFragment" />
-    </fragment>
+
+
     <fragment
         android:id="@+id/kokteyllerFragment"
         android:name="com.example.paylasimmvvm.view.icecekler.KokteyllerFiltreFragment"
@@ -342,11 +341,22 @@
             app:destination="@id/profilFragment" />
     </fragment>
     <fragment
-        android:id="@+id/algoliaFragment"
-        android:name="com.example.paylasimmvvm.util.AlgoliaFragment"
-        android:label="AlgoliaFragment" >
+        android:id="@+id/comment_fragment"
+        android:name="com.example.paylasimmvvm.view.yorumlar.comment_fragment"
+        android:label="fragment_comment_fragment"
+        tools:layout="@layout/fragment_comment_fragment" >
+        <argument
+            android:name="user_id"
+            app:argType="string" />
+        <argument
+            android:name="isPost"
+            app:argType="boolean" />
         <action
-            android:id="@+id/action_algoliaFragment_to_userProfilFragment"
+            android:id="@+id/action_comment_fragment_to_userProfilFragment"
             app:destination="@id/userProfilFragment" />
+        <action
+            android:id="@+id/action_comment_fragment_to_profilFragment"
+            app:destination="@id/profilFragment" />
     </fragment>
+
 </navigation>

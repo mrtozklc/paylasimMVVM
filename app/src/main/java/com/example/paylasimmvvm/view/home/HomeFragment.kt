@@ -1,6 +1,7 @@
 package com.example.paylasimmvvm.view.home
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.*
@@ -46,6 +47,7 @@ class HomeFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         (activity as AppCompatActivity).supportActionBar?.hide()
+
     }
 
 
@@ -84,6 +86,7 @@ class HomeFragment : Fragment() {
 
         badgeViewModeli= ViewModelProvider(this)[BadgeViewModel::class.java]
         badgeViewModeli.refreshBadge()
+
 
         observeLiveDataBadge()
 
@@ -326,6 +329,7 @@ class HomeFragment : Fragment() {
             }
 
         }
+
         kampanyalarViewModeli.yukleniyor.observe(viewLifecycleOwner) { yukleniyor ->
             yukleniyor.let {
                 if (it) {
@@ -345,11 +349,15 @@ class HomeFragment : Fragment() {
 
     private  fun observeLiveDataBadge(){
         badgeViewModeli.badgeLive.observe(viewLifecycleOwner) {gorulmeyenMesajSayisi ->
+
             gorulmeyenMesajSayisi.let {
+
+
 
                 val navView:BottomNavigationView = requireActivity().findViewById(R.id.bottomNavigationView)
                 if (gorulmeyenMesajSayisi != null) {
                     navView.setBadge(R.id.mesajlarFragment, gorulmeyenMesajSayisi.size)
+
 
                 }
 

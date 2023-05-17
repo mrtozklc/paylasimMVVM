@@ -10,7 +10,7 @@ import android.view.ViewGroup
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.RecyclerView
 import com.example.paylasimmvvm.R
-import com.example.paylasimmvvm.databinding.RecyclerRowHomeBinding
+import com.example.paylasimmvvm.databinding.RecyclerRowIsletmeListBinding
 import com.example.paylasimmvvm.model.KullaniciKampanya
 import com.example.paylasimmvvm.util.Bildirimler
 import com.example.paylasimmvvm.util.EventbusData
@@ -31,7 +31,7 @@ class IsletmeListRecyclerAdapter(var context: Context, private var tumKampanyala
 
     class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
 
-        val binding= RecyclerRowHomeBinding.bind(itemView)
+        val binding= RecyclerRowIsletmeListBinding.bind(itemView)
 
         private var profileImage = binding.profilImage
         private var userNameTitle = binding.kullaniciAdiTepe
@@ -45,6 +45,10 @@ class IsletmeListRecyclerAdapter(var context: Context, private var tumKampanyala
 
         @SuppressLint("SetTextI18n")
         fun setData(anlikGonderi: KullaniciKampanya) {
+
+            if (anlikGonderi.userID.equals(FirebaseAuth.getInstance().currentUser?.uid)){
+                mesajGonder.visibility=View.GONE
+            }
 
 
             FirebaseDatabase.getInstance().reference.child("konumlar").child("kullanici_konum").child(
@@ -140,7 +144,7 @@ class IsletmeListRecyclerAdapter(var context: Context, private var tumKampanyala
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
 
 
-        val viewHolder = LayoutInflater.from(context).inflate(R.layout.recycler_row_home, parent, false)
+        val viewHolder = LayoutInflater.from(context).inflate(R.layout.recycler_row_isletme_list, parent, false)
 
         return ViewHolder(viewHolder)
     }

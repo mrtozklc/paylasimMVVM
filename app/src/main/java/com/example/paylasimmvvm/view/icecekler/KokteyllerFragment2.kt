@@ -15,12 +15,16 @@ import com.example.paylasimmvvm.adapter.KokteyllerGridAdapter
 
 import com.example.paylasimmvvm.databinding.FragmentKokteyller2Binding
 import com.example.paylasimmvvm.model.Drink
+import com.example.paylasimmvvm.util.setBadge
+import com.example.paylasimmvvm.viewmodel.BadgeViewModel
 import com.example.paylasimmvvm.viewmodel.KokteylViewModel
+import com.google.android.material.bottomnavigation.BottomNavigationView
 
 
 class KokteyllerFragment2 : Fragment() {
     private lateinit var binding:FragmentKokteyller2Binding
     private lateinit var kokteylViewModeli: KokteylViewModel
+    private lateinit var badgeViewModeli: BadgeViewModel
     private var tumKokteyller=ArrayList<Drink>()
     lateinit var searchView: SearchView
 
@@ -51,6 +55,8 @@ class KokteyllerFragment2 : Fragment() {
 
 
         kokteylViewModeli= ViewModelProvider(this)[KokteylViewModel::class.java]
+        badgeViewModeli= ViewModelProvider(this)[BadgeViewModel::class.java]
+        badgeViewModeli.refreshBadge()
 
         binding.imageViewBack.setOnClickListener {
             findNavController().navigateUp()
@@ -172,6 +178,22 @@ class KokteyllerFragment2 : Fragment() {
 
                 }
             }
+        }
+
+        badgeViewModeli.badgeLive.observe(viewLifecycleOwner) {gorulmeyenMesajSayisi ->
+            gorulmeyenMesajSayisi.let {
+
+
+
+                val navView: BottomNavigationView = requireActivity().findViewById(R.id.bottomNavigationView)
+                if (gorulmeyenMesajSayisi != null) {
+                    navView.setBadge(R.id.mesajlarFragment, gorulmeyenMesajSayisi.size)
+
+
+                }
+
+            }
+
         }
 
 

@@ -165,11 +165,8 @@ class KampanyaOlusturFragment : Fragment() {
     private fun veritabaninakaydet(downloadurl:String?){
 
 
-
-
         val postID = db.child("kampanya").child(auth.uid!!).push().key
         val yuklenenPost = KampanyaOlustur(auth.uid, postID, 0,binding.aciklamaId.text.toString(),secilenSure, downloadurl)
-
 
 
         db.child("kampanya").child(auth.uid!!).child(postID!!).setValue(yuklenenPost)
@@ -178,15 +175,6 @@ class KampanyaOlusturFragment : Fragment() {
         Toast.makeText(requireActivity(),"Kampanya Oluşturuldu", Toast.LENGTH_LONG).show()
 
 
-        if(binding.aciklamaId.text.toString().isNotEmpty()){
-
-            db.child("yorumlar").child(postID).child(postID).child("user_id").setValue(auth.uid)
-            db.child("yorumlar").child(postID).child(postID).child("yorum_tarih").setValue(
-                ServerValue.TIMESTAMP)
-            db.child("yorumlar").child(postID).child(postID).child("yorum").setValue(binding.aciklamaId.text.toString())
-            db.child("yorumlar").child(postID).child(postID).child("yorum_begeni").setValue("0")
-
-        }
         kampanyaSayisiniGuncelle()
         binding.progressBar.visibility=View.GONE
         binding.gorselSec.visibility=View.VISIBLE

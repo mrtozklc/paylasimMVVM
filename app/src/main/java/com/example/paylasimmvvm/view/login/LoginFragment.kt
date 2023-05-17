@@ -12,14 +12,17 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.navigation.Navigation
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import com.example.paylasimmvvm.R
 import com.example.paylasimmvvm.databinding.FragmentLoginBinding
 import com.example.paylasimmvvm.model.KullaniciBilgileri
+import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
+import com.google.firebase.messaging.FirebaseMessaging
 
 
 class LoginFragment : Fragment() {
@@ -32,6 +35,7 @@ class LoginFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         (activity as AppCompatActivity).supportActionBar?.hide()
+
     }
 
 
@@ -46,12 +50,15 @@ class LoginFragment : Fragment() {
 
         binding= FragmentLoginBinding.inflate(layoutInflater,container,false)
         val view=binding.root
+        binding.progressBarLogin.visibility=View.VISIBLE
+        binding.loginContainer.visibility=View.GONE
         auth = FirebaseAuth.getInstance()
         mref = FirebaseDatabase.getInstance().reference
-        setupAuthLis()
+
 
 
         init()
+        setupAuthLis()
 
         return view
 
@@ -60,6 +67,7 @@ class LoginFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         binding. tvKaydoll.setOnClickListener {
 
            findNavController().navigate(R.id.registerFragment)
@@ -82,24 +90,29 @@ class LoginFragment : Fragment() {
 
 
 
+
         mauthLis= FirebaseAuth.AuthStateListener {
             val user=FirebaseAuth.getInstance().currentUser?.uid
 
 
             if (user!=null){
-                Log.e("autjliss","gelenid${user}")
+
 
                 findNavController().navigate(R.id.homeFragment)
 
 
                 val bottomNav = requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView)
                 bottomNav.visibility=View.VISIBLE
+                binding.progressBarLogin.visibility=View.GONE
+
 
 
             }else{
 
                 val bottomNav = requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView)
                 bottomNav.visibility=View.GONE
+                binding.progressBarLogin.visibility=View.GONE
+                binding.loginContainer.visibility=View.VISIBLE
 
 
             }
@@ -120,7 +133,7 @@ class LoginFragment : Fragment() {
                 if (p0.isSuccessful) {
                     val navController = findNavController()
 
-                    // fcmTokenAl()
+                    fcmTokenAl()
 
                     Toast.makeText(
                         requireContext(),
@@ -210,7 +223,7 @@ class LoginFragment : Fragment() {
 
 
 
-/*    private fun fcmTokenAl() {
+       private fun fcmTokenAl() {
         FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
             if (!task.isSuccessful) {
                 return@OnCompleteListener
@@ -220,73 +233,36 @@ class LoginFragment : Fragment() {
 
             newTokenAl(token)
 
-
-
         })
-    }*/
+    }
+
 
 
     private fun newTokenAl(newToken: String) {
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        if (currentUser != null) {
+            val database = FirebaseDatabase.getInstance().reference
+            val usersRef = database.child("users")
+            usersRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    for (childSnapshot in dataSnapshot.children) {
+                        for (userSnapshot in childSnapshot.children) {
 
-        if (FirebaseAuth.getInstance().currentUser!=null){
-
-            FirebaseDatabase.getInstance().reference.child("users").child("isletmeler").addListenerForSingleValueEvent(object :
-                ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    if (snapshot.value != null) {
-
-                        for (user in snapshot.children) {
-
-
-                            val okunanKullanici = user.getValue(KullaniciBilgileri::class.java)
-                            if (okunanKullanici!!.user_id!! == FirebaseAuth.getInstance().currentUser!!.uid) {
-
-                                FirebaseDatabase.getInstance().reference.child("users").child("isletmeler").child(FirebaseAuth.getInstance().currentUser!!.uid).child("FCM_TOKEN").setValue(newToken)
-
-
-
+                            if (userSnapshot.child("user_id").value == currentUser.uid) {
+                                val userRef = userSnapshot.ref
+                                userRef.child("FCM_TOKEN").setValue(newToken)
+                                break
                             }
                         }
                     }
-                    FirebaseDatabase.getInstance().reference.child("users").child("kullanicilar").addListenerForSingleValueEvent(object:
-                        ValueEventListener {
-                        override fun onDataChange(snapshot: DataSnapshot) {
-                            if (snapshot.value != null) {
-
-                                for (user in snapshot.children) {
-
-
-                                    val okunanKullanici = user.getValue(KullaniciBilgileri::class.java)
-                                    Log.e("newtoken", "okunankullanici$okunanKullanici")
-
-                                    if (okunanKullanici!!.user_id!! == FirebaseAuth.getInstance().currentUser!!.uid) {
-
-                                        FirebaseDatabase.getInstance().reference.child("users").child("kullanicilar").child(FirebaseAuth.getInstance().currentUser!!.uid).child("FCM_TOKEN").setValue(newToken)
-
-
-
-                                    }
-                                }
-                            }
-                        }
-
-                        override fun onCancelled(error: DatabaseError) {
-                        }
-
-                    })
-
                 }
 
-                override fun onCancelled(error: DatabaseError) {
+                override fun onCancelled(databaseError: DatabaseError) {
+                    databaseError.toException().printStackTrace()
                 }
-
             })
-
-
         }
-
     }
-
     private var watcher: TextWatcher = object : TextWatcher {
         override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
 

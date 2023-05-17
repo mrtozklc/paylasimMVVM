@@ -3,6 +3,7 @@ package com.example.paylasimmvvm.view.home
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 
 import android.view.MenuItem
 
@@ -14,6 +15,7 @@ import androidx.navigation.ui.setupWithNavController
 import com.example.paylasimmvvm.R
 
 import com.example.paylasimmvvm.databinding.ActivityMainBinding
+import com.example.paylasimmvvm.view.mesajlar.ChatFragment
 
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
@@ -30,21 +32,25 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
 
-        val navHostFragment =
-            supportFragmentManager.findFragmentById(R.id.fragmentContainerView) as NavHostFragment
-
+        val navHostFragment = supportFragmentManager.findFragmentById(R.id.fragmentContainerView) as NavHostFragment
         val navController = navHostFragment.navController
-        setupBottomNavMenu(navController)
-
-
-
-    }
-
-    private fun setupBottomNavMenu(navController: NavController) {
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottomNavigationView)
         bottomNav?.setupWithNavController(navController)
 
+        if (intent.extras != null) {
+            val gidilecekUserID = intent.extras?.getString("konusulacakKisi")
+
+            if (gidilecekUserID != null ) {
+                val chatNavHostFragment = supportFragmentManager.findFragmentById(R.id.fragmentContainerView) as NavHostFragment
+                val chatNavController = chatNavHostFragment.navController
+                val bundle = Bundle()
+                bundle.putString("konusulacakKisi", gidilecekUserID)
+                chatNavController.navigate(R.id.chatFragment, bundle)
+            }
+        }
+
     }
+
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         val navController = findNavController(R.id.fragmentContainerView)

@@ -12,18 +12,21 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
+import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.paylasimmvvm.R
 import com.example.paylasimmvvm.adapter.MenulerGridAdapter
 import com.example.paylasimmvvm.adapter.MudavimlerRecyclerAdapter
 import com.example.paylasimmvvm.adapter.ProfilFragmentRecyclerAdapter
+import com.example.paylasimmvvm.adapter.UserProfilRecyclerAdapter
 import com.example.paylasimmvvm.databinding.FragmentProfilBinding
 import com.example.paylasimmvvm.model.KullaniciBilgileri
 import com.example.paylasimmvvm.model.KullaniciKampanya
 import com.example.paylasimmvvm.model.Menuler
 import com.example.paylasimmvvm.model.Mudavimler
 import com.example.paylasimmvvm.util.EventbusData
+import com.example.paylasimmvvm.util.setBadge
 import com.example.paylasimmvvm.view.login.SignOutFragment
 import com.example.paylasimmvvm.viewmodel.BadgeViewModel
 import com.example.paylasimmvvm.viewmodel.ProfilViewModel
@@ -85,17 +88,9 @@ class ProfilFragment : Fragment() {
         profilKampanyalarViewModeli.getMudavimler(auth.currentUser!!.uid)
 
         kullaniciBilgileriVerileriniAl()
-        observeliveData()
+
 
         binding.paylasimlar.isEnabled=false
-
-
-        val layoutManager= LinearLayoutManager(activity)
-        binding.recyclerProfil.layoutManager=layoutManager
-        recyclerviewadapter= ProfilFragmentRecyclerAdapter(requireActivity(),tumGonderiler)
-        binding.recyclerProfil.adapter=recyclerviewadapter
-
-
 
         binding.paylasimlar.setOnClickListener {
             binding.paylasimlar.isEnabled=false
@@ -103,8 +98,8 @@ class ProfilFragment : Fragment() {
             binding.yorumlar.isEnabled=true
             binding.mudavimler.isEnabled=true
 
-            profilKampanyalarViewModeli= ViewModelProvider(this)[ProfilViewModel::class.java]
             profilKampanyalarViewModeli.refreshProfilKampanya(auth.currentUser!!.uid)
+
 
             profilKampanyalarViewModeli.gonderiYok.observe(viewLifecycleOwner){
                 it.let {
@@ -156,13 +151,9 @@ class ProfilFragment : Fragment() {
             binding.paylasimlar.isEnabled=true
             binding.mudavimler.isEnabled=true
 
-            EventBus.getDefault()
-                .postSticky(EventbusData.YorumYapilacakGonderininIDsiniGonder(tiklanilanKullanici))
 
-            val action=ProfilFragmentDirections.actionProfilFragmentToYorumlarFragment()
+            val action=ProfilFragmentDirections.actionProfilFragmentToCommentFragment(tiklanilanKullanici!!,false)
             Navigation.findNavController(it).navigate(action)
-
-
 
 
         }
@@ -175,12 +166,6 @@ class ProfilFragment : Fragment() {
             binding.yorumlar.isEnabled=true
             profilKampanyalarViewModeli.getMudavimler(auth.currentUser!!.uid)
 
-            val layoutManager= LinearLayoutManager(activity)
-            binding.recyclerProfil.layoutManager=layoutManager
-            recyclerMudavimler= MudavimlerRecyclerAdapter(tumMudavimler)
-            binding.recyclerProfil.adapter=recyclerMudavimler
-            binding.recyclerProfil.visibility = View.VISIBLE
-            binding.gridId.visibility=View.GONE
 
             profilKampanyalarViewModeli.mudavimYok.observe(viewLifecycleOwner){
                 it.let {
@@ -200,13 +185,15 @@ class ProfilFragment : Fragment() {
                 it.let {
                     if (it!=null){
                         val layoutManager= LinearLayoutManager(activity)
+                        recyclerMudavimler= MudavimlerRecyclerAdapter(tumMudavimler,true)
                         binding.recyclerProfil.layoutManager=layoutManager
                         binding.recyclerProfil.adapter=recyclerMudavimler
                         binding.recyclerProfil.visibility = View.VISIBLE
                         binding.gridId.visibility=View.GONE
                         binding.gonderiYok.visibility=View.GONE
-                        recyclerMudavimler= MudavimlerRecyclerAdapter(tumMudavimler)
                         recyclerMudavimler.mudavimListesiniGuncelle(it)
+
+
                     }
                 }
             }
@@ -259,11 +246,19 @@ class ProfilFragment : Fragment() {
 
 
     }, viewLifecycleOwner, Lifecycle.State.RESUMED)
+
+        observeliveData()
+
+
+        val layoutManager= LinearLayoutManager(activity)
+        binding.recyclerProfil.layoutManager=layoutManager
+        recyclerviewadapter= ProfilFragmentRecyclerAdapter(requireActivity(),tumGonderiler)
+        binding.recyclerProfil.adapter=recyclerviewadapter
     }
 
     @SuppressLint("SetTextI18n")
     private fun observeliveData(){
-
+        Log.e("observecalisti","")
         val gridView = requireActivity().findViewById(R.id.grid_id) as GridView
 
         val customAdapter = MenulerGridAdapter(tumMenuler,true)
@@ -281,6 +276,7 @@ class ProfilFragment : Fragment() {
                 }
             }
         }
+
         profilKampanyalarViewModeli.menuSayisiMutable.observe(viewLifecycleOwner) { profilMenu ->
             profilMenu.let {
                 if (profilMenu!=null){
@@ -337,6 +333,7 @@ class ProfilFragment : Fragment() {
 
         profilKampanyalarViewModeli.profilKampanya.observe(viewLifecycleOwner) { profilKampanya ->
             profilKampanya.let {
+                Log.e("observecalistikampanyaa",""+profilKampanya)
                 Collections.sort(profilKampanya, object : Comparator<KullaniciKampanya> {
                     override fun compare(p0: KullaniciKampanya?, p1: KullaniciKampanya?): Int {
                         if (p0!!.postYuklenmeTarih!! > p1!!.postYuklenmeTarih!!) {
@@ -345,7 +342,10 @@ class ProfilFragment : Fragment() {
                     }
 
                 })
-
+                val layoutManager= LinearLayoutManager(activity)
+                binding.recyclerProfil.layoutManager=layoutManager
+                recyclerviewadapter= ProfilFragmentRecyclerAdapter(requireActivity(),tumGonderiler)
+                binding.recyclerProfil.adapter=recyclerviewadapter
                 binding.recyclerProfil.visibility = View.VISIBLE
                 binding.gridId.visibility=View.GONE
                 recyclerviewadapter.kampanyalariGuncelle(profilKampanya)
@@ -365,11 +365,25 @@ class ProfilFragment : Fragment() {
             Mudavimler.let {
                 if (Mudavimler!=null){
 
-                    recyclerMudavimler= MudavimlerRecyclerAdapter(tumMudavimler)
+                    recyclerMudavimler= MudavimlerRecyclerAdapter(tumMudavimler,true)
                     recyclerMudavimler.mudavimListesiniGuncelle(Mudavimler)
 
                 }
             }
+        }
+
+        profilBadges.badgeLive.observe(viewLifecycleOwner) {gorulmeyenMesajSayisi ->
+            gorulmeyenMesajSayisi.let {
+
+
+                val navView:BottomNavigationView = requireActivity().findViewById(R.id.bottomNavigationView)
+                if (gorulmeyenMesajSayisi != null) {
+                    navView.setBadge(R.id.mesajlarFragment, gorulmeyenMesajSayisi.size)
+
+                }
+
+            }
+
         }
 
     }
@@ -481,6 +495,7 @@ class ProfilFragment : Fragment() {
     override fun onStart() {
         super.onStart()
         Log.e("hata","profildesin")
+        (activity as AppCompatActivity).supportActionBar?.show()
         auth.addAuthStateListener(mauthLis)
 
     }

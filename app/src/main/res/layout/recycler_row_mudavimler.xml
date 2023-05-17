@@ -12,6 +12,8 @@
         android:layout_height="30dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
+        app:civ_border_color="#6C6A6A"
+        app:civ_border_width="1dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -30,7 +32,7 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_marginTop="16dp"
-        android:background="@drawable/register_edit_text"
+        android:background="@color/secondary_text_color"
         app:layout_constraintTop_toBottomOf="@+id/profilPhoto" />
 
 

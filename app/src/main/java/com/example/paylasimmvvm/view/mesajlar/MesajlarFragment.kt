@@ -10,11 +10,14 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.paylasimmvvm.R
 import com.example.paylasimmvvm.adapter.MesajlarRecyclerAdapter
 import com.example.paylasimmvvm.databinding.FragmentMesajlarBinding
 import com.example.paylasimmvvm.model.Mesajlar
+import com.example.paylasimmvvm.util.setBadge
 import com.example.paylasimmvvm.viewmodel.BadgeViewModel
 import com.example.paylasimmvvm.viewmodel.MesajlarViewModel
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DatabaseReference
@@ -31,7 +34,11 @@ class MesajlarFragment : Fragment() {
     private lateinit var mesajlarViewModeli:MesajlarViewModel
     var tumMesajlar=ArrayList<Mesajlar>()
     private lateinit var badgeViewModeli: BadgeViewModel
+    var listenerAtandiMi=false
 
+    companion object {
+        var fragmentAcikMi=false
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         (activity as AppCompatActivity).supportActionBar?.hide()
@@ -56,14 +63,27 @@ class MesajlarFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        mesajlarViewModeli= ViewModelProvider(this)[MesajlarViewModel::class.java]
-        mesajlarViewModeli.refreshMesajlar()
-        badgeViewModeli= ViewModelProvider(this)[BadgeViewModel::class.java]
-        badgeViewModeli.refreshBadge()
+        Log.e("listeneratandımı","oncreate"+listenerAtandiMi)
+
+        if(listenerAtandiMi==false){
+            listenerAtandiMi=true
+            Log.e("listeneratandımı","oncreateifsonrası"+listenerAtandiMi)
+
+            mesajlarViewModeli= ViewModelProvider(this)[MesajlarViewModel::class.java]
+
+            mesajlarViewModeli.refreshMesajlar()
+
+            badgeViewModeli= ViewModelProvider(this)[BadgeViewModel::class.java]
+            badgeViewModeli.refreshBadge()
+
+            observeLiveData()
+
+        }
 
 
 
-        observeLiveData()
+
+
 
         val layoutManager= LinearLayoutManager(activity)
         binding.recyclerMesajlar.layoutManager=layoutManager
@@ -108,6 +128,19 @@ class MesajlarFragment : Fragment() {
                 }
             }
         }
+      badgeViewModeli.badgeLive.observe(viewLifecycleOwner) {gorulmeyenMesajSayisi ->
+          gorulmeyenMesajSayisi.let {
+
+              val navView: BottomNavigationView = requireActivity().findViewById(R.id.bottomNavigationView)
+              if (gorulmeyenMesajSayisi != null) {
+                  navView.setBadge(R.id.mesajlarFragment, gorulmeyenMesajSayisi.size)
+
+
+              }
+
+          }
+
+      }
     }
 
 
@@ -131,6 +164,8 @@ class MesajlarFragment : Fragment() {
 
 
     override fun onStart() {
+        Log.e("startmesajlar","")
+        fragmentAcikMi=true
         super.onStart()
 
 
@@ -138,15 +173,57 @@ class MesajlarFragment : Fragment() {
     }
 
     override fun onStop() {
+        Log.e("stopmesajlar","")
+        fragmentAcikMi=false
+
         super.onStop()
+        Log.e("lisetneratandımı","onstop"+listenerAtandiMi)
 
 
         auth.removeAuthStateListener(mauthLis)
+
     }
 
+    override fun onResume() {
+        Log.e("resumeesajlar","")
 
 
+        fragmentAcikMi=true
+        Log.e("listeneratandımı","onresume"+listenerAtandiMi)
 
+        if(listenerAtandiMi==false){
+            tumMesajlar.clear()
+            listenerAtandiMi=true
+            recyclerAdapter.notifyDataSetChanged()
+            Log.e("listeneratandımıı","onresumeifsonbras"+listenerAtandiMi)
+            mesajlarViewModeli.refreshMesajlar()
+        }
+        super.onResume()
+
+
+    }
+
+    override fun onPause() {
+        Log.e("pausemesajlar","")
+        fragmentAcikMi=false
+        super.onPause()
+
+
+        Log.e("lisetneratandımıonpause",""+listenerAtandiMi)
+        if(listenerAtandiMi==true){
+            tumMesajlar.clear()
+            Log.e("lisetneratandımı","onpauseifsobrası"+listenerAtandiMi)
+
+            listenerAtandiMi=false
+            mesajlarViewModeli.removeListeners()
+        }
+
+
+    }
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.e("ondestroymesajlar","")
+    }
 
 
 

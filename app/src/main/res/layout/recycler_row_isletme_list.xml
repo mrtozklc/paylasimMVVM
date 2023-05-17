@@ -13,7 +13,7 @@
         android:layout_height="80dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        app:civ_border_color="#6C6A6A"
+        app:civ_border_color="#607D8B"
         app:civ_border_width="1dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/kullaniciAdiTepe" />
@@ -37,7 +37,6 @@
         android:layout_marginTop="8dp"
 
         android:textAlignment="center"
-        android:textColor="@color/mavi"
         android:textSize="22sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
@@ -59,7 +58,7 @@
         android:id="@+id/tw_mesafe"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
+        android:layout_marginEnd="8dp"
 
         app:layout_constraintBottom_toBottomOf="@+id/mudavimSayisi"
         app:layout_constraintEnd_toEndOf="parent"
@@ -68,13 +67,13 @@
 
     <ImageView
         android:id="@+id/img_mesaj"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
         android:layout_marginEnd="8dp"
         app:layout_constraintBottom_toBottomOf="@+id/profil_image"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/profil_image"
-        app:srcCompat="@drawable/ic_launcher_mesaj_foreground" />
+        app:srcCompat="@drawable/ic_baseline_mesaj_24" />
 
     <TextView
         android:id="@+id/textView21"
@@ -94,7 +93,7 @@
         android:id="@+id/cizgi"
         android:layout_width="match_parent"
         android:layout_height="2dp"
-        android:background="@color/koyugri"
+        android:background="#607D8B"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

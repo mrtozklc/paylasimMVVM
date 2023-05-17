@@ -7,6 +7,10 @@ import androidx.fragment.app.DialogFragment
 import androidx.navigation.fragment.findNavController
 import com.example.paylasimmvvm.R
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 
 
 class SignOutFragment : DialogFragment() {
@@ -16,6 +20,7 @@ class SignOutFragment : DialogFragment() {
             .setTitle("Çıkış Yap")
             .setMessage("Emin misiniz?")
             .setPositiveButton("Çıkış Yap") { p0, p1 ->
+                deleteToken()
                 FirebaseAuth.getInstance().signOut()
 
                 findNavController().popBackStack()
@@ -27,6 +32,30 @@ class SignOutFragment : DialogFragment() {
             .create()
 
         return alert
+    }
+    private fun deleteToken() {
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        if (currentUser != null) {
+            val database = FirebaseDatabase.getInstance().reference
+            val usersRef = database.child("users")
+            usersRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    for (childSnapshot in dataSnapshot.children) {
+                        for (userSnapshot in childSnapshot.children) {
+                            if (userSnapshot.child("user_id").value == currentUser.uid) {
+                                val userRef = userSnapshot.ref
+                                userRef.child("FCM_TOKEN").removeValue()
+                                break
+                            }
+                        }
+                    }
+                }
+
+                override fun onCancelled(databaseError: DatabaseError) {
+                    databaseError.toException().printStackTrace()
+                }
+            })
+        }
     }
 
 

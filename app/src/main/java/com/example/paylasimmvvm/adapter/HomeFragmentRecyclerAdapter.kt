@@ -226,8 +226,7 @@ class HomeFragmentRecyclerAdapter (var context: Context, private var tumKampanya
 
                 if (anlikGonderi.userID!! == FirebaseAuth.getInstance().currentUser!!.uid){
 
-                    val action= HomeFragmentDirections.actionHomeFragmentToProfilFragment()
-                    Navigation.findNavController(it).navigate(action)
+
 
                 }else{
                     val action= HomeFragmentDirections.actionHomeFragmentToUserProfilFragment(anlikGonderi.userID!!)
@@ -259,6 +258,7 @@ class HomeFragmentRecyclerAdapter (var context: Context, private var tumKampanya
                 })
             }
             val mauth:String=FirebaseAuth.getInstance().currentUser!!.uid
+
             if (anlikGonderi.userID.equals(mauth)){
                 postMenu.visibility=View.GONE
             }
@@ -277,7 +277,7 @@ class HomeFragmentRecyclerAdapter (var context: Context, private var tumKampanya
                                         Bildirimler.KAMPANYA_BEGENILDI_GERI,
                                         anlikGonderi.postID!!)
                                 }
-                                gonderiBegen.setImageResource(R.drawable.ic_launcher_like_foreground)
+                                gonderiBegen.setImageResource(R.drawable.ic_baseline_favorite)
                             } else {
                                 ref.child("begeniler").child(anlikGonderi.postID!!).child(currentID)
                                     .setValue(currentID)
@@ -288,7 +288,7 @@ class HomeFragmentRecyclerAdapter (var context: Context, private var tumKampanya
                                         anlikGonderi.postID!!
                                     )
                                 }
-                                gonderiBegen.setImageResource(R.drawable.ic_launcher_like_red_foreground)
+                                gonderiBegen.setImageResource(R.drawable.baseline_favorite_red_24)
                                 begenmeSayisi.visibility=View.VISIBLE
                                 begenmeSayisi.text = ""+ snapshot.childrenCount.toString()+" beğeni"
                             }
@@ -306,6 +306,7 @@ class HomeFragmentRecyclerAdapter (var context: Context, private var tumKampanya
             }
 
             yorumlariGoster.setOnClickListener {
+
                 yorumlarFragmentiniBaslat(anlikGonderi)
             }
 
@@ -333,9 +334,9 @@ class HomeFragmentRecyclerAdapter (var context: Context, private var tumKampanya
                     }
 
                     if (snapshot.hasChild(userID)) {
-                        gonderiBegen.setImageResource(R.drawable.ic_launcher_like_red_foreground)
+                        gonderiBegen.setImageResource(R.drawable.baseline_favorite_red_24)
                     } else {
-                        gonderiBegen.setImageResource(R.drawable.ic_launcher_like_foreground)
+                        gonderiBegen.setImageResource(R.drawable.ic_baseline_favorite)
 
                     }
                 }
@@ -350,10 +351,9 @@ class HomeFragmentRecyclerAdapter (var context: Context, private var tumKampanya
 
                 Bildirimler.bildirimKaydet(anlikGonderi.userID!!,Bildirimler.YORUM_YAPILDI,anlikGonderi.postID!!)
             }
-            EventBus.getDefault()
-                .postSticky(EventbusData.YorumYapilacakGonderininIDsiniGonder(anlikGonderi.postID))
-            val action=HomeFragmentDirections.actionHomeFragmentToYorumlarFragment()
+           val action= HomeFragmentDirections.actionHomeFragmentToCommentFragment(anlikGonderi.postID!!,true)
             Navigation.findNavController(itemView).navigate(action)
+
 
         }
 

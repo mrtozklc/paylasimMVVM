@@ -79,6 +79,7 @@ class UserProfilFragment : Fragment() {
             userProfilKampanyalarViewModeli.getMudavimler(secilenUser)
             userProfilKampanyalarViewModeli.refreshProfilKampanya(secilenUser)
             kullaniciBilgileriVerileriniAl(secilenUser)
+
             binding.paylasimlar.isEnabled=false
 
             binding.paylasimlar.setOnClickListener {
@@ -133,8 +134,8 @@ class UserProfilFragment : Fragment() {
                 binding.menu.isEnabled=true
                 binding.paylasimlar.isEnabled=true
                 binding.mudavimler.isEnabled=true
-                EventBus.getDefault().postSticky(EventbusData.YorumYapilacakGonderininIDsiniGonder(secilenUser))
-                val action=UserProfilFragmentDirections.actionUserProfilFragmentToYorumlarFragment()
+                val action=UserProfilFragmentDirections.actionUserProfilFragmentToCommentFragment(
+                    secilenUser,false)
                 Navigation.findNavController(it).navigate(action)
             }
 
@@ -180,7 +181,7 @@ class UserProfilFragment : Fragment() {
                     it.let {
                         if (it!=null){
                             val layoutManager= LinearLayoutManager(activity)
-                            recyclerMudavimler= MudavimlerRecyclerAdapter(tumMudavimler)
+                            recyclerMudavimler= MudavimlerRecyclerAdapter(tumMudavimler,false)
                             binding.recyclerProfil.layoutManager=layoutManager
                             binding.recyclerProfil.adapter=recyclerMudavimler
                             binding.recyclerProfil.visibility = View.VISIBLE
@@ -191,6 +192,7 @@ class UserProfilFragment : Fragment() {
                     }
                 }
             }
+
             binding.mesajGonder.setOnClickListener {
                 val action=UserProfilFragmentDirections.actionUserProfilFragmentToChatFragment(secilenUser)
                 Navigation.findNavController(it).navigate(action)
