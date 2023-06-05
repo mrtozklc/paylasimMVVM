@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -22,6 +23,7 @@ import com.example.paylasimmvvm.model.ChatModel
 import com.example.paylasimmvvm.model.KullaniciBilgileri
 import com.example.paylasimmvvm.util.setBadge
 import com.example.paylasimmvvm.view.profil.UserProfilFragmentArgs
+import com.example.paylasimmvvm.view.yorumlar.comment_fragmentDirections
 import com.example.paylasimmvvm.viewmodel.BadgeViewModel
 import com.example.paylasimmvvm.viewmodel.ChatViewModel
 import com.example.paylasimmvvm.viewmodel.MesajlarViewModel
@@ -58,7 +60,6 @@ class ChatFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        (activity as AppCompatActivity).supportActionBar?.hide()
     }
 
 
@@ -79,7 +80,9 @@ class ChatFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         arguments?.let {
+
             val sohbetEdilcekKisi= UserProfilFragmentArgs.fromBundle(it).userId
+
             val konusulacakKisi = arguments?.getString("konusulacakKisi")
             chatViewModeli= ViewModelProvider(this)[ChatViewModel::class.java]
             badgeViewModeli= ViewModelProvider(this)[BadgeViewModel::class.java]
@@ -87,14 +90,14 @@ class ChatFragment : Fragment() {
             if (konusulacakKisi != null) {
                 sohbetEdilenUserName(konusulacakKisi)
                 chatViewModeli.refreshChat(konusulacakKisi)
-                badgeViewModeli.refreshBadge()
+                badgeViewModeli.refreshMessageBadge()
                 mesajGonder(konusulacakKisi)
 
             }else{
                 sohbetEdilenUserName(sohbetEdilcekKisi)
                 mesajGonderenId=FirebaseAuth.getInstance().currentUser!!.uid
                 chatViewModeli.refreshChat(sohbetEdilcekKisi)
-                badgeViewModeli.refreshBadge()
+                badgeViewModeli.refreshMessageBadge()
                 mesajGonder(sohbetEdilcekKisi)
 
 
@@ -135,6 +138,14 @@ class ChatFragment : Fragment() {
             binding.imageViewBack.setOnClickListener {
 
                  findNavController().navigateUp()
+            }
+
+            binding.tvMesajlasLanUserName.setOnClickListener {
+                if (sohbetEdilcekKisi!=FirebaseAuth.getInstance().currentUser?.uid){
+                    val action=ChatFragmentDirections.actionChatFragmentToUserProfilFragment(sohbetEdilcekKisi!!)
+                    Navigation.findNavController(it).navigate(action)
+                }
+
             }
 
 
@@ -234,7 +245,7 @@ class ChatFragment : Fragment() {
             }
 
         }
-        badgeViewModeli.badgeLive.observe(viewLifecycleOwner) {gorulmeyenMesajSayisi ->
+        badgeViewModeli.badgeLiveMessage.observe(viewLifecycleOwner) {gorulmeyenMesajSayisi ->
             gorulmeyenMesajSayisi.let {
 
                 val navView: BottomNavigationView = requireActivity().findViewById(R.id.bottomNavigationView)
@@ -247,6 +258,7 @@ class ChatFragment : Fragment() {
 
         }
     }
+
 
     private fun sohbetEdilenUserName(sohbetEdilcekKisi: String) {
 
@@ -385,6 +397,8 @@ class ChatFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
+        (activity as AppCompatActivity).supportActionBar?.hide()
+
 
         fragmentAcikMi = if(!fragmentAcikMi){
             true

@@ -1,5 +1,6 @@
 package com.example.paylasimmvvm.viewmodel
 
+import android.util.Log
 import android.view.View
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -21,7 +22,6 @@ class BildirimlerViewModel:ViewModel() {
         bildirimlerArray.clear()
         mref= FirebaseDatabase.getInstance().reference
         mauth=Firebase.auth
-        bildirimYok.value=true
         yukleniyor.value=true
 
 
@@ -31,20 +31,20 @@ class BildirimlerViewModel:ViewModel() {
 
                 if (snapshot.getValue()!=null){
 
-
-
                     for (ds in snapshot.children){
-                        var okunanBildirim=ds.getValue(BildirimModel::class.java)
 
+                        val okunanBildirim=ds.getValue(BildirimModel::class.java)
+                        okunanBildirim?.bildirim_id = ds.key
 
                         bildirimlerArray.add(okunanBildirim!!)
                     }
                     tumBildirimlerLive.value=bildirimlerArray
+                    yukleniyor.value=false
 
 
                 }else{
 
-                    tumBildirimlerLive.value=bildirimlerArray
+                    bildirimYok.value=true
                     yukleniyor.value=false
 
                 }
@@ -55,39 +55,9 @@ class BildirimlerViewModel:ViewModel() {
 
         })
 
-        if (bildirimlerArray.size==0){
 
 
-            mref.child("bildirimler").child(mauth.currentUser!!.uid).addListenerForSingleValueEvent(object :
-                ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    if (snapshot.getValue()==null){
-                        bildirimYok.value=true
 
-                      //  binding.recyclerBildirim.visibility= View.GONE
-                      //  binding.bildirimYok.visibility= View.VISIBLE
-
-                    }
-                    else{
-                        bildirimYok.value=false
-                        yukleniyor.value=false
-                        tumBildirimlerLive.value=bildirimlerArray
-
-                      //  binding.recyclerBildirim.visibility= View.VISIBLE
-                       // binding.bildirimYok.visibility= View.GONE
-
-                    }
-
-                }
-
-                override fun onCancelled(error: DatabaseError) {
-                }
-
-            })
-
-        }
-
-        tumBildirimlerLive.value=bildirimlerArray
 
     }
 

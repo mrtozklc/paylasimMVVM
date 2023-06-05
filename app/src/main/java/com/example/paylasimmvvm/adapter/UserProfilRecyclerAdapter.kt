@@ -43,7 +43,7 @@ class UserProfilRecyclerAdapter(var context: Context, private var tumKampanyalar
         private var profileImage =binding.profilImage
         private var userNameTitle = binding.kullaniciAdiTepe
         private var gonderi = binding.kampanyaPhoto
-        private var userNameveAciklama = binding.textView21
+        private var userName = binding.userName
         private var kampanyaTarihi = binding.kampanyaTarihi
         private var yorumYap = binding.imgYorum
         var gonderiBegen = binding.imgBegen
@@ -70,7 +70,8 @@ class UserProfilRecyclerAdapter(var context: Context, private var tumKampanyalar
 
             }
 
-            userNameveAciklama.text = anlikGonderi.userName.toString()+" "+anlikGonderi.postAciklama.toString()
+            userName.text = anlikGonderi.userName.toString()
+            binding.aciklama.text=anlikGonderi.postAciklama.toString()
 
             Picasso.get().load(anlikGonderi.postURL).into(gonderi)
 
@@ -100,27 +101,22 @@ class UserProfilRecyclerAdapter(var context: Context, private var tumKampanyalar
                 val ref = FirebaseDatabase.getInstance().reference
                 val currentID = FirebaseAuth.getInstance().currentUser!!.uid
 
-                ref.child("begeniler").child(anlikGonderi.postID!!)
+                ref.child("kampanya").child(anlikGonderi.userID!!).child(anlikGonderi.postID!!).child("begeniler")
                     .addListenerForSingleValueEvent(object : ValueEventListener {
                         override fun onDataChange(snapshot: DataSnapshot) {
                             if (snapshot.hasChild(currentID)) {
-                                ref.child("begeniler").child(anlikGonderi.postID!!).child(currentID)
+                                ref.child("kampanya").child(anlikGonderi.userID!!).child(anlikGonderi.postID!!).child("begeniler").child(currentID)
                                     .removeValue()
-                                if (anlikGonderi.userID!= FirebaseAuth.getInstance().currentUser!!.uid){
-                                    Bildirimler.bildirimKaydet(anlikGonderi.userID!!,
-                                        Bildirimler.KAMPANYA_BEGENILDI_GERI,anlikGonderi.postID!!)
 
-
-                                }
                                 gonderiBegen.setImageResource(R.drawable.ic_baseline_favorite)
 
                             } else {
-                                ref.child("begeniler").child(anlikGonderi.postID!!).child(currentID)
+                                ref.child("kampanya").child(anlikGonderi.userID!!).child(anlikGonderi.postID!!).child("begeniler").child(currentID)
                                     .setValue(currentID)
 
                                 if (anlikGonderi.userID!= FirebaseAuth.getInstance().currentUser!!.uid){
                                     Bildirimler.bildirimKaydet(anlikGonderi.userID!!,
-                                        Bildirimler.KAMPANYA_BEGENILDI,anlikGonderi.postID!!)
+                                        Bildirimler.KAMPANYA_BEGENILDI,anlikGonderi.postID!!,anlikGonderi.postURL!!)
                                 }
                                 gonderiBegen.setImageResource(R.drawable.baseline_favorite_red_24)
                                 begenmeSayisi.visibility= View.VISIBLE
@@ -145,8 +141,7 @@ class UserProfilRecyclerAdapter(var context: Context, private var tumKampanyalar
 
 
 
-
-            val action= UserProfilFragmentDirections.actionUserProfilFragmentToCommentFragment(anlikGonderi.postID!!,true)
+            val action= UserProfilFragmentDirections.actionUserProfilFragmentToCommentFragment(anlikGonderi.userID!!,true,anlikGonderi.postID!!,anlikGonderi.postURL!!)
             Navigation.findNavController(itemView).navigate(action)
 
         }
@@ -154,7 +149,7 @@ class UserProfilRecyclerAdapter(var context: Context, private var tumKampanyalar
 
         private fun yorumlariGoster(anlikGonderi: KullaniciKampanya) {
             val mref= FirebaseDatabase.getInstance().reference
-            mref.child("yorumlar").child(anlikGonderi.postID!!).addListenerForSingleValueEvent(object :
+            mref.child("kampanya").child(anlikGonderi.userID!!).child(anlikGonderi.postID!!).child("yorumlar").addListenerForSingleValueEvent(object :
                 ValueEventListener {
                 @SuppressLint("SetTextI18n")
                 override fun onDataChange(snapshot: DataSnapshot) {
@@ -190,7 +185,7 @@ class UserProfilRecyclerAdapter(var context: Context, private var tumKampanyalar
         private fun begeniKontrolu(anlikGonderi: KullaniciKampanya) {
             val mRef = FirebaseDatabase.getInstance().reference
             val userID = FirebaseAuth.getInstance().currentUser!!.uid
-            mRef.child("begeniler").child(anlikGonderi.postID!!).addValueEventListener(object :
+            mRef.child("kampanya").child(anlikGonderi.userID!!).child(anlikGonderi.postID!!).child("begeniler").addValueEventListener(object :
                 ValueEventListener {
 
 

@@ -15,8 +15,6 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -26,7 +24,7 @@ import androidx.navigation.fragment.findNavController
 import com.example.paylasimmvvm.R
 import com.example.paylasimmvvm.databinding.FragmentKampanyaOlusturBinding
 import com.example.paylasimmvvm.model.KampanyaOlustur
-import com.example.paylasimmvvm.adapter.HomeFragmentRecyclerAdapter
+import com.example.paylasimmvvm.view.profil.UserProfilFragmentArgs
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.*
@@ -47,7 +45,7 @@ class KampanyaOlusturFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        (activity as AppCompatActivity).supportActionBar?.hide()
+
     }
 
 
@@ -66,6 +64,12 @@ class KampanyaOlusturFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+      arguments?.let {
+       val isUser= KampanyaOlusturFragmentArgs.fromBundle(it).isUser
+          Log.e("isUser",""+isUser)
+
+
+      }
 
         db= FirebaseDatabase.getInstance().reference
         storage = FirebaseStorage.getInstance()
@@ -133,6 +137,7 @@ class KampanyaOlusturFragment : Fragment() {
     private fun setupAuthLis() {
 
 
+
         mauthLis= FirebaseAuth.AuthStateListener {
             val user=FirebaseAuth.getInstance().currentUser
 
@@ -152,6 +157,7 @@ class KampanyaOlusturFragment : Fragment() {
         super.onStart()
         Log.e("hata","kampanyaolusturdasın")
         auth.addAuthStateListener(mauthLis)
+        (activity as AppCompatActivity).supportActionBar?.hide()
     }
 
     override fun onStop() {
@@ -230,7 +236,7 @@ class KampanyaOlusturFragment : Fragment() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
-    @Deprecated("Deprecated in Java")
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if(requestCode==2&& resultCode== Activity.RESULT_OK&& data!=null){
             secilengorsel= data.data

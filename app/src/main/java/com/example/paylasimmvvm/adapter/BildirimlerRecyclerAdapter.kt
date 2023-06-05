@@ -1,10 +1,16 @@
 package com.example.paylasimmvvm.adapter
 
 import android.annotation.SuppressLint
+import android.graphics.Typeface
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.style.StyleSpan
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.navigation.NavOptions
+import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.RecyclerView
 import com.example.paylasimmvvm.R
@@ -13,328 +19,394 @@ import com.example.paylasimmvvm.model.BildirimModel
 import com.example.paylasimmvvm.util.TimeAgo
 import com.example.paylasimmvvm.view.bildirimler.BildirimlerFragmentDirections
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.*
 import com.squareup.picasso.Picasso
-import java.util.*
 
-class BildirimlerRecyclerAdapter(private var tumBildirimler:ArrayList<BildirimModel>):
-    RecyclerView.Adapter<BildirimlerRecyclerAdapter.mviewHolder>() {
+class BildirimlerRecyclerAdapter(private val tumBildirimler: ArrayList<BildirimModel>) :
+    RecyclerView.Adapter<BildirimlerRecyclerAdapter.mViewHolder>() {
 
-    init {
-        tumBildirimler.sortWith { o1, o2 ->
-            if (o1!!.time!! > o2!!.time!!) {
-                -1
-            } else 1
-        }
-    }
+    var ILK_GOSTERIM=10
+    private var onAllItemsDeletedListener: (() -> Unit)? = null
 
 
-
-
-
-
-    class mviewHolder(itemview: View): RecyclerView.ViewHolder(itemview) {
-        val binding = RecyclerRowBildirimlerBinding.bind(itemView)
-
-
-        var gonderiBegenildi=binding.tvBegendi
-        var yorumYapildi=binding.tvBegendi
-        var begenenPP=binding.begenenppId
-        var kampanya=binding.begenilenKampanyaId
-
+   inner class mViewHolder(itemview: View) : RecyclerView.ViewHolder(itemview) {
+        private val binding = RecyclerRowBildirimlerBinding.bind(itemView)
+        private val gonderiBegenildi = binding.contentTitle
+        private val yorumYapildi = binding.contentTitle
+        private val begenenPP = binding.profilPP
+        private val kampanya = binding.gonderiImageView
 
 
 
 
         fun setdata(anlikBildirim: BildirimModel) {
 
-            kampanya.setOnClickListener {
-                val action=BildirimlerFragmentDirections.actionBildirimlerFragmentToProfilFragment()
-                val navOptions = NavOptions.Builder()
-                    .setPopUpTo(R.id.bildirimlerFragment, true)
-                    .build()
+            if (anlikBildirim.bildirim_tur == 1) {
+            kullanicininBilgileriBegen(anlikBildirim.user_id, anlikBildirim.gonderi_id, anlikBildirim.time!!)
+            } else if (anlikBildirim.bildirim_tur == 2) {
+             kullanicininBilgileriYorum(anlikBildirim.user_id, anlikBildirim.gonderi_id, anlikBildirim.time!!,anlikBildirim.yorum!!)
+            }
+            else if (anlikBildirim.bildirim_tur == 3) {
+          kullanicininBilgileriYorumBegeni(anlikBildirim.user_id, anlikBildirim.time!!,anlikBildirim.yorum!!)
+            }
+            else if (anlikBildirim.bildirim_tur == 4) {
+            kullanicininBilgileriYorumIsletme(anlikBildirim.user_id, anlikBildirim.time!!,anlikBildirim.yorum!!)
+            }
 
-                Navigation.findNavController(it).navigate(action,navOptions)
-
+            if (anlikBildirim.goruldu==false){
+                itemView.setBackgroundResource(R.color.divider_color)
+            }else{
+                itemView.background = null
 
             }
 
-            if (anlikBildirim.bildirim_tur==1){
+            binding.gonderiImageView.setOnClickListener {
+              navigateClick(it,anlikBildirim)
+            }
+            binding.contentTitle.setOnClickListener {
+                navigateClick(it,anlikBildirim)
+            }
+            binding.contentText.setOnClickListener {
+                navigateClick(it,anlikBildirim)
+            }
+            binding.profilPP.setOnClickListener {
+                if (anlikBildirim.user_id!=FirebaseAuth.getInstance().currentUser!!.uid){
+                    val actipn=BildirimlerFragmentDirections.actionBildirimlerFragmentToUserProfilFragment(anlikBildirim.user_id!!)
+                    Navigation.findNavController(it).navigate(actipn)
+                }
+            }
+            binding.optionsImageView.setOnClickListener {
+                val popupMenu = androidx.appcompat.widget.PopupMenu(it.context, it)
+                popupMenu.inflate(R.menu.menu_delete)
+                popupMenu.setForceShowIcon(false)
+                popupMenu.setOnMenuItemClickListener { item ->
+                    when (item.itemId) {
+                        R.id.menu_delete -> {
+                            val silinicekBildirim = anlikBildirim.bildirim_id
 
-                idsiVerilenKullanicininBilgileriBegen(anlikBildirim.user_id, anlikBildirim.gonderi_id,anlikBildirim.time!!)
+                            FirebaseDatabase.getInstance().reference.child("bildirimler").child(FirebaseAuth.getInstance().currentUser!!.uid)
+                                .child(silinicekBildirim!!)
+                                .addListenerForSingleValueEvent(object : ValueEventListener {
+                                    override fun onDataChange(snapshot: DataSnapshot) {
+                                        snapshot.ref.removeValue()
+                                        val position = bindingAdapterPosition
+                                        if (position != RecyclerView.NO_POSITION) {
+                                            val bildirim = tumBildirimler[position]
+                                            tumBildirimler.remove(bildirim)
+                                            notifyItemRemoved(position)
+                                        }
+                                    }
+                                    override fun onCancelled(error: DatabaseError) {
+                                    }
+                                })
+                            true
+                        }
+                        R.id.menu_deleteAll->{
+                            val alertDialog = AlertDialog.Builder(itemView.context)
+                                .setTitle("Bildirimleri Sil")
+                                .setMessage("Tüm bildirimler silinsin mi?")
+                                .setPositiveButton("Evet") { _, _ ->
 
+                                    FirebaseDatabase.getInstance().reference.child("bildirimler").child(FirebaseAuth.getInstance().currentUser!!.uid)
+
+                                        .addListenerForSingleValueEvent(object : ValueEventListener {
+                                            override fun onDataChange(snapshot: DataSnapshot) {
+                                                snapshot.ref.removeValue()
+                                                tumBildirimler.clear()
+                                                notifyDataSetChanged()
+
+                                            }
+                                            override fun onCancelled(error: DatabaseError) {
+                                            }
+                                        })
+                                }
+                                .setNegativeButton("Hayır", null)
+                                .create()
+
+                            alertDialog.show()
+
+
+
+
+                            true
+                        }
+                        else -> false
+                    }
+
+                }
+                if (tumBildirimler.isEmpty()) {
+                    onAllItemsDeletedListener?.invoke()
+                }
+
+                popupMenu.gravity = Gravity.CENTER
+                popupMenu.show()
+            }
 
             }
-            else if (anlikBildirim.bildirim_tur==2){
 
 
-                idsiVerilenKullanicininBilgileriYorum(anlikBildirim.user_id, anlikBildirim.gonderi_id,anlikBildirim.time!!)
+        private fun navigateClick(view:View,anlikBildirim:BildirimModel){
+            when (anlikBildirim.bildirim_tur) {
+                1 -> {
+                    handleYorumlarSnapshot(anlikBildirim.user_id, anlikBildirim.gonderi_id) { yorumlarVarMi ->
+                        val action = if (yorumlarVarMi) {
+                            BildirimlerFragmentDirections.actionBildirimlerFragmentToGonderiDetayFragment(
+                                anlikBildirim.gonderi_id!!,
+                                FirebaseAuth.getInstance().currentUser!!.uid,
+                                null,
+                                true
+                            )
+                        } else {
+                            BildirimlerFragmentDirections.actionBildirimlerFragmentToGonderiDetayFragment(
+                                anlikBildirim.gonderi_id!!,
+                                FirebaseAuth.getInstance().currentUser!!.uid,
+                                null,
+                                false
+                            )
+                        }
+                        Navigation.findNavController(view).navigate(action)
+                    }
+                }
+                4 -> {
+                    val action = BildirimlerFragmentDirections.actionBildirimlerFragmentToCommentFragment(
+                        FirebaseAuth.getInstance().currentUser!!.uid,
+                        false,
+                        "",
+                        ""
+                    )
+                    Navigation.findNavController(view).navigate(action)
+                }
+                else -> {
 
+                    if (anlikBildirim.gonderi_id!=null&& anlikBildirim.gonderi_id!!.isNotEmpty()){
+                        val action = BildirimlerFragmentDirections.actionBildirimlerFragmentToGonderiDetayFragment(
+                            anlikBildirim.gonderi_id!!,
+                            FirebaseAuth.getInstance().currentUser!!.uid,
+                            anlikBildirim.yorum_key,
+                            true
+                        )
+                        Navigation.findNavController(view).navigate(action)
+                    }else{
+
+                        val action = BildirimlerFragmentDirections.actionBildirimlerFragmentToCommentFragment(
+                            FirebaseAuth.getInstance().currentUser!!.uid,
+                            false,
+                            "",
+                            ""
+                        )
+                        Navigation.findNavController(view).navigate(action)
+                    }
+
+                }
             }
-
-
-
         }
 
 
-        private fun idsiVerilenKullanicininBilgileriYorum(user_id: String?, gonderi_id: String?, bildirimZamani: Long) {
+        private fun kullanicininBilgileriYorumIsletme(userId: String?,  time: Long,yorum:String?) {
+            binding.gonderiImageView.visibility=View.INVISIBLE
+            handleUserSnapshot(userId, time) { userName, profilePicture ->
+                val message = " işletmeniz hakkında bir yorum yaptı."
 
-            FirebaseDatabase.getInstance().reference.child("users").child("kullanicilar").child(user_id!!).addListenerForSingleValueEvent(object :ValueEventListener{
-                @SuppressLint("SetTextI18n")
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    if (snapshot.value !=null){
+                val spannableString = SpannableString("$userName$message")
+                spannableString.setSpan(
+                    StyleSpan(Typeface.BOLD), 0,
+                    userName.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+                yorumYapildi.text = spannableString
+                binding.bildirimZamaniTextView.text= TimeAgo.getTimeAgoForComments(time)
+                val maxChararecters = 100
+                val yorumKarakter = if (yorum?.length!! > maxChararecters) yorum.substring(0, maxChararecters) + "..." else yorum
+                binding.contentText.text=yorumKarakter
+                if (profilePicture.isNotEmpty()){
+                    Picasso.get().load(profilePicture).error(R.drawable.ic_baseline_person).placeholder(R.drawable.ic_baseline_person).into(begenenPP)
 
-                        if (user_id == FirebaseAuth.getInstance().currentUser!!.uid){
-                            begenenPP.visibility=View.GONE
-                            yorumYapildi.visibility=View.GONE
-                            kampanya.visibility=View.GONE
+                }else{
+                    Picasso.get().load(R.drawable.ic_baseline_person).error(R.drawable.ic_baseline_person).placeholder(R.drawable.ic_baseline_person).into(begenenPP)
 
-                        }else{
-                            val userName = snapshot.child("user_name").value.toString()
-                            if (snapshot.child("user_name").value.toString().isNotEmpty())
-
-                                yorumYapildi.text = userName + " gönderine yorum yaptı.  " + TimeAgo.getTimeAgoForComments(bildirimZamani)
-
-
-
-
-                            if (snapshot.child("user_detail").child("profile_picture").value.toString().isNotEmpty()) {
-                                val takipEdenPicURL = snapshot.child("user_detail").child("profile_picture").value.toString()
-                                Picasso.get().load(takipEdenPicURL).placeholder(R.drawable.ic_baseline_person).error(R.drawable.ic_baseline_person).into(begenenPP)
-
-                            }else{
-                                begenenPP.setBackgroundResource(R.drawable.ic_baseline_person)
-
-
-                            }
-
-                        }
-                    }
                 }
-
-
-
-
-                override fun onCancelled(error: DatabaseError) {
-                }
-
-            })
-
-            FirebaseDatabase.getInstance().reference.child("users").child("isletmeler").child(
-                user_id
-            ).addListenerForSingleValueEvent(object :ValueEventListener{
-                @SuppressLint("SetTextI18n")
-                override fun onDataChange(snapshot: DataSnapshot)  {
-                    if (snapshot.value !=null){
-
-                        if (user_id == FirebaseAuth.getInstance().currentUser!!.uid){
-                            begenenPP.visibility=View.GONE
-                            yorumYapildi.visibility=View.GONE
-                            kampanya.visibility=View.GONE
-
-                        }else{
-                            val userName = snapshot.child("user_name").value.toString()
-                            if (snapshot.child("user_name").value.toString().isNotEmpty())
-
-                                yorumYapildi.text = userName + " gönderine yorum yaptı.  " + TimeAgo.getTimeAgoForComments(bildirimZamani)
-
-
-
-
-                            if (snapshot.child("user_detail").child("profile_picture").value.toString()
-                                    .isNotEmpty()) {
-                                val takipEdenPicURL = snapshot.child("user_detail").child("profile_picture").value.toString()
-                                Picasso.get().load(takipEdenPicURL).placeholder(R.drawable.ic_baseline_person).error(R.drawable.ic_baseline_person).into(begenenPP)
-                            }
-                            else{
-                                begenenPP.setBackgroundResource(R.drawable.ic_baseline_person)
-
-
-                            }
-
-                        }
-                    }
-                }
-
-                override fun onCancelled(error: DatabaseError) {
-                }
-
-            })
-
-
-            FirebaseDatabase.getInstance().reference.child("kampanya").child(FirebaseAuth.getInstance().currentUser!!.uid)
-                .child(gonderi_id!!).addListenerForSingleValueEvent(object :ValueEventListener{
-                    override fun onDataChange(snapshot: DataSnapshot) {
-
-                        if (snapshot.value !=null){
-                            if (user_id == FirebaseAuth.getInstance().currentUser!!.uid){
-                                begenenPP.visibility=View.GONE
-                                yorumYapildi.visibility=View.GONE
-                                kampanya.visibility=View.GONE}
-
-                            else if (snapshot.child("file_url").value.toString().isNotEmpty()) {
-                                kampanya.visibility = View.VISIBLE
-                                val begenilenFotoURL = snapshot.child("file_url").value.toString()
-                                Picasso.get().load(begenilenFotoURL).placeholder(R.drawable.ic_baseline_person).error(R.drawable.ic_baseline_person).into(kampanya)
-
-                            } else {
-                                kampanya.visibility = View.INVISIBLE
-
-                            }
-
-                        }
-                    }
-
-                    override fun onCancelled(error: DatabaseError) {
-                    }
-
-                })
-
-
-
+            }
 
         }
 
-        private fun idsiVerilenKullanicininBilgileriBegen(user_id: String?, gonderi_id: String?, bildirimZamani: Long) {
+        private fun kullanicininBilgileriYorumBegeni(user_id: String?, bildirimZamani: Long,yorum: String?) {
+            binding.gonderiImageView.visibility=View.INVISIBLE
+            handleUserSnapshot(user_id, bildirimZamani) { userName, profilePicture ->
+                val message = " yorumunu beğendi."
 
-            FirebaseDatabase.getInstance().reference.child("users").child("kullanicilar").child(user_id!!).addListenerForSingleValueEvent(object :ValueEventListener{
+                val spannableString = SpannableString("$userName$message")
+                spannableString.setSpan(
+                    StyleSpan(Typeface.BOLD), 0,
+                    userName.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+                yorumYapildi.text = spannableString
+                binding.bildirimZamaniTextView.text= TimeAgo.getTimeAgoForComments(bildirimZamani)
+                val MAX_CHARACTERS = 100
+                val yorumKarakter = if (yorum?.length!! > MAX_CHARACTERS) yorum.substring(0, MAX_CHARACTERS) + "..." else yorum
+                binding.contentText.text=yorumKarakter
+                if (profilePicture.isNotEmpty()){
+                    Picasso.get().load(profilePicture).error(R.drawable.ic_baseline_person).placeholder(R.drawable.ic_baseline_person).into(begenenPP)
+
+                }else{
+                    Picasso.get().load(R.drawable.ic_baseline_person).error(R.drawable.ic_baseline_person).placeholder(R.drawable.ic_baseline_person).into(begenenPP)
+
+                }
+            }
+
+        }
+        private fun kullanicininBilgileriYorum(user_id: String?, gonderi_id: String?, bildirimZamani: Long,yorum: String?) {
+            handleUserSnapshot(user_id, bildirimZamani) { userName, profilePicture ->
+                val maxChararecters = 100
+                val yorumKarakter = if (yorum?.length!! > maxChararecters) yorum.substring(0, maxChararecters) + "..." else yorum
+                val message = " gönderine yorum yaptı."
+
+                val spannableString = SpannableString("$userName$message")
+                spannableString.setSpan(
+                    StyleSpan(Typeface.BOLD), 0,
+                    userName.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+                yorumYapildi.text = spannableString
+
+                binding.bildirimZamaniTextView.text= TimeAgo.getTimeAgoForComments(bildirimZamani)
+                binding.contentText.text=yorumKarakter
+
+                if (profilePicture.isNotEmpty()){
+                    Picasso.get().load(profilePicture).error(R.drawable.ic_baseline_person).placeholder(R.drawable.ic_baseline_person).into(begenenPP)
+
+                }else{
+                    Picasso.get().load(R.drawable.ic_baseline_person).error(R.drawable.ic_baseline_person).placeholder(R.drawable.ic_baseline_person).into(begenenPP)
+
+                }
+            }
+            handleKampanyaSnapshot( gonderi_id) { fileUrl ->
+                kampanya.visibility = if (fileUrl.isNotEmpty()) View.VISIBLE else View.INVISIBLE
+                Picasso.get().load(fileUrl).placeholder(R.drawable.ic_baseline_person).error(R.drawable.ic_baseline_person).into(kampanya)
+            }
+        }
+
+        private fun kullanicininBilgileriBegen(user_id: String?, gonderi_id: String?, bildirimZamani: Long) {
+
+            handleUserSnapshot(user_id, bildirimZamani) { userName, profilePicture ->
+                val message = " gönderini beğendi."
+
+                val spannableString = SpannableString("$userName$message")
+                spannableString.setSpan(
+                    StyleSpan(Typeface.BOLD), 0,
+                    userName.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+                gonderiBegenildi.text =spannableString
+                binding.bildirimZamaniTextView.text= TimeAgo.getTimeAgoForComments(bildirimZamani)
+                if (profilePicture.isNotEmpty()){
+                    Picasso.get().load(profilePicture).placeholder(R.drawable.ic_baseline_person).error(R.drawable.ic_baseline_person).into(begenenPP)
+
+                }else{
+                    Picasso.get().load(R.drawable.ic_baseline_person).placeholder(R.drawable.ic_baseline_person).error(R.drawable.ic_baseline_person).into(begenenPP)
+
+                }
+            }
+            handleKampanyaSnapshot( gonderi_id) { fileUrl ->
+                kampanya.visibility = if (fileUrl.isNotEmpty()) View.VISIBLE else View.INVISIBLE
+                Picasso.get().load(fileUrl).into(kampanya)
+            }
+        }
+
+        private fun handleUserSnapshot(user_id: String?, bildirim20Zamani: Long, onSuccess: (String, String) -> Unit) {
+            val userRef = FirebaseDatabase.getInstance().reference.child("users").child("kullanicilar").child(user_id!!)
+            val isletmeRef = FirebaseDatabase.getInstance().reference.child("users").child("isletmeler").child(user_id!!)
+            isletmeRef.addListenerForSingleValueEvent(object : ValueEventListener {
                 @SuppressLint("SetTextI18n")
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    if (snapshot.value !=null){
+                    if (snapshot.exists()) {
+                        val userName = snapshot.child("user_name").value.toString()
+                        val profilePicture = snapshot.child("user_detail").child("profile_picture").value.toString()
 
-                        if (user_id == FirebaseAuth.getInstance().currentUser!!.uid){
-                            begenenPP.visibility=View.GONE
-                            yorumYapildi.visibility=View.GONE
-                            kampanya.visibility=View.GONE
+                        onSuccess.invoke(userName, profilePicture)
 
-                        }else{
-                            val userName = snapshot.child("user_name").value.toString()
-                            if (snapshot.child("user_name").value.toString().isNotEmpty())
+                    }else{
+                        userRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                            @SuppressLint("SetTextI18n")
+                            override fun onDataChange(snapshot: DataSnapshot) {
+                                if (snapshot.exists()) {
+                                    val userName = snapshot.child("user_name").value.toString()
+                                    val profilePicture = snapshot.child("user_detail").child("profile_picture").value.toString()
 
-                                gonderiBegenildi.text = userName + " Kampanyani Beğendi .  " + TimeAgo.getTimeAgoForComments(bildirimZamani)
-
-
-
-
-                            if (snapshot.child("user_detail").child("profile_picture").value.toString().isNotEmpty()) {
-                                val takipEdenPicURL = snapshot.child("user_detail").child("profile_picture").value.toString()
-                                Picasso.get().load(takipEdenPicURL).placeholder(R.drawable.ic_baseline_person).error(R.drawable.ic_baseline_person).into(begenenPP)
-
-                            }else{
-                                begenenPP.setBackgroundResource(R.drawable.ic_baseline_person)
-                            }
-
-                        }
-                    }
-                }
-
-                override fun onCancelled(error: DatabaseError) {
-                }
-
-            })
-
-            FirebaseDatabase.getInstance().reference.child("users").child("isletmeler").child(
-                user_id
-            ).addListenerForSingleValueEvent(object :ValueEventListener{
-                @SuppressLint("SetTextI18n")
-                override fun onDataChange(snapshot: DataSnapshot)  {
-                    if (snapshot.value !=null){
-
-                        if (user_id == FirebaseAuth.getInstance().currentUser!!.uid){
-                            begenenPP.visibility=View.GONE
-                            yorumYapildi.visibility=View.GONE
-                            kampanya.visibility=View.GONE
-
-                        }else{
-                            val userName = snapshot.child("user_name").value.toString()
-                            if (snapshot.child("user_name").value.toString().isNotEmpty())
-
-                                gonderiBegenildi.text = userName + " Kampanyani Beğendi .  " + TimeAgo.getTimeAgoForComments(bildirimZamani)
-
-
-
-
-                            if (snapshot.child("user_detail").child("profile_picture").value.toString()
-                                    .isNotEmpty()) {
-                                val takipEdenPicURL = snapshot.child("user_detail").child("profile_picture").value.toString()
-                                Picasso.get().load(takipEdenPicURL).placeholder(R.drawable.ic_baseline_person).error(R.drawable.ic_baseline_person).into(begenenPP)
-
-                            }else{
-                                begenenPP.setBackgroundResource(R.drawable.ic_baseline_person
-                                )
-                            }
-
-                        }
-                    }
-                }
-
-                override fun onCancelled(error: DatabaseError) {
-                }
-
-            })
-
-
-            FirebaseDatabase.getInstance().reference.child("kampanya").child(FirebaseAuth.getInstance().currentUser!!.uid)
-                .child(gonderi_id!!).addListenerForSingleValueEvent(object :ValueEventListener{
-                    override fun onDataChange(snapshot: DataSnapshot) {
-
-                        if (snapshot.value !=null){
-                            if (user_id == FirebaseAuth.getInstance().currentUser!!.uid){  begenenPP.visibility=View.GONE
-                                yorumYapildi.visibility=View.GONE
-                                kampanya.visibility=View.GONE}
-                            else
-
-
-                                if (snapshot.child("file_url").value.toString().isNotEmpty()) {
-                                    kampanya.visibility = View.VISIBLE
-                                    val begenilenFotoURL = snapshot.child("file_url").value.toString()
-                                    Picasso.get().load(begenilenFotoURL).into(kampanya)
-                                } else {
-                                    kampanya.visibility = View.INVISIBLE
+                                    onSuccess.invoke(userName, profilePicture)
 
                                 }
+                            }
+                            override fun onCancelled(error: DatabaseError) {
+                            }
+                        })
 
-                        }
                     }
+                }
 
-                    override fun onCancelled(error: DatabaseError) {
-                    }
-
-                })
-
-
-
+                override fun onCancelled(error: DatabaseError) {
+                }
+            })
         }
 
+        private fun handleKampanyaSnapshot( gonderi_id: String?, onSuccess: (String) -> Unit) {
+            val kampanyaRef = FirebaseDatabase.getInstance().reference.child("kampanya").child(FirebaseAuth.getInstance().currentUser!!.uid).child(gonderi_id!!)
+            kampanyaRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    if (snapshot.exists()) {
 
+                        val fileUrl = snapshot.child("file_url").value.toString()
+
+
+                        onSuccess.invoke(fileUrl)
+
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                }
+            })
+        }
+        private fun handleYorumlarSnapshot(user_id: String?, gonderi_id: String?, onSuccess: (Boolean) -> Unit) {
+            val kampanyaRef = FirebaseDatabase.getInstance().reference.child("kampanya").child(user_id!!).child(gonderi_id!!)
+            kampanyaRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val yorumlarDugumu = snapshot.child("yorumlar")
+
+                    val yorumlarVarMi = yorumlarDugumu.exists()
+
+                    onSuccess.invoke(yorumlarVarMi)
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+
+                }
+            })
+        }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): mviewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): mViewHolder {
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.recycler_row_bildirimler, parent, false)
 
-        val view=
-
-            LayoutInflater.from(parent.context).inflate(R.layout.recycler_row_bildirimler,parent,false)
-
-        return mviewHolder(view)
+        return mViewHolder(view)
     }
 
-    override fun onBindViewHolder(holder: mviewHolder, position: Int) {
-
+    override fun onBindViewHolder(holder: mViewHolder, position: Int) {
         holder.setdata(tumBildirimler[position])
-
     }
 
     override fun getItemCount(): Int {
-        return tumBildirimler.size
+        return if (tumBildirimler.size < ILK_GOSTERIM) {
+            tumBildirimler.size
+        } else {
+            ILK_GOSTERIM
+        }
+
     }
+
+
+
+
     @SuppressLint("NotifyDataSetChanged")
-    fun kampanyalariGuncelle(yeniKampanyaListesi:List<BildirimModel>){
+    fun bildirimleriGuncelle(yeniBildirimListesi: List<BildirimModel>) {
+
         tumBildirimler.clear()
-        tumBildirimler.addAll(yeniKampanyaListesi)
+        tumBildirimler.addAll(yeniBildirimListesi)
         notifyDataSetChanged()
     }
+    fun setOnAllItemsDeletedListener(listener: (() -> Unit)?) {
+        onAllItemsDeletedListener = listener
+    }
 }
-

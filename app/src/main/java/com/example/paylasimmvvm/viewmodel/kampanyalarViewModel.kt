@@ -28,6 +28,7 @@ class kampanyalarViewModel: ViewModel() {
 
         yukleniyor.value=true
 
+
         mref=FirebaseDatabase.getInstance().reference
 
         val user = Firebase.auth.currentUser
@@ -93,6 +94,7 @@ class kampanyalarViewModel: ViewModel() {
 
         yukleniyor.value=true
 
+
         mref=FirebaseDatabase.getInstance().reference
 
         for(i in 0 until tumKullaniciIDleri.size){
@@ -142,10 +144,7 @@ class kampanyalarViewModel: ViewModel() {
                                         tumGonderiler.add(eklenecekUserPost)
 
 
-                                        kampanyaYok.value=false
-                                        yukleniyor.value=true
-                                        kampanyalar.value= tumGonderiler
-                                        yukleniyor.value=false
+                                       
                                     }
                                 }
                             }

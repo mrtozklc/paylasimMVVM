@@ -1,18 +1,21 @@
 package com.example.paylasimmvvm.service
 
+import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.graphics.BitmapFactory
+import android.graphics.Typeface
 import android.media.RingtoneManager
 import android.os.Build
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.style.StyleSpan
 import android.util.Log
-import androidx.annotation.RequiresApi
+import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import com.example.paylasimmvvm.R
-import com.example.paylasimmvvm.view.home.HomeFragment
 import com.example.paylasimmvvm.view.home.MainActivity
 import com.example.paylasimmvvm.view.mesajlar.ChatFragment
 import com.example.paylasimmvvm.view.mesajlar.MesajlarFragment
@@ -24,78 +27,300 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 
+
 class MessagingService:FirebaseMessagingService() {
 
+
+
     override fun onMessageReceived(message: RemoteMessage) {
-        var  bildirimTitle=message.notification!!.title
-        var bildirimBody=message.notification!!.body
-        var bildirimData=message.data.get("konusulacakKisi")
 
-        Log.e("bildirim", "bildirim$bildirimTitle$bildirimBody$bildirimData")
+     Log.e("bildirimdata",""+message.data)
 
-        if(!ChatFragment.fragmentAcikMi && !MesajlarFragment.fragmentAcikMi)
-        {
-            yeniMesajBildirimi(bildirimTitle,bildirimBody,bildirimData)
+        if (message.data["bildirimTuru"]!!.toString() == "yeni_mesaj") {
+
+            val mesajGonderenUserName = message.data["kimYolladi"]
+            val sonMesaj = message.data["neYolladi"]
+            val mesajGonderenUserID = message.data["secilenUserID"]
+
+
+            if (!ChatFragment.fragmentAcikMi && !MesajlarFragment.fragmentAcikMi) {
+                yeniMesajBildirimi(mesajGonderenUserName, sonMesaj, mesajGonderenUserID)
+
+            }
+
+        }
+        else if(message.data["bildirimTuru"]!!.toString() == "1"){
+
+            val begenenUserName= message.data["kimYolladi"]
+            val begenenUserID= message.data["secilenUserID"]
+            val begenilenUserID= message.data["begenilenUserID"]
+            val gonderiID=message.data["gonderiID"]
+            val bildirimID=message.data["bildirimID"]
+            yeniBegeniBildirimi(begenenUserName, begenenUserID, gonderiID,begenilenUserID,bildirimID)
+
+
+        }
+        else if(message.data["bildirimTuru"]!!.toString() == "2"){
+
+            val kimYolladi= message.data["kimYolladi"]
+            val yorumYapanUserID= message.data["secilenUserID"]
+            val begenilenUserID= message.data["begenilenUserID"]
+            val gonderiID=message.data["gonderiID"]
+            val yorum=message.data["yorum"]
+            val yorumKey=message.data["yorumKey"]
+            val bildirimID=message.data["bildirimID"]
+
+            yeniYorumBildirimi(kimYolladi, yorumYapanUserID, gonderiID,begenilenUserID,yorum,yorumKey,bildirimID)
+
+        }
+        else if(message.data["bildirimTuru"]!!.toString() == "3"){
+
+            val kimYolladi= message.data["kimYolladi"]
+            val begenenUserID= message.data["secilenUserID"]
+            val begenilenUserID= message.data["begenilenUserID"]
+            val yorum=message.data["yorum"]
+            val yorumKey=message.data["yorumKey"]
+            val gonderiID=message.data["gonderiID"]
+            val bildirimID=message.data["bildirimID"]
+
+            yeniYorumBegeniBildirimi(kimYolladi, begenenUserID,yorum,yorumKey,begenilenUserID,gonderiID,bildirimID)
+
+
+        }
+        else if(message.data["bildirimTuru"]!!.toString() == "4"){
+
+            val kimYolladi= message.data["kimYolladi"]
+            val yorumYapanUserID= message.data["secilenUserID"]
+            val yorumYapilanUserID= message.data["yorumYapilanUserID"]
+            val yorum=message.data["yorum"]
+            val yorumKey=message.data["yorumKey"]
+            val bildirimID=message.data["bildirimID"]
+
+           yeniYorumIsletmeBildirimi(kimYolladi, yorumYapanUserID, yorum,yorumKey,yorumYapilanUserID,bildirimID)
+
+
         }
 
 
+    }
 
+    private fun yeniYorumIsletmeBildirimi( kimYolladi: String?,yorumYapanUserID: String?,yorum: String?, yorumKey: String?,
+        yorumYapilanUserID: String?,bildirimID:String?) {
+        val pendingIntent = Intent(this, MainActivity::class.java)
+
+        pendingIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        pendingIntent.putExtra("isletmeYorumKey", yorumKey)
+        pendingIntent.putExtra("isletmeYorumYapilanUserID", yorumYapilanUserID)
+        pendingIntent.putExtra("isletmeYapilanYorum", yorum)
+        pendingIntent.putExtra("bildirimID", bildirimID)
+        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val bildirimPendingIntent = PendingIntent.getActivity(
+            this,
+            70,
+            pendingIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+
+
+                val contentView = RemoteViews(packageName, R.layout.notification_pp)
+                val message = " işletmeniz hakkında bir yorum yaptı"
+                val spannableString = SpannableString("$kimYolladi$message")
+                spannableString.setSpan(StyleSpan(Typeface.BOLD), 0,
+                    kimYolladi!!.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+                contentView.setTextViewText(R.id.contentTitle, spannableString)
+                contentView.setTextViewText(R.id.contentText, yorum)
+
+                val builder = NotificationCompat.Builder(this, "isletme yorum")
+                    .setSmallIcon(R.drawable.ic_baseline_circle_notifications)
+                    .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
+                    .setCustomContentView(contentView)
+                    .setCustomBigContentView(contentView)
+                    .setAutoCancel(true)
+                    .setContentIntent(bildirimPendingIntent)
+                    .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                    .build()
+
+                notificationManager.notify(bildirimIDOlustur(yorumYapanUserID!!), builder)
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                val channel = NotificationChannel("isletme yorum", "Channel human readable title", NotificationManager.IMPORTANCE_DEFAULT)
+                notificationManager.createNotificationChannel(channel)
+            }
 
 
     }
+    @SuppressLint("SuspiciousIndentation")
+    private fun yeniYorumBegeniBildirimi(kimYolladi: String?, begenenUserID: String?, yorum: String?, yorumKey: String?, begenilenUserID:String?, gonderiID: String?,bildirimID:String?) {
+        val pendingIntent = Intent(this, MainActivity::class.java)
 
+        pendingIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        pendingIntent.putExtra("begenilenYorumKey", yorumKey)
+        pendingIntent.putExtra("begenilenYorumGonderiID", gonderiID)
+        pendingIntent.putExtra("begenilenUserID", begenilenUserID)
+        pendingIntent.putExtra("begenilenYorum", yorum)
+        pendingIntent.putExtra("bildirimID", bildirimID)
 
-    override fun onNewToken(token: String) {
-        var newToken=token!!
+        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val bildirimPendingIntent = PendingIntent.getActivity(
+            this,
+            30,
+            pendingIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
 
-       newTokenAl(newToken)
-    }
+        val contentView = RemoteViews(packageName, R.layout.notification_pp)
 
-    private fun yeniMesajBildirimi(bildirimTitle: String?, bildirimBody: String?, gidilecekUserID: String?) {
+        val message = " yorumunu beğendi"
+        val spannableString = SpannableString("$kimYolladi$message")
+        spannableString.setSpan(StyleSpan(Typeface.BOLD), 0,
+            kimYolladi!!.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+        contentView.setTextViewText(R.id.contentTitle, spannableString)
+        contentView.setTextViewText(R.id.contentText, yorum)
 
-        var pendingIntent= Intent(this,MainActivity::class.java)
-        pendingIntent.flags=Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        pendingIntent.putExtra("konusulacakKisi",gidilecekUserID)
-
-        var bildirimPendingIntent= PendingIntent.getActivity(this,10,pendingIntent,PendingIntent.FLAG_IMMUTABLE)
-
-        var builder= NotificationCompat.Builder(this,"Yeni Mesaj")
-            .setSmallIcon(R.drawable.ic_baseline_mesaj_24)
-            .setLargeIcon(BitmapFactory.decodeResource(resources,R.drawable.ic_baseline_mesaj_24))
+        val builder = NotificationCompat.Builder(this, "Yorum Begenildi")
+            .setSmallIcon(R.drawable.ic_baseline_circle_notifications)
             .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
-            .setContentTitle(bildirimTitle)
-            .setContentText(bildirimBody)
+            .setCustomContentView(contentView)
+            .setCustomBigContentView(contentView)
             .setAutoCancel(true)
             .setContentIntent(bildirimPendingIntent)
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .build()
 
-        var notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.notify(bildirimIDOlustur(begenenUserID!!), builder)
 
-        @RequiresApi(Build.VERSION_CODES.O)
+
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel("Yeni Mesaj", "Channel human readable title", NotificationManager.IMPORTANCE_DEFAULT)
+            val channel = NotificationChannel("Yorum Begenildi", "Channel human readable title", NotificationManager.IMPORTANCE_DEFAULT)
             notificationManager.createNotificationChannel(channel)
         }
 
-        notificationManager.notify(bildirimIDOlustur(gidilecekUserID!!),builder)
-
-
-
-
     }
+    private fun yeniYorumBildirimi(yorumYapanUserName: String?,yorumYapanUserID: String?, gonderiID: String?,begenilenUserID: String?,yorum: String?,yorumKey: String?,bildirimID:String?) {
+        val pendingIntent = Intent(this, MainActivity::class.java)
+        pendingIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        pendingIntent.putExtra("gonderiYorumKey", yorumKey)
+        pendingIntent.putExtra("yorumYapilanGonderi", gonderiID)
+        pendingIntent.putExtra("begenilenUserID", begenilenUserID)
+        pendingIntent.putExtra("bildirimID", bildirimID)
+        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val bildirimPendingIntent = PendingIntent.getActivity(
+            this,
+            20,
+            pendingIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
 
 
-    private fun bildirimIDOlustur(gidilecekUserID: String): Int{
-        var id= 0
+        val contentView = RemoteViews(packageName, R.layout.notification_pp)
+        val message = " gönderine yorum yaptı"
+        val spannableString = SpannableString("$yorumYapanUserName$message")
+        spannableString.setSpan(StyleSpan(Typeface.BOLD), 0,
+            yorumYapanUserName!!.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+        contentView.setTextViewText(R.id.contentTitle, spannableString)
+        contentView.setTextViewText(R.id.contentText, yorum)
+            val builder = NotificationCompat.Builder(this, "Yorum Yapildi")
+            .setSmallIcon(R.drawable.ic_baseline_circle_notifications)
+            .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
+            .setCustomContentView(contentView)
+            .setCustomBigContentView(contentView)
+            .setAutoCancel(true)
+            .setContentIntent(bildirimPendingIntent)
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .build()
 
-        for(i in 0..5){
-            id= id + gidilecekUserID[i].toInt()
+           notificationManager.notify(bildirimIDOlustur(yorumYapanUserID!!), builder)
+
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel("Yorum Yapildi", "Channel human readable title", NotificationManager.IMPORTANCE_DEFAULT)
+            notificationManager.createNotificationChannel(channel)
         }
 
-        return id
     }
+    private fun yeniBegeniBildirimi(begenenUserName: String?, begenenUserID: String?, gonderiID: String?, begenilenUserID: String?,bildirimID:String?) {
+        val pendingIntent = Intent(this, MainActivity::class.java)
+        pendingIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        pendingIntent.putExtra("begenilenGonderi", gonderiID)
+        pendingIntent.putExtra("begenilenUserID", begenilenUserID)
+        pendingIntent.putExtra("bildirimID", bildirimID)
+        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val bildirimPendingIntent = PendingIntent.getActivity(
+            this,
+            10,
+            pendingIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+
+        val contentView = RemoteViews(packageName, R.layout.notification_pp)
+        val message = " gönderini beğendi"
+
+        val spannableString = SpannableString("$begenenUserName$message")
+        spannableString.setSpan(StyleSpan(Typeface.BOLD), 0,
+            begenenUserName!!.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+
+        contentView.setTextViewText(R.id.contentTitle, spannableString)
+
+        val builder = NotificationCompat.Builder(this, "Gonderi begenildi")
+            .setSmallIcon(R.drawable.ic_baseline_circle_notifications)
+            .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
+            .setCustomContentView(contentView)
+            .setCustomBigContentView(contentView)
+            .setAutoCancel(true)
+            .setContentIntent(bildirimPendingIntent)
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .build()
+
+        notificationManager.notify(bildirimIDOlustur(begenenUserID!!), builder)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel("Gonderi begenildi", "Channel human readable title", NotificationManager.IMPORTANCE_DEFAULT)
+            notificationManager.createNotificationChannel(channel)
+        }
+    }
+    private fun yeniMesajBildirimi(bildirimTitle: String?, bildirimBody: String?, gidilecekUserID: String?) {
+        val pendingIntent = Intent(this, MainActivity::class.java)
+        pendingIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        pendingIntent.putExtra("konusulacakKisi", gidilecekUserID)
+        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val bildirimPendingIntent = PendingIntent.getActivity(
+            this,
+            15,
+            pendingIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        val contentView = RemoteViews(packageName, R.layout.notification_pp)
+        contentView.setTextViewText(R.id.contentTitle, bildirimTitle)
+        contentView.setTextViewText(R.id.contentText, bildirimBody)
+
+        val builder = NotificationCompat.Builder(this, "Yeni Mesaj")
+            .setSmallIcon(R.drawable.ic_baseline_mesaj_24)
+            .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
+            .setCustomContentView(contentView)
+            .setCustomBigContentView(contentView)
+            .setAutoCancel(true)
+            .setContentIntent(bildirimPendingIntent)
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .build()
+
+        notificationManager.notify(bildirimIDOlustur(gidilecekUserID!!), builder)
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                val channel = NotificationChannel("Yeni Mesaj", "Channel human readable title", NotificationManager.IMPORTANCE_DEFAULT)
+                notificationManager.createNotificationChannel(channel)
+            }
 
 
+
+    }
+    private fun bildirimIDOlustur(gidilecekUserID: String): Int{
+
+        return gidilecekUserID.hashCode()
+    }
+    override fun onNewToken(token: String) {
+
+        newTokenAl(token)
+    }
     private fun newTokenAl(newToken: String) {
         val currentUser = FirebaseAuth.getInstance().currentUser
         if (currentUser != null) {

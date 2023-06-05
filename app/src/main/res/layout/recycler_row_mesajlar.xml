@@ -19,12 +19,15 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+
+
     <TextView
         android:id="@+id/tv_username"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:textSize="20sp"
+        android:textStyle="bold"
+        style="@style/MyTextAppearance.Compat.Notification.Title"
         app:layout_constraintStart_toEndOf="@+id/img_konusmalarpp"
         app:layout_constraintTop_toTopOf="@+id/img_konusmalarpp" />
 
@@ -32,22 +35,23 @@
         android:id="@+id/okundu_bilgisi"
         android:layout_width="30dp"
         android:layout_height="30dp"
-        android:layout_marginEnd="4dp"
-        android:background="@drawable/ic_launcher_okundu_bilgisi"
 
+        android:layout_marginStart="4dp"
+        android:background="@drawable/ic_launcher_okundu_bilgisi"
         android:visibility="invisible"
-        app:layout_constraintBottom_toBottomOf="@+id/img_konusmalarpp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/img_konusmalarpp"
-       />
+        app:layout_constraintBottom_toBottomOf="@+id/zamanOnce_id"
+        app:layout_constraintStart_toEndOf="@+id/zamanOnce_id"
+        app:layout_constraintTop_toTopOf="@+id/zamanOnce_id" />
 
     <TextView
         android:id="@+id/sonMesaj_id"
-        android:layout_width="wrap_content"
+        style="@style/MyTextAppearance.Compat.Notification.Info"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintBottom_toBottomOf="@+id/img_konusmalarpp"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintEnd_toStartOf="@+id/optionsImageView"
         app:layout_constraintStart_toEndOf="@+id/img_konusmalarpp"
         app:layout_constraintTop_toBottomOf="@+id/tv_username" />
 
@@ -56,17 +60,17 @@
         android:id="@+id/zamanOnce_id"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="4dp"
-        app:layout_constraintBottom_toBottomOf="@+id/sonMesaj_id"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/sonMesaj_id" />
+        android:layout_marginStart="4dp"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_username"
+        app:layout_constraintStart_toEndOf="@+id/tv_username"
+        app:layout_constraintTop_toTopOf="@+id/tv_username" />
 
     <View
         android:id="@+id/cizgi"
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_marginTop="16dp"
-        android:background="@color/koyugri"
+        android:background="@color/dark_primary_color"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

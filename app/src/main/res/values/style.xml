@@ -1,9 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <style name="TextViewHeaderStyle" parent="android:Widget.TextView">
-        <item name="android:textColor">@color/grey</item>
-        <item name="android:textStyle">bold</item>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <style name="MyTextAppearance.Compat.Notification.Title" parent="TextAppearance.Compat.Notification.Title" tools:ignore="ResourceCycle">
+        <item name="android:textSize">16sp</item>
     </style>
+
+    <style name="MyTextAppearance.Compat.Notification.Info" parent="TextAppearance.Compat.Notification.Info" tools:ignore="ResourceCycle">
+        <item name="android:textSize">14sp</item>
+    </style>
+
+
 
 
 

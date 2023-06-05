@@ -14,8 +14,6 @@ import com.example.paylasimmvvm.R
 import com.example.paylasimmvvm.databinding.RecyclerRowBinding
 import com.example.paylasimmvvm.model.KullaniciKampanya
 import com.example.paylasimmvvm.util.Bildirimler
-import com.example.paylasimmvvm.util.Bildirimler.mref
-import com.example.paylasimmvvm.util.EventbusData
 import com.example.paylasimmvvm.util.TimeAgo
 import com.example.paylasimmvvm.view.profil.ProfilFragmentDirections
 import com.github.chrisbanes.photoview.PhotoView
@@ -53,7 +51,7 @@ class ProfilFragmentRecyclerAdapter (var context: Context, private var tumKampan
         private var profileImage =binding.profilImage
         private var userNameTitle = binding.kullaniciAdiTepe
         private var gonderi = binding.kampanyaPhoto
-        private var userNameveAciklama = binding.textView21
+        private var userName = binding.userName
         private var kampanyaTarihi = binding.kampanyaTarihi
         private var yorumYap = binding.imgYorum
         var gonderiBegen = binding.imgBegen
@@ -67,7 +65,6 @@ class ProfilFragmentRecyclerAdapter (var context: Context, private var tumKampan
 
         @SuppressLint("SetTextI18n")
         fun setData(anlikGonderi: KullaniciKampanya) {
-            Log.e("gelenadapter",""+anlikGonderi.postID)
 
 
             userNameTitle.text = anlikGonderi.userName
@@ -85,7 +82,8 @@ class ProfilFragmentRecyclerAdapter (var context: Context, private var tumKampan
             }
 
 
-            userNameveAciklama.text = anlikGonderi.userName.toString()+" "+anlikGonderi.postAciklama.toString()
+            userName.text = anlikGonderi.userName.toString()
+            binding.aciklama.text=anlikGonderi.postAciklama.toString()
             Picasso.get().load(anlikGonderi.postURL).into(gonderi)
 
             kampanyaTarihi.text = TimeAgo.getTimeAgo(anlikGonderi.postYuklenmeTarih!!)
@@ -145,7 +143,7 @@ class ProfilFragmentRecyclerAdapter (var context: Context, private var tumKampan
                         val postID = anlikGonderi.postID
 
 
-                        mref.child("kampanya").child(FirebaseAuth.getInstance().currentUser!!.uid)
+                        FirebaseDatabase.getInstance().reference.child("kampanya").child(FirebaseAuth.getInstance().currentUser!!.uid)
                             .child(postID!!).addListenerForSingleValueEvent(object :
                             ValueEventListener {
                             override fun onDataChange(snapshot: DataSnapshot) {
@@ -158,7 +156,7 @@ class ProfilFragmentRecyclerAdapter (var context: Context, private var tumKampan
 
                         })
 
-                        mref.child("users").child("isletmeler")
+                        FirebaseDatabase.getInstance().reference.child("users").child("isletmeler")
                             .child(FirebaseAuth.getInstance().currentUser!!.uid)
                             .child("user_detail").addListenerForSingleValueEvent(object :
                             ValueEventListener {
@@ -166,7 +164,7 @@ class ProfilFragmentRecyclerAdapter (var context: Context, private var tumKampan
                                 var oankiGonderiSayisi =
                                     snapshot.child("post").value.toString().toInt()
                                 oankiGonderiSayisi--
-                                mref.child("users").child("isletmeler")
+                                FirebaseDatabase.getInstance().reference.child("users").child("isletmeler")
                                     .child(FirebaseAuth.getInstance().currentUser!!.uid)
                                     .child("user_detail").child("post")
                                     .setValue(oankiGonderiSayisi.toString())
@@ -199,25 +197,21 @@ class ProfilFragmentRecyclerAdapter (var context: Context, private var tumKampan
                 val ref = FirebaseDatabase.getInstance().reference
                 val currentID = FirebaseAuth.getInstance().currentUser!!.uid
 
-                ref.child("begeniler").child(anlikGonderi.postID!!)
+                ref.child("kampanya").child(anlikGonderi.userID!!).child(anlikGonderi.postID!!).child("begeniler")
                     .addListenerForSingleValueEvent(object : ValueEventListener {
                         override fun onDataChange(snapshot: DataSnapshot) {
                             if (snapshot.hasChild(currentID)) {
-                                ref.child("begeniler").child(anlikGonderi.postID!!).child(currentID)
+                                ref.child("kampanya").child(anlikGonderi.userID!!).child(anlikGonderi.postID!!).child("begeniler").child(currentID)
                                     .removeValue()
-                                if (anlikGonderi.userID!= FirebaseAuth.getInstance().currentUser!!.uid){
-                                Bildirimler.bildirimKaydet(anlikGonderi.userID!!,Bildirimler.KAMPANYA_BEGENILDI_GERI,anlikGonderi.postID!!)
 
-
-                                }
                                 gonderiBegen.setImageResource(R.drawable.ic_baseline_favorite)
 
                             } else {
-                                ref.child("begeniler").child(anlikGonderi.postID!!).child(currentID)
+                                ref.child("kampanya").child(anlikGonderi.userID!!).child(anlikGonderi.postID!!).child("begeniler").child(currentID)
                                     .setValue(currentID)
-                                Log.e("bildirim",""+anlikGonderi)
                                 if (anlikGonderi.userID!= FirebaseAuth.getInstance().currentUser!!.uid){
-                                 Bildirimler.bildirimKaydet(anlikGonderi.userID!!,Bildirimler.KAMPANYA_BEGENILDI,anlikGonderi.postID!!)
+
+                                 Bildirimler.bildirimKaydet(anlikGonderi.userID!!,Bildirimler.KAMPANYA_BEGENILDI,anlikGonderi.postID!!,anlikGonderi.postURL!!)
                                 }
 
                                 gonderiBegen.setImageResource(R.drawable.baseline_favorite_red_24)
@@ -240,12 +234,7 @@ class ProfilFragmentRecyclerAdapter (var context: Context, private var tumKampan
         }
 
         private fun yorumlarFragmentiniBaslat(anlikGonderi: KullaniciKampanya) {
-
-
-
-
-
-            val action=ProfilFragmentDirections.actionProfilFragmentToCommentFragment(anlikGonderi.postID!!,true)
+            val action=ProfilFragmentDirections.actionProfilFragmentToCommentFragment(anlikGonderi.userID!!,true,anlikGonderi.postID!!,anlikGonderi.postURL!!)
             Navigation.findNavController(itemView).navigate(action)
 
         }
@@ -253,7 +242,7 @@ class ProfilFragmentRecyclerAdapter (var context: Context, private var tumKampan
 
         private fun yorumlariGoster(anlikGonderi: KullaniciKampanya) {
             val mref= FirebaseDatabase.getInstance().reference
-            mref.child("yorumlar").child(anlikGonderi.postID!!).addListenerForSingleValueEvent(object :
+            mref.child("kampanya").child(anlikGonderi.userID!!).child(anlikGonderi.postID!!).child("yorumlar").addListenerForSingleValueEvent(object :
                 ValueEventListener {
                 @SuppressLint("SetTextI18n")
                 override fun onDataChange(snapshot: DataSnapshot) {
@@ -289,7 +278,7 @@ class ProfilFragmentRecyclerAdapter (var context: Context, private var tumKampan
         private fun begeniKontrolu(anlikGonderi: KullaniciKampanya) {
             val mRef = FirebaseDatabase.getInstance().reference
             val userID = FirebaseAuth.getInstance().currentUser!!.uid
-            mRef.child("begeniler").child(anlikGonderi.postID!!).addValueEventListener(object :
+            mRef.child("kampanya").child(anlikGonderi.userID!!).child(anlikGonderi.postID!!).child("begeniler").addValueEventListener(object :
                 ValueEventListener {
 
 

@@ -23,6 +23,7 @@
             android:background="@drawable/mesaj_alan_bg"
             android:padding="10dp"
             android:text=""
+            android:maxWidth="300dp"
             android:textSize="14sp" />
     </LinearLayout>
 

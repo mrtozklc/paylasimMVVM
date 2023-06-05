@@ -44,7 +44,6 @@ class ProfilEditFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        (activity as AppCompatActivity).supportActionBar?.hide()
     }
 
 
@@ -452,6 +451,12 @@ class ProfilEditFragment : Fragment() {
 
         gelenKullaniciBilgileri= kullanicibilgileri.kullanici!!
 
+
+    }
+
+    override fun onStart() {
+        super.onStart()
+        (activity as AppCompatActivity).supportActionBar?.hide()
 
     }
 

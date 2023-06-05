@@ -2,6 +2,7 @@ package com.example.paylasimmvvm.view.yorumlar
 
 import android.os.Bundle
 import android.text.TextUtils
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -14,6 +15,7 @@ import com.example.paylasimmvvm.R
 import com.example.paylasimmvvm.adapter.YorumlarRecyclerAdapter
 import com.example.paylasimmvvm.databinding.FragmentCommentFragmentBinding
 import com.example.paylasimmvvm.model.Yorumlar
+import com.example.paylasimmvvm.util.Bildirimler
 import com.example.paylasimmvvm.viewmodel.YorumlarViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -33,32 +35,26 @@ class comment_fragment : Fragment() {
     private lateinit var yorumlarViewModel: YorumlarViewModel
     var tiklananUser=""
     private var isPost: Boolean = false
-
-
-
-    var   yorumYapilacakGonderininID:String?=null
-    var yorumYapilacakIsletmeID:String?=null
+    var postURL=""
+    var gonderiID=""
     lateinit var mAuth: FirebaseAuth
     lateinit var mUser: FirebaseUser
     lateinit var mRef: DatabaseReference
+    var yorumYapilanGonderi: String? =null
+    var yorumKey:String?=null
 
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        (activity as AppCompatActivity).supportActionBar?.hide()
-    }
 
 
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding= FragmentCommentFragmentBinding.inflate(layoutInflater,container,false)
         val view =binding.root
 
         return view
-        // Inflate the layout for this fragment
+
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -66,13 +62,34 @@ class comment_fragment : Fragment() {
         mUser=mAuth.currentUser!!
 
         arguments?.let { it ->
-            isPost = comment_fragmentArgs.fromBundle(it).isPost
-            val secilenUser = comment_fragmentArgs.fromBundle(it).userId
-            tiklananUser = secilenUser
-
-
             yorumlarViewModel = ViewModelProvider(this)[YorumlarViewModel::class.java]
-            yorumlarViewModel.yorumlariAl(tiklananUser)
+            isPost = comment_fragmentArgs.fromBundle(it).isPost
+            tiklananUser = comment_fragmentArgs.fromBundle(it).userId
+            postURL=comment_fragmentArgs.fromBundle(it).postUrl
+            gonderiID=comment_fragmentArgs.fromBundle(it).postId
+            yorumYapilanGonderi = arguments?.getString("yorumYapilanGonderi")
+            yorumKey= arguments?.getString("yorumKey")
+            val  bildirimID = it.getString("bildirimID")
+            if (bildirimID!=null){
+                val databaseRef = FirebaseDatabase.getInstance().reference.child("bildirimler").child(FirebaseAuth.getInstance().currentUser!!.uid).child(bildirimID)
+                databaseRef.child("goruldu").setValue(true)
+            }
+
+
+
+
+            if (isPost){
+                if (yorumYapilanGonderi!=null){
+                   yorumlarViewModel.gonderiYorumlariniAl(tiklananUser,yorumYapilanGonderi!!)
+                }else{
+                    yorumlarViewModel.gonderiYorumlariniAl(tiklananUser,gonderiID)
+                }
+            }
+            if(!isPost){
+
+             yorumlarViewModel.isletmeYorumlariniAl(tiklananUser)
+            }
+
 
         }
 
@@ -82,12 +99,21 @@ class comment_fragment : Fragment() {
         val layoutManager = LinearLayoutManager(activity)
         binding.recyclerviewYorumlar.layoutManager = layoutManager
 
-        recyclerviewadapter = if (isPost) {
-            YorumlarRecyclerAdapter(tumYorumlar, true,tiklananUser)
-        } else {
-            YorumlarRecyclerAdapter(tumYorumlar, false,tiklananUser)
-        }
+        recyclerviewadapter =  if (isPost) {
+            if (yorumYapilanGonderi != null) {
 
+                YorumlarRecyclerAdapter(tumYorumlar, true, yorumYapilanGonderi!!,tiklananUser)
+            }else{
+
+                YorumlarRecyclerAdapter(tumYorumlar, true, gonderiID,tiklananUser)
+
+                
+            }
+
+        } else {
+
+            YorumlarRecyclerAdapter(tumYorumlar, false, "",tiklananUser)
+        }
         binding.recyclerviewYorumlar.adapter = recyclerviewadapter
 
 
@@ -98,15 +124,62 @@ class comment_fragment : Fragment() {
 
             if(!TextUtils.isEmpty(yorum)){
 
-                val yeniYorum = hashMapOf<String, Any>(
-                    "user_id" to mUser.uid,
-                    "yorum" to binding.etMesajEkle.text.toString(),
-                    "yorum_begeni" to "0",
-                    "yorum_tarih" to ServerValue.TIMESTAMP
-                )
+                if (isPost){
+                    val yeniYorumGonderiReference = FirebaseDatabase.getInstance().reference.child("kampanya").child(tiklananUser).child(gonderiID!!).child("yorumlar").push()
+                    val pushKey = yeniYorumGonderiReference.key
 
-                FirebaseDatabase.getInstance().reference.child("yorumlar")
-                    .child(tiklananUser!!).push().setValue(yeniYorum)
+                    val yeniYorum = hashMapOf<String, Any>(
+                        "yorum_key" to pushKey.toString(),
+                        "user_id" to mUser.uid,
+                        "yorum" to binding.etMesajEkle.text.toString(),
+                        "yorum_begeni" to "0",
+                        "yorum_tarih" to ServerValue.TIMESTAMP
+                    )
+                    yeniYorumGonderiReference.setValue(yeniYorum)
+
+                    if (tiklananUser!=FirebaseAuth.getInstance().currentUser!!.uid) {}
+
+                        Bildirimler.bildirimKaydet(
+                            tiklananUser,
+                            Bildirimler.YORUM_YAPILDI,
+                            gonderiID,
+                            postURL,
+                            binding.etMesajEkle.text.toString(),
+                            pushKey
+                        )
+
+
+
+                }else{
+                    val yeniYorumIsletmeReference = FirebaseDatabase.getInstance().reference.child("users").child("isletmeler").child(tiklananUser).child("yorumlar").push()
+                    val pushKey = yeniYorumIsletmeReference.key
+                    val yeniYorum = hashMapOf<String, Any>(
+                        "yorum_key" to pushKey.toString(),
+                        "user_id" to mUser.uid,
+                        "yorum" to binding.etMesajEkle.text.toString(),
+                        "yorum_begeni" to "0",
+                        "yorum_tarih" to ServerValue.TIMESTAMP
+                    )
+
+
+                   yeniYorumIsletmeReference.setValue(yeniYorum)
+
+                    if (tiklananUser!=FirebaseAuth.getInstance().currentUser!!.uid) {}
+
+
+                        Bildirimler.bildirimKaydet(
+                            tiklananUser,
+                            Bildirimler.YORUM_YAPILDI_ISLETME,
+                            gonderiID,
+                            postURL,
+                            binding.etMesajEkle.text.toString(),
+                            pushKey
+                        )
+
+
+
+                }
+
 
 
                 binding.etMesajEkle.setText("")
@@ -119,8 +192,8 @@ class comment_fragment : Fragment() {
 
         binding.imageViewBack.setOnClickListener {
             findNavController().navigateUp()
-        }
 
+        }
 
 
 
@@ -134,6 +207,16 @@ class comment_fragment : Fragment() {
 
                 binding.recyclerviewYorumlar.visibility = View.VISIBLE
                 recyclerviewadapter.yorumlariGuncelle(Yorumlar)
+
+                tumYorumlar = Yorumlar as ArrayList<Yorumlar>
+
+                // ilgili yoruma kaydırma
+                binding.recyclerviewYorumlar.post {
+                    val yorumPosition = tumYorumlar.indexOfFirst { it.yorum_key == yorumKey }
+
+                    binding.recyclerviewYorumlar.scrollToPosition(yorumPosition)
+                }
+
             }
 
         }
@@ -161,19 +244,15 @@ class comment_fragment : Fragment() {
 
                 }else{
                      binding.progressBar8.visibility=View.GONE
-
                 }
-
             }
-
         }
+    }
+    override fun onStart() {
+        super.onStart()
+        (activity as AppCompatActivity).supportActionBar?.hide()
 
     }
-
-
-
-
-
 
 
 }

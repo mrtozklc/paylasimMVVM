@@ -34,7 +34,6 @@ class IsletmeMenuFragment : Fragment() {
     var secilengorsel: Uri? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        (activity as AppCompatActivity).supportActionBar?.hide()
     }
 
 
@@ -137,6 +136,12 @@ class IsletmeMenuFragment : Fragment() {
 
 
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        (activity as AppCompatActivity).supportActionBar?.hide()
+
     }
 
 }

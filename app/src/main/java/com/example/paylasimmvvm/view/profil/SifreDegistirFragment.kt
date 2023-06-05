@@ -23,7 +23,6 @@ class SifreDegistirFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        (activity as AppCompatActivity).supportActionBar?.hide()
     }
 
 
@@ -131,6 +130,12 @@ class SifreDegistirFragment : Fragment() {
 
 
         return binding.root
+    }
+
+    override fun onStart() {
+        super.onStart()
+        (activity as AppCompatActivity).supportActionBar?.hide()
+
     }
 
 

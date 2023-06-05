@@ -8,9 +8,7 @@ class EventbusData {
 
         internal class kullaniciBilgileriniGonder(var kullanici: KullaniciBilgileri?)
 
-        internal class YorumYapilacakGonderininIDsiniGonder(var gonderiID:String?)
 
-        internal class yorumYapilacakIsletmeID(var isletmeID:String?)
 
 
     }

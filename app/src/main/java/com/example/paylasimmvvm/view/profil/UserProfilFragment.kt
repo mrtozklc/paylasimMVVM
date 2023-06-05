@@ -21,7 +21,6 @@ import com.example.paylasimmvvm.model.KullaniciBilgileri
 import com.example.paylasimmvvm.model.KullaniciKampanya
 import com.example.paylasimmvvm.model.Menuler
 import com.example.paylasimmvvm.model.Mudavimler
-import com.example.paylasimmvvm.util.EventbusData
 import com.example.paylasimmvvm.viewmodel.BadgeViewModel
 import com.example.paylasimmvvm.viewmodel.ProfilViewModel
 import com.google.firebase.auth.FirebaseAuth
@@ -29,7 +28,6 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.*
 import com.google.firebase.ktx.Firebase
 import com.squareup.picasso.Picasso
-import org.greenrobot.eventbus.EventBus
 import java.util.*
 
 
@@ -47,7 +45,6 @@ class UserProfilFragment : Fragment() {
     var tiklananUser=""
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        (activity as AppCompatActivity).supportActionBar?.hide()
     }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -117,6 +114,35 @@ class UserProfilFragment : Fragment() {
                 binding.mudavimler.isEnabled=true
                 binding.mudavimOl.visibility=View.INVISIBLE
                 userProfilKampanyalarViewModeli.getMenus(secilenUser)
+
+                userProfilKampanyalarViewModeli.yukleniyor.observe(viewLifecycleOwner){
+                    it.let {
+                        if(it){
+                            binding.gonderiYok.visibility=View.GONE
+                            binding.gridId.visibility=View.GONE
+                            binding.recyclerProfil.visibility=View.GONE
+                            binding.progresBarKokteyl.visibility=View.VISIBLE
+
+                        }else{
+                            binding.progresBarKokteyl.visibility=View.GONE
+                        }
+                    }
+                }
+
+                userProfilKampanyalarViewModeli.profilMenu.observe(viewLifecycleOwner) { profilMenu ->
+                    profilMenu.let {
+                        if (profilMenu!=null){
+                            val gridView = requireActivity().findViewById(R.id.grid_id) as GridView
+                            val customAdapter = MenulerGridAdapter(tumMenuler,false)
+                            gridView.adapter = customAdapter
+                            binding.gridId.visibility = View.VISIBLE
+                            customAdapter.menuleriGuncelle(profilMenu)
+                            binding.recyclerProfil.visibility=View.GONE
+                            binding.gonderiYok.visibility=View.GONE
+                        }
+                    }
+                }
+
                 userProfilKampanyalarViewModeli.gonderiYok.observe(viewLifecycleOwner){
                     it.let { if(it){ binding.gonderiYok.text = "Henüz menü yüklenmemiş."
                             binding.gonderiYok.visibility=View.VISIBLE
@@ -135,7 +161,7 @@ class UserProfilFragment : Fragment() {
                 binding.paylasimlar.isEnabled=true
                 binding.mudavimler.isEnabled=true
                 val action=UserProfilFragmentDirections.actionUserProfilFragmentToCommentFragment(
-                    secilenUser,false)
+                    secilenUser,false,"","")
                 Navigation.findNavController(it).navigate(action)
             }
 
@@ -165,6 +191,19 @@ class UserProfilFragment : Fragment() {
                 binding.yorumlar.isEnabled=true
                 binding.mudavimOl.visibility=View.INVISIBLE
                 userProfilKampanyalarViewModeli.getMudavimler(secilenUser)
+                userProfilKampanyalarViewModeli.yukleniyor.observe(viewLifecycleOwner){
+                    it.let {
+                        if(it){
+                            binding.gonderiYok.visibility=View.GONE
+                            binding.gridId.visibility=View.GONE
+                            binding.recyclerProfil.visibility=View.GONE
+                            binding.progresBarKokteyl.visibility=View.VISIBLE
+
+                        }else{
+                            binding.progresBarKokteyl.visibility=View.GONE
+                        }
+                    }
+                }
                 userProfilKampanyalarViewModeli.mudavimYok.observe(viewLifecycleOwner){
                     it.let {
                         if(it){
@@ -199,6 +238,7 @@ class UserProfilFragment : Fragment() {
             }
         }
         observeliveData()
+
         val layoutManager= LinearLayoutManager(activity)
         binding.recyclerProfil.layoutManager=layoutManager
         recyclerviewadapter= UserProfilRecyclerAdapter(requireActivity(),tumGonderiler)
@@ -285,9 +325,7 @@ class UserProfilFragment : Fragment() {
 
     @SuppressLint("SetTextI18n")
     private fun observeliveData(){
-        val gridView = requireActivity().findViewById(R.id.grid_id) as GridView
-        val customAdapter = MenulerGridAdapter(tumMenuler,false)
-        gridView.adapter = customAdapter
+
 
         userProfilKampanyalarViewModeli.profilKampanya.observe(viewLifecycleOwner, androidx.lifecycle.Observer { profilKampanya->
             profilKampanya.let {
@@ -309,16 +347,8 @@ class UserProfilFragment : Fragment() {
                 binding.paylasimlar.text = "Paylaşımlar \n[${profilKampanya.size}]"
             }
         })
-        userProfilKampanyalarViewModeli.profilMenu.observe(viewLifecycleOwner) { profilMenu ->
-            profilMenu.let {
-                if (profilMenu!=null){
-                    binding.gridId.visibility = View.VISIBLE
-                    customAdapter.menuleriGuncelle(profilMenu)
-                    binding.recyclerProfil.visibility=View.GONE
-                    binding.gonderiYok.visibility=View.GONE
-                }
-            }
-        }
+
+
         profilBadges.isletmeYorumlarBadgeLive.observe(viewLifecycleOwner) {yorumSayisi ->
             yorumSayisi.let {
 
@@ -328,6 +358,7 @@ class UserProfilFragment : Fragment() {
                 }
             }
         }
+
         userProfilKampanyalarViewModeli.menuSayisiMutable.observe(viewLifecycleOwner) { profilMenu ->
             profilMenu.let {
                 if (profilMenu!=null){
@@ -335,6 +366,7 @@ class UserProfilFragment : Fragment() {
                 }
             }
         }
+
         userProfilKampanyalarViewModeli.mudavimSayisiMutableLiveData.observe(viewLifecycleOwner){ Mudavimler->
             Mudavimler.let {
                 if (Mudavimler!=null){
@@ -342,6 +374,7 @@ class UserProfilFragment : Fragment() {
                 }
             }
         }
+
         userProfilKampanyalarViewModeli.mudavimlerMutableLiveData.observe(viewLifecycleOwner){ Mudavimler->
             Mudavimler.let {
                 if (Mudavimler!=null){
@@ -362,6 +395,7 @@ class UserProfilFragment : Fragment() {
                 }
             }
         }
+
         userProfilKampanyalarViewModeli.gonderiYok.observe(viewLifecycleOwner){
             it.let {
                 if(it){
@@ -375,6 +409,7 @@ class UserProfilFragment : Fragment() {
                 }
             }
         }
+
         userProfilKampanyalarViewModeli.yukleniyor.observe(viewLifecycleOwner){
             it.let {
                 if(it){
@@ -388,5 +423,11 @@ class UserProfilFragment : Fragment() {
                 }
             }
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        (activity as AppCompatActivity).supportActionBar?.hide()
+
     }
 }

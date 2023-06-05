@@ -34,7 +34,6 @@ class LoginFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        (activity as AppCompatActivity).supportActionBar?.hide()
 
     }
 
@@ -291,6 +290,9 @@ class LoginFragment : Fragment() {
         super.onStart()
         Log.e("hata","logindesin")
         auth.addAuthStateListener(mauthLis)
+        (activity as AppCompatActivity).supportActionBar?.hide()
+
+
     }
 
     override fun onStop() {

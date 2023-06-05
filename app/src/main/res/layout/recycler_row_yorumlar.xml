@@ -11,7 +11,7 @@
         android:id="@+id/profilPhotoYorumlar"
         android:layout_width="30dp"
         android:layout_height="30dp"
-        android:layout_marginStart="16dp"
+        android:layout_marginStart="4dp"
         android:layout_marginTop="16dp"
         app:civ_border_color="#6C6A6A"
         app:civ_border_width="1dp"
@@ -24,6 +24,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:textSize="16sp"
+        android:textStyle="bold"
         app:layout_constraintStart_toEndOf="@+id/profilPhotoYorumlar"
         app:layout_constraintTop_toTopOf="@+id/profilPhotoYorumlar" />
 
@@ -54,6 +55,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
+        android:textSize="10sp"
         app:layout_constraintBottom_toBottomOf="@+id/username"
         app:layout_constraintStart_toEndOf="@+id/username"
         app:layout_constraintTop_toTopOf="@+id/username"

@@ -22,6 +22,7 @@
             android:layout_height="wrap_content"
             android:background="@drawable/mesaj_gonderen_bg"
             android:padding="10dp"
+            android:maxWidth="300dp"
             android:text=""
             android:textSize="14sp" />
     </LinearLayout>

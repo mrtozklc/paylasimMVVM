@@ -7,7 +7,6 @@ import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,13 +20,13 @@ import com.example.paylasimmvvm.R
 import com.example.paylasimmvvm.adapter.IsletmeListRecyclerAdapter
 import com.example.paylasimmvvm.databinding.FragmentIsletmeListBinding
 import com.example.paylasimmvvm.model.KullaniciKampanya
-import com.example.paylasimmvvm.util.Bildirimler.mref
 import com.example.paylasimmvvm.util.setBadge
 import com.example.paylasimmvvm.viewmodel.BadgeViewModel
 import com.example.paylasimmvvm.viewmodel.ProfilViewModel
 import com.example.paylasimmvvm.viewmodel.kampanyalarViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
 
 
 class IsletmeListFragment : Fragment() {
@@ -36,14 +35,13 @@ class IsletmeListFragment : Fragment() {
     private lateinit var recyclerviewadapter: IsletmeListRecyclerAdapter
     private var tumGonderiler= ArrayList<KullaniciKampanya>()
     private lateinit var badgeViewModeli: BadgeViewModel
-    private lateinit var viewModel:ProfilViewModel
 
     lateinit var locationManager: LocationManager
     lateinit var locationListener: LocationListener
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        (activity as AppCompatActivity).supportActionBar?.hide()
+
     }
 
 
@@ -62,7 +60,7 @@ class IsletmeListFragment : Fragment() {
 
 
         badgeViewModeli= ViewModelProvider(this)[BadgeViewModel::class.java]
-        badgeViewModeli.refreshBadge()
+        badgeViewModeli.refreshMessageBadge()
 
         locationManager= (requireActivity().getSystemService(Context.LOCATION_SERVICE) as LocationManager)!!
         locationListener=object :LocationListener{
@@ -77,7 +75,7 @@ class IsletmeListFragment : Fragment() {
                     konum.put("longitude",p0.longitude)
                     konum.put("konumkullaniciId",FirebaseAuth.getInstance().currentUser!!.uid)
 
-                    mref.child("konumlar").child("kullanici_konum").child(currentUser.uid).child(currentUser.uid).setValue(konum)
+                    FirebaseDatabase.getInstance().reference.child("konumlar").child("kullanici_konum").child(currentUser.uid).child(currentUser.uid).setValue(konum)
                 }
 
             }
@@ -127,7 +125,7 @@ class IsletmeListFragment : Fragment() {
 
         }
 
-        badgeViewModeli.badgeLive.observe(viewLifecycleOwner) {gorulmeyenMesajSayisi ->
+        badgeViewModeli.badgeLiveMessage.observe(viewLifecycleOwner) {gorulmeyenMesajSayisi ->
             gorulmeyenMesajSayisi.let {
 
                 val navView: BottomNavigationView = requireActivity().findViewById(R.id.bottomNavigationView)
@@ -140,6 +138,11 @@ class IsletmeListFragment : Fragment() {
 
         }
 
+    }
+
+    override fun onStart() {
+        super.onStart()
+        (activity as AppCompatActivity).supportActionBar?.hide()
     }
 
 

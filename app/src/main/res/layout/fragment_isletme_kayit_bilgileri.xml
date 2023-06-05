@@ -36,7 +36,7 @@
         android:id="@+id/golgelik"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@drawable/register_edit_text"
+        android:background="@color/secondary_text_color"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageView_back" />
@@ -121,7 +121,7 @@
         android:layout_marginEnd="162dp"
         android:enabled="false"
         android:text="Giriş"
-        android:background="@drawable/textview_bg"
+        android:background="@drawable/textview_bg2"
         android:textAllCaps="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
@@ -131,7 +131,7 @@
     <Spinner
         android:id="@+id/spinner3"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="48dp"
         android:layout_marginTop="8dp"
 
         app:layout_constraintEnd_toEndOf="parent"
@@ -141,7 +141,7 @@
     <Spinner
         android:id="@+id/spinner4"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="48dp"
         android:layout_marginTop="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

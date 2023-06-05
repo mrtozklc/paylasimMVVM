@@ -1,7 +1,6 @@
 package com.example.paylasimmvvm.view.home
 
 import android.annotation.SuppressLint
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.*
@@ -44,14 +43,6 @@ class HomeFragment : Fragment() {
     var sayfaninSonunaGelindi = false
 
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        (activity as AppCompatActivity).supportActionBar?.hide()
-
-    }
-
-
-
 
 
     override fun onCreateView(
@@ -85,7 +76,7 @@ class HomeFragment : Fragment() {
         kampanyalarViewModeli.refreshKampanyalar()
 
         badgeViewModeli= ViewModelProvider(this)[BadgeViewModel::class.java]
-        badgeViewModeli.refreshBadge()
+        badgeViewModeli.refreshMessageBadge()
 
 
         observeLiveDataBadge()
@@ -109,6 +100,7 @@ class HomeFragment : Fragment() {
 
             binding.refreshMainId.isRefreshing = false
         }
+
 
         binding.searchView2.setOnQueryTextFocusChangeListener { view, hasFocus ->
             if (hasFocus) {
@@ -348,7 +340,7 @@ class HomeFragment : Fragment() {
     }
 
     private  fun observeLiveDataBadge(){
-        badgeViewModeli.badgeLive.observe(viewLifecycleOwner) {gorulmeyenMesajSayisi ->
+        badgeViewModeli.badgeLiveMessage.observe(viewLifecycleOwner) {gorulmeyenMesajSayisi ->
 
             gorulmeyenMesajSayisi.let {
 
@@ -371,16 +363,15 @@ class HomeFragment : Fragment() {
 
 
     private fun setUpRecyclerview(){
+        Log.e("recylersetup","")
 
 
 
 
         val layoutManager= LinearLayoutManager(activity)
         binding.recyclerAnaSayfa.layoutManager=layoutManager
-        recyclerviewadapter= HomeFragmentRecyclerAdapter(requireActivity(),sayfaBasiGonderiler)
+        recyclerviewadapter= HomeFragmentRecyclerAdapter(requireActivity(),sayfaBasiGonderiler,false)
         binding.recyclerAnaSayfa.adapter=recyclerviewadapter
-
-
 
 
         binding.recyclerAnaSayfa.addOnScrollListener(object : RecyclerView.OnScrollListener(){
@@ -426,11 +417,11 @@ class HomeFragment : Fragment() {
     }
 
 
-
-
     override fun onStart() {
         super.onStart()
         Log.e("hata","homedasın")
+        (activity as AppCompatActivity).supportActionBar?.hide()
+
         // auth.addAuthStateListener(mauthLis)
     }
 

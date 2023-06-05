@@ -9,28 +9,29 @@
 
   <ImageView
       android:id="@+id/searchh"
-      android:layout_width="40dp"
-      android:layout_height="40dp"
-      android:layout_marginStart="16dp"
-      android:layout_marginTop="16dp"
+      android:layout_width="35dp"
+      android:layout_height="35dp"
+      android:layout_marginEnd="16dp"
+      app:layout_constraintBottom_toBottomOf="@+id/imageView_back"
       app:layout_constraintEnd_toEndOf="parent"
-      app:layout_constraintTop_toTopOf="parent"
+      app:layout_constraintTop_toTopOf="@+id/imageView_back"
       app:srcCompat="@drawable/ic_baseline_search_24" />
 
-    <GridView
-        android:id="@+id/idGRV"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:horizontalSpacing="6dp"
-        android:numColumns="2"
-        android:verticalSpacing="2dp"
-        android:visibility="visible"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView_back"
-        app:layout_constraintVertical_bias="0.0" />
+  <GridView
+      android:id="@+id/idGRV"
+      android:layout_width="0dp"
+      android:layout_height="0dp"
+      android:layout_marginTop="4dp"
+      android:horizontalSpacing="6dp"
+      android:numColumns="2"
+      android:verticalSpacing="2dp"
+      android:visibility="visible"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintHorizontal_bias="0.0"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="@+id/imageView_back"
+      app:layout_constraintVertical_bias="0.0" />
 
   <TextView
       android:id="@+id/icecek"
@@ -60,18 +61,16 @@
       android:id="@+id/edittextSearch"
       android:layout_width="0dp"
       android:layout_height="wrap_content"
-      android:layout_marginStart="16dp"
       android:layout_marginEnd="16dp"
-      android:background="@drawable/textview_bg"
-      android:queryHint="Kokteyl Ara"
       android:iconifiedByDefault="false"
+      android:queryHint="Kokteyl Ara"
       android:textAlignment="center"
-      android:visibility="gone"
-      app:layout_constraintBottom_toTopOf="@+id/idGRV"
+      android:visibility="invisible"
+      app:layout_constraintBottom_toBottomOf="@+id/imageView_back"
       app:layout_constraintEnd_toStartOf="@+id/searchh"
       app:layout_constraintHorizontal_bias="0.0"
       app:layout_constraintStart_toEndOf="@+id/imageView_back"
-      app:layout_constraintTop_toTopOf="parent" />
+      app:layout_constraintTop_toTopOf="@+id/imageView_back" />
 
   <ProgressBar
         android:id="@+id/progresBarKokteyl"

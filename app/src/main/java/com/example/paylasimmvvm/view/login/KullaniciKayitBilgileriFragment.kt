@@ -40,7 +40,6 @@ class KullaniciKayitBilgileriFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        (activity as AppCompatActivity).supportActionBar?.hide()
     }
 
 
@@ -246,6 +245,12 @@ class KullaniciKayitBilgileriFragment : Fragment() {
 
 
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        (activity as AppCompatActivity).supportActionBar?.hide()
+
     }
     override fun onAttach(context: Context) {
         super.onAttach(context)

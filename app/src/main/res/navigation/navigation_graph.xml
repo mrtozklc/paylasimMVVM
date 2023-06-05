@@ -77,6 +77,9 @@
             android:name="userId"
             app:argType="string"
             android:defaultValue="userId" />
+        <action
+            android:id="@+id/action_chatFragment_to_userProfilFragment"
+            app:destination="@id/userProfilFragment" />
     </fragment>
     <fragment
         android:id="@+id/profilEditFragment"
@@ -224,6 +227,9 @@
         <action
             android:id="@+id/action_homeFragment_to_comment_fragment"
             app:destination="@id/comment_fragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_gonderiDetayFragment"
+            app:destination="@id/gonderiDetayFragment" />
 
 
     </fragment>
@@ -251,8 +257,13 @@
         <action
             android:id="@+id/action_bildirimlerFragment_to_comment_fragment"
             app:destination="@id/comment_fragment" />
+        <action
+            android:id="@+id/action_bildirimlerFragment_to_gonderiDetayFragment"
+            app:destination="@id/gonderiDetayFragment" />
+
 
     </fragment>
+
     <fragment
         android:id="@+id/mesajlarFragment"
         android:name="com.example.paylasimmvvm.view.mesajlar.MesajlarFragment"
@@ -276,6 +287,9 @@
         <action
             android:id="@+id/action_kampanyaOlusturFragment_to_profilFragment"
             app:destination="@id/profilFragment" />
+        <argument
+            android:name="isUser"
+            app:argType="boolean" />
 
 
     </fragment>
@@ -357,6 +371,31 @@
         <action
             android:id="@+id/action_comment_fragment_to_profilFragment"
             app:destination="@id/profilFragment" />
+        <argument android:name="post_id"
+            app:argType="string" />
+        <argument
+            android:name="post_url"
+            app:argType="string" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/gonderiDetayFragment"
+        android:name="com.example.paylasimmvvm.view.home.GonderiDetayFragment"
+        android:label="fragment_gonderi_detay"
+        tools:layout="@layout/fragment_gonderi_detay" >
+        <argument
+            android:name="gonderi_id"
+            app:argType="string" />
+        <argument
+            android:name="user_id"
+            app:argType="string" />
+        <argument
+            android:name="yorum_key"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="yorum_var"
+            app:argType="boolean" />
     </fragment>
 
 </navigation>

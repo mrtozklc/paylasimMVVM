@@ -18,7 +18,11 @@ import com.example.paylasimmvvm.databinding.ActivityMainBinding
 import com.example.paylasimmvvm.view.mesajlar.ChatFragment
 
 import com.google.android.material.bottomnavigation.BottomNavigationView
-
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 
 
 class MainActivity : AppCompatActivity() {
@@ -37,19 +41,107 @@ class MainActivity : AppCompatActivity() {
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottomNavigationView)
         bottomNav?.setupWithNavController(navController)
 
-        if (intent.extras != null) {
-            val gidilecekUserID = intent.extras?.getString("konusulacakKisi")
+        val extras = intent.extras
+        if (extras != null) {
+            val gidilecekUserIDChatFragment = extras.getString("konusulacakKisi")
+            val begenilenGonderiID = extras.getString("begenilenGonderi")
+            val yorumYapilanGonderiID = extras.getString("yorumYapilanGonderi")
+            val begenilenYorumGonderiID = extras.getString("begenilenYorumGonderiID")
+            val begenilenUserID = extras.getString("begenilenUserID")
+            val begenilenYorumKey = extras.getString("begenilenYorumKey")
+            val gonderiYorumKey = extras.getString("gonderiYorumKey")
+            val isletmeYorumUserID = extras.getString("isletmeYorumYapilanUserID")
+            val isletmeYorumKey = extras.getString("isletmeYorumKey")
+            val bildirimID = extras.getString("bildirimID")
 
-            if (gidilecekUserID != null ) {
-                val chatNavHostFragment = supportFragmentManager.findFragmentById(R.id.fragmentContainerView) as NavHostFragment
+            if (!isletmeYorumUserID.isNullOrEmpty()) {
+                val yorumlarNavHostFragment =
+                    supportFragmentManager.findFragmentById(R.id.fragmentContainerView) as NavHostFragment
+                val yorumlarNavController = yorumlarNavHostFragment.navController
+                val bundle = Bundle().apply {
+                    putBoolean("isPost", false)
+                    putString("user_id", isletmeYorumUserID)
+                    putString("post_id", "")
+                    putString("post_url", "")
+                    putString("yorumKey", isletmeYorumKey)
+                    putString("bildirimID", bildirimID)
+                }
+                yorumlarNavController.navigate(R.id.comment_fragment, bundle)
+            }
+
+            if (!gidilecekUserIDChatFragment.isNullOrEmpty()) {
+                val chatNavHostFragment =
+                    supportFragmentManager.findFragmentById(R.id.fragmentContainerView) as NavHostFragment
                 val chatNavController = chatNavHostFragment.navController
-                val bundle = Bundle()
-                bundle.putString("konusulacakKisi", gidilecekUserID)
+                val bundle = Bundle().apply {
+                    putString("konusulacakKisi", gidilecekUserIDChatFragment)
+                }
                 chatNavController.navigate(R.id.chatFragment, bundle)
+            }
+
+            if (!begenilenGonderiID.isNullOrEmpty()) {
+
+                val homeNavHostFragment =
+                    supportFragmentManager.findFragmentById(R.id.fragmentContainerView) as NavHostFragment
+                val homeNavController = homeNavHostFragment.navController
+                val bundle = Bundle().apply {
+                    putString("gonderi_id", begenilenGonderiID)
+                    putString("user_id", begenilenUserID)
+                    putString("yorum_key", "")
+                    putBoolean("yorum_var", true)
+                    putString("bildirimID", bildirimID)
+                }
+                homeNavController.navigate(R.id.gonderiDetayFragment, bundle)
+            }
+
+            if (!yorumYapilanGonderiID.isNullOrEmpty()) {
+                val homeNavHostFragment =
+                    supportFragmentManager.findFragmentById(R.id.fragmentContainerView) as NavHostFragment
+                val homeNavController = homeNavHostFragment.navController
+                val bundle = Bundle().apply {
+                    putString("gonderi_id", yorumYapilanGonderiID)
+                    putString("user_id", begenilenUserID)
+                    putString("yorum_key", gonderiYorumKey)
+                    putBoolean("yorum_var", true)
+                    putString("bildirimID", bildirimID)
+                }
+                homeNavController.navigate(R.id.gonderiDetayFragment, bundle)
+            }
+
+            if (!begenilenYorumKey.isNullOrEmpty()) {
+                if (!begenilenYorumGonderiID.isNullOrEmpty() && begenilenYorumGonderiID.isNotEmpty()) {
+                    val yorumlarNavHostFragment =
+                        supportFragmentManager.findFragmentById(R.id.fragmentContainerView) as NavHostFragment
+                    val yorumlarNavController = yorumlarNavHostFragment.navController
+                    val bundle = Bundle().apply {
+                        putString("gonderi_id", begenilenYorumGonderiID)
+                        putString("user_id", begenilenUserID)
+                        putString("yorum_key", begenilenYorumKey)
+                        putBoolean("yorum_var", true)
+                        putString("bildirimID", bildirimID)
+                    }
+                    yorumlarNavController.navigate(R.id.gonderiDetayFragment, bundle)
+                } else {
+                    val yorumlarNavHostFragment =
+                        supportFragmentManager.findFragmentById(R.id.fragmentContainerView) as NavHostFragment
+                    val yorumlarNavController = yorumlarNavHostFragment.navController
+                    val bundle = Bundle().apply {
+                        putBoolean("isPost", false)
+                        putString("user_id", begenilenUserID)
+                        putString("post_id", begenilenUserID)
+                        putString("post_url", "")
+                        putString("yorumKey", begenilenYorumKey)
+                        putString("bildirimID", bildirimID)
+                    }
+                    yorumlarNavController.navigate(R.id.comment_fragment, bundle)
+                }
             }
         }
 
+
+
     }
+
 
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

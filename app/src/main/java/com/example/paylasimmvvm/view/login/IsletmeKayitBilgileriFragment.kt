@@ -45,7 +45,6 @@ class IsletmeKayitBilgileriFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        (activity as AppCompatActivity).supportActionBar?.hide()
     }
 
 
@@ -335,6 +334,12 @@ class IsletmeKayitBilgileriFragment : Fragment() {
             }
         }
         thread.start()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        (activity as AppCompatActivity).supportActionBar?.hide()
+
     }
 
 

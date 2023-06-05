@@ -46,9 +46,7 @@ object TimeAgo {
             return "şimdi"
         }
         val diff = now - time1
-        return if (diff < MINUTE_MILLIS) {
-            "AZ ÖNCE"
-        } else if (diff < 2 * MINUTE_MILLIS) {
+        return if (diff < 2 * MINUTE_MILLIS) {
             "1d"
         } else if (diff < 50 * MINUTE_MILLIS) {
             (diff / MINUTE_MILLIS) .toString() + "d"
@@ -57,7 +55,7 @@ object TimeAgo {
         } else if (diff < 24 * HOUR_MILLIS) {
             (diff / HOUR_MILLIS).toString() + "s"
         } else if (diff < 48 * HOUR_MILLIS) {
-            "DÜN"
+            "dün"
         } else {
 
             (diff / DAY_MILLIS).toString() + "g"

@@ -28,7 +28,6 @@ class KokteylDetayiFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        (activity as AppCompatActivity).supportActionBar?.hide()
     }
 
 
@@ -46,7 +45,7 @@ class KokteylDetayiFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         badgeViewModeli= ViewModelProvider(this)[BadgeViewModel::class.java]
-        badgeViewModeli.refreshBadge()
+        badgeViewModeli.refreshMessageBadge()
 
         arguments?.let {
 
@@ -124,7 +123,7 @@ class KokteylDetayiFragment : Fragment() {
             }
         }
 
-        badgeViewModeli.badgeLive.observe(viewLifecycleOwner) {gorulmeyenMesajSayisi ->
+        badgeViewModeli.badgeLiveMessage.observe(viewLifecycleOwner) {gorulmeyenMesajSayisi ->
             Log.e("hoomeegelenbadge",""+gorulmeyenMesajSayisi.size)
             gorulmeyenMesajSayisi.let {
 
@@ -132,7 +131,7 @@ class KokteylDetayiFragment : Fragment() {
 
                 val navView: BottomNavigationView = requireActivity().findViewById(R.id.bottomNavigationView)
                 if (gorulmeyenMesajSayisi != null) {
-                    navView.setBadge(R.id.mesajlarFragment, gorulmeyenMesajSayisi.size)
+                     navView.setBadge(R.id.mesajlarFragment, gorulmeyenMesajSayisi.size)
 
 
                 }
@@ -140,6 +139,12 @@ class KokteylDetayiFragment : Fragment() {
             }
 
         }
+
+    }
+
+    override fun onStart() {
+        super.onStart()
+        (activity as AppCompatActivity).supportActionBar?.hide()
 
     }
 

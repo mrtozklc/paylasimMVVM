@@ -1,6 +1,5 @@
 package com.example.paylasimmvvm.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.paylasimmvvm.model.ChatModel
@@ -38,7 +37,6 @@ class ChatViewModel:ViewModel() {
             ChildEventListener {
             override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
                 if (isChildEventListenerActive) {
-                    Log.e("chataddedcalıstı","")
                     val okunanMesaj=snapshot.getValue(ChatModel::class.java)
                     chatArray.add(okunanMesaj!!)
 

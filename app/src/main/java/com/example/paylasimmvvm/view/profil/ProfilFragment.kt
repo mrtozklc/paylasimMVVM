@@ -4,7 +4,9 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import android.widget.ActionMenuView
 import android.widget.GridView
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
@@ -30,6 +32,9 @@ import com.example.paylasimmvvm.util.setBadge
 import com.example.paylasimmvvm.view.login.SignOutFragment
 import com.example.paylasimmvvm.viewmodel.BadgeViewModel
 import com.example.paylasimmvvm.viewmodel.ProfilViewModel
+import com.google.android.material.badge.BadgeDrawable
+import com.google.android.material.badge.BadgeUtils
+import com.google.android.material.bottomappbar.BottomAppBar
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
@@ -54,12 +59,13 @@ class ProfilFragment : Fragment() {
     private lateinit var recyclerMudavimler: MudavimlerRecyclerAdapter
     private lateinit var profilBadges:BadgeViewModel
     var tiklanilanKullanici:String?=null
+     var isUser:Boolean?=null
+
 
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        (activity as AppCompatActivity).supportActionBar?.show()
     }
 
 
@@ -83,7 +89,8 @@ class ProfilFragment : Fragment() {
 
         profilBadges= ViewModelProvider(this)[BadgeViewModel::class.java]
         profilBadges.refreshIsletmeYorumlarBadge(auth.currentUser!!.uid)
-        profilBadges.refreshBadge()
+        profilBadges.refreshMessageBadge()
+        profilBadges.refreshNotificationBadge()
         profilKampanyalarViewModeli.getMenus(auth.currentUser!!.uid)
         profilKampanyalarViewModeli.getMudavimler(auth.currentUser!!.uid)
 
@@ -127,6 +134,38 @@ class ProfilFragment : Fragment() {
             binding.mudavimler.isEnabled=true
 
             profilKampanyalarViewModeli.getMenus(auth.currentUser!!.uid)
+
+            profilKampanyalarViewModeli.yukleniyor.observe(viewLifecycleOwner){
+                it.let {
+                    if(it){
+
+                        binding.gonderiYok.visibility=View.GONE
+                        binding.gridId.visibility=View.GONE
+                        binding.recyclerProfil.visibility=View.GONE
+                        binding.progresBarKokteyl.visibility=View.VISIBLE
+
+                    }else{
+                        binding.progresBarKokteyl.visibility=View.GONE
+
+                    }
+                }
+            }
+            profilKampanyalarViewModeli.profilMenu.observe(viewLifecycleOwner) { profilMenu ->
+                profilMenu.let {
+                    if (profilMenu!=null){
+                        val gridView = requireActivity().findViewById(R.id.grid_id) as GridView
+
+                        val customAdapter = MenulerGridAdapter(tumMenuler,true)
+
+                        gridView.adapter = customAdapter
+                        binding.gridId.visibility = View.VISIBLE
+                        customAdapter.menuleriGuncelle(profilMenu)
+                        binding.recyclerProfil.visibility=View.GONE
+                        binding.gonderiYok.visibility=View.GONE
+
+                    }
+                }
+            }
             profilKampanyalarViewModeli.gonderiYok.observe(viewLifecycleOwner){
                 it.let {
                     if(it){
@@ -145,6 +184,7 @@ class ProfilFragment : Fragment() {
 
         }
 
+
         binding.yorumlar.setOnClickListener {
             binding.yorumlar.isEnabled=false
             binding.menu.isEnabled=true
@@ -152,7 +192,7 @@ class ProfilFragment : Fragment() {
             binding.mudavimler.isEnabled=true
 
 
-            val action=ProfilFragmentDirections.actionProfilFragmentToCommentFragment(tiklanilanKullanici!!,false)
+            val action=ProfilFragmentDirections.actionProfilFragmentToCommentFragment(tiklanilanKullanici!!,false,"","")
             Navigation.findNavController(it).navigate(action)
 
 
@@ -165,6 +205,23 @@ class ProfilFragment : Fragment() {
             binding.paylasimlar.isEnabled=true
             binding.yorumlar.isEnabled=true
             profilKampanyalarViewModeli.getMudavimler(auth.currentUser!!.uid)
+
+            profilKampanyalarViewModeli.yukleniyor.observe(viewLifecycleOwner){
+                it.let {
+                    if(it){
+                        binding.gonderiYok.visibility=View.GONE
+                        binding.gridId.visibility=View.GONE
+                        binding.recyclerProfil.visibility=View.GONE
+                        binding.progresBarKokteyl.visibility=View.VISIBLE
+
+                    }else{
+                        binding.progresBarKokteyl.visibility=View.GONE
+
+                    }
+                }
+            }
+
+
 
 
             profilKampanyalarViewModeli.mudavimYok.observe(viewLifecycleOwner){
@@ -201,16 +258,42 @@ class ProfilFragment : Fragment() {
 
         val menuHost: MenuHost = requireActivity()
 
-
-
         menuHost.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                 menuInflater.inflate(R.menu.menu2, menu)
-            }
 
+                val menuItem = menu.findItem(R.id.bildirimlerbar)
+                val actionView = menuItem.actionView
+
+                val notificationCount = actionView?.findViewById<TextView>(R.id.txtCount)
+
+                profilBadges.badgeLiveNotification.observe(viewLifecycleOwner) {gorulmeyenBildirim ->
+                    gorulmeyenBildirim.let {
+                        val count = gorulmeyenBildirim.size
+                        if (count > 0) {
+                                if (notificationCount != null) {
+                                    notificationCount.text = count.toString()
+                                    notificationCount.visibility = View.VISIBLE
+                                }
+
+                            } else {
+                                if (notificationCount != null) {
+                                    notificationCount.visibility = View.GONE
+                                }
+                            }
+
+
+                    }
+
+                }
+                actionView?.setOnClickListener {
+                    onMenuItemSelected(menuItem)
+                }
+            }
 
             @SuppressLint("SuspiciousIndentation")
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+
                 when (menuItem.itemId) {
 
                     R.id.cikisYap -> {
@@ -219,8 +302,9 @@ class ProfilFragment : Fragment() {
                     }
                     R.id.kampanyaOlustur_id -> {
 
-                        val action=ProfilFragmentDirections.actionProfilFragmentToKampanyaOlusturFragment()
+                        val action=ProfilFragmentDirections.actionProfilFragmentToKampanyaOlusturFragment(isUser!!)
                         Navigation.findNavController(view).navigate(action)
+
 
                     }
 
@@ -237,6 +321,17 @@ class ProfilFragment : Fragment() {
                         val action=ProfilFragmentDirections.actionProfilFragmentToBildirimlerFragment()
                         Navigation.findNavController(view).navigate(action)
 
+                        val databaseRef = FirebaseDatabase.getInstance().reference.child("bildirimler").child(FirebaseAuth.getInstance().currentUser!!.uid)
+
+                        databaseRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                                for (childSnapshot in dataSnapshot.children) {
+                                    childSnapshot.ref.child("goruldu").setValue(true)
+                                }
+                            }
+                            override fun onCancelled(databaseError: DatabaseError) {
+                            }
+                        })
 
                     }
                 }
@@ -247,7 +342,9 @@ class ProfilFragment : Fragment() {
 
     }, viewLifecycleOwner, Lifecycle.State.RESUMED)
 
+
         observeliveData()
+
 
 
         val layoutManager= LinearLayoutManager(activity)
@@ -258,22 +355,25 @@ class ProfilFragment : Fragment() {
 
     @SuppressLint("SetTextI18n")
     private fun observeliveData(){
-        Log.e("observecalisti","")
-        val gridView = requireActivity().findViewById(R.id.grid_id) as GridView
 
-        val customAdapter = MenulerGridAdapter(tumMenuler,true)
+        profilKampanyalarViewModeli.profilKampanya.observe(viewLifecycleOwner) { profilKampanya ->
+            profilKampanya.let {
+                Collections.sort(profilKampanya, object : Comparator<KullaniciKampanya> {
+                    override fun compare(p0: KullaniciKampanya?, p1: KullaniciKampanya?): Int {
+                        if (p0!!.postYuklenmeTarih!! > p1!!.postYuklenmeTarih!!) {
+                            return -1
+                        } else return 1
+                    }
 
-        gridView.adapter = customAdapter
-
-        profilKampanyalarViewModeli.profilMenu.observe(viewLifecycleOwner) { profilMenu ->
-            profilMenu.let {
-                if (profilMenu!=null){
-                    binding.gridId.visibility = View.VISIBLE
-                    customAdapter.menuleriGuncelle(profilMenu)
-                    binding.recyclerProfil.visibility=View.GONE
-                    binding.gonderiYok.visibility=View.GONE
-
-                }
+                })
+                val layoutManager= LinearLayoutManager(activity)
+                binding.recyclerProfil.layoutManager=layoutManager
+                recyclerviewadapter= ProfilFragmentRecyclerAdapter(requireActivity(),tumGonderiler)
+                binding.recyclerProfil.adapter=recyclerviewadapter
+                binding.recyclerProfil.visibility = View.VISIBLE
+                binding.gridId.visibility=View.GONE
+                recyclerviewadapter.kampanyalariGuncelle(profilKampanya)
+                binding.paylasimlar.text = "Paylaşımlar [${profilKampanya.size}]"
             }
         }
 
@@ -331,28 +431,6 @@ class ProfilFragment : Fragment() {
             }
         }
 
-        profilKampanyalarViewModeli.profilKampanya.observe(viewLifecycleOwner) { profilKampanya ->
-            profilKampanya.let {
-                Log.e("observecalistikampanyaa",""+profilKampanya)
-                Collections.sort(profilKampanya, object : Comparator<KullaniciKampanya> {
-                    override fun compare(p0: KullaniciKampanya?, p1: KullaniciKampanya?): Int {
-                        if (p0!!.postYuklenmeTarih!! > p1!!.postYuklenmeTarih!!) {
-                            return -1
-                        } else return 1
-                    }
-
-                })
-                val layoutManager= LinearLayoutManager(activity)
-                binding.recyclerProfil.layoutManager=layoutManager
-                recyclerviewadapter= ProfilFragmentRecyclerAdapter(requireActivity(),tumGonderiler)
-                binding.recyclerProfil.adapter=recyclerviewadapter
-                binding.recyclerProfil.visibility = View.VISIBLE
-                binding.gridId.visibility=View.GONE
-                recyclerviewadapter.kampanyalariGuncelle(profilKampanya)
-                binding.paylasimlar.text = "Paylaşımlar [${profilKampanya.size}]"
-            }
-        }
-
         profilKampanyalarViewModeli.mudavimSayisiMutableLiveData.observe(viewLifecycleOwner){ Mudavimler->
             Mudavimler.let {
                 if (Mudavimler!=null){
@@ -361,18 +439,7 @@ class ProfilFragment : Fragment() {
             }
         }
 
-        profilKampanyalarViewModeli.mudavimlerMutableLiveData.observe(viewLifecycleOwner){ Mudavimler->
-            Mudavimler.let {
-                if (Mudavimler!=null){
-
-                    recyclerMudavimler= MudavimlerRecyclerAdapter(tumMudavimler,true)
-                    recyclerMudavimler.mudavimListesiniGuncelle(Mudavimler)
-
-                }
-            }
-        }
-
-        profilBadges.badgeLive.observe(viewLifecycleOwner) {gorulmeyenMesajSayisi ->
+        profilBadges.badgeLiveMessage.observe(viewLifecycleOwner) {gorulmeyenMesajSayisi ->
             gorulmeyenMesajSayisi.let {
 
 
@@ -412,6 +479,7 @@ class ProfilFragment : Fragment() {
                 @SuppressLint("SetTextI18n")
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if (snapshot.value !=null){
+                        isUser=false
 
                         binding.menu.visibility=View.VISIBLE
                         binding.paylasimlar.visibility=View.VISIBLE
@@ -449,6 +517,7 @@ class ProfilFragment : Fragment() {
                 ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if (snapshot.value !=null){
+                        isUser=true
                         val okunanKullanici= snapshot.getValue(KullaniciBilgileri::class.java)
                         EventBus.getDefault().postSticky(EventbusData.kullaniciBilgileriniGonder(okunanKullanici))
 

@@ -1,10 +1,9 @@
 package com.example.paylasimmvvm.view.mesajlar
 
 import android.os.Bundle
-import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -24,7 +23,6 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.ktx.Firebase
 
-
 class MesajlarFragment : Fragment() {
     private lateinit var binding: FragmentMesajlarBinding
     private lateinit var auth : FirebaseAuth
@@ -32,16 +30,12 @@ class MesajlarFragment : Fragment() {
     lateinit var mref: DatabaseReference
     private lateinit var recyclerAdapter:MesajlarRecyclerAdapter
     private lateinit var mesajlarViewModeli:MesajlarViewModel
-    var tumMesajlar=ArrayList<Mesajlar>()
+    private var tumMesajlar=ArrayList<Mesajlar>()
     private lateinit var badgeViewModeli: BadgeViewModel
-    var listenerAtandiMi=false
+    private var listenerAtandiMi=false
 
     companion object {
         var fragmentAcikMi=false
-    }
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        (activity as AppCompatActivity).supportActionBar?.hide()
     }
 
     override fun onCreateView(
@@ -50,45 +44,83 @@ class MesajlarFragment : Fragment() {
     ): View {
         binding= FragmentMesajlarBinding.inflate(layoutInflater,container,false)
         val view=binding.root
-
-
         auth= Firebase.auth
         mref = FirebaseDatabase.getInstance().reference
-
         setupAuthLis()
-
 
         return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        Log.e("listeneratandımı","oncreate"+listenerAtandiMi)
+        registerForContextMenu(binding.recyclerMesajlar)
 
-        if(listenerAtandiMi==false){
+        if(!listenerAtandiMi){
             listenerAtandiMi=true
-            Log.e("listeneratandımı","oncreateifsonrası"+listenerAtandiMi)
 
             mesajlarViewModeli= ViewModelProvider(this)[MesajlarViewModel::class.java]
 
             mesajlarViewModeli.refreshMesajlar()
 
             badgeViewModeli= ViewModelProvider(this)[BadgeViewModel::class.java]
-            badgeViewModeli.refreshBadge()
+            badgeViewModeli.refreshMessageBadge()
 
             observeLiveData()
 
         }
 
-
-
-
-
-
         val layoutManager= LinearLayoutManager(activity)
         binding.recyclerMesajlar.layoutManager=layoutManager
         recyclerAdapter= MesajlarRecyclerAdapter(tumMesajlar)
         binding.recyclerMesajlar.adapter=recyclerAdapter
+
+        recyclerAdapter.setOnItemLongClickListener {
+            showMenu()
+        }
+    }
+    private fun showMenu() {
+        binding.textView2.visibility=View.INVISIBLE
+        binding.delete.visibility=View.VISIBLE
+        binding.tumunuSec.visibility=View.VISIBLE
+        binding.imageViewBack.visibility=View.VISIBLE
+
+        binding.tumunuSec.setOnClickListener {
+            recyclerAdapter.selectAll()
+        }
+        binding.imageViewBack.setOnClickListener {
+            binding.textView2.visibility=View.VISIBLE
+            binding.delete.visibility=View.INVISIBLE
+            binding.tumunuSec.visibility=View.INVISIBLE
+            binding.imageViewBack.visibility=View.INVISIBLE
+            recyclerAdapter.deSelectAll()
+        }
+        binding.delete.setOnClickListener {
+            val selectedItemsCount = recyclerAdapter.getSelectedItems().size
+
+            if (selectedItemsCount > 0) {
+                val alertDialog = AlertDialog.Builder(requireContext())
+                    .setTitle("Mesajları Sil")
+                    .setMessage("$selectedItemsCount mesajı silmek istiyor musunuz?")
+                    .setPositiveButton("Evet") { _, _ ->
+
+                        recyclerAdapter.setOnAllItemsDeletedListener {
+                            mesajlarViewModeli.refreshMesajlar()
+                            badgeViewModeli.refreshMessageBadge()
+                        }
+                        recyclerAdapter.deleteSelectedItems()
+                        binding.textView2.visibility=View.VISIBLE
+                        binding.delete.visibility=View.INVISIBLE
+                        binding.tumunuSec.visibility=View.INVISIBLE
+                        binding.imageViewBack.visibility=View.INVISIBLE
+                    }
+                    .setNegativeButton("Hayır", null)
+                    .create()
+
+                alertDialog.show()
+            } else {
+                Toast.makeText(requireContext(), "Lütfen öğeleri seçin", Toast.LENGTH_SHORT).show()
+            }
+        }
 
     }
 
@@ -128,7 +160,7 @@ class MesajlarFragment : Fragment() {
                 }
             }
         }
-      badgeViewModeli.badgeLive.observe(viewLifecycleOwner) {gorulmeyenMesajSayisi ->
+      badgeViewModeli.badgeLiveMessage.observe(viewLifecycleOwner) {gorulmeyenMesajSayisi ->
           gorulmeyenMesajSayisi.let {
 
               val navView: BottomNavigationView = requireActivity().findViewById(R.id.bottomNavigationView)
@@ -143,19 +175,12 @@ class MesajlarFragment : Fragment() {
       }
     }
 
-
     private fun setupAuthLis() {
-
-
         mauthLis= FirebaseAuth.AuthStateListener {
             val user=FirebaseAuth.getInstance().currentUser
-
             if (user==null){
-                findNavController().popBackStack(com.example.paylasimmvvm.R.id.mesajlarFragment,true)
-
-
-                findNavController().navigate(com.example.paylasimmvvm.R.id.loginFragment)
-
+                findNavController().popBackStack(R.id.mesajlarFragment,true)
+                findNavController().navigate(R.id.loginFragment)
 
             }
         }
@@ -164,7 +189,8 @@ class MesajlarFragment : Fragment() {
 
 
     override fun onStart() {
-        Log.e("startmesajlar","")
+        (activity as AppCompatActivity).supportActionBar?.hide()
+
         fragmentAcikMi=true
         super.onStart()
 
@@ -173,29 +199,23 @@ class MesajlarFragment : Fragment() {
     }
 
     override fun onStop() {
-        Log.e("stopmesajlar","")
         fragmentAcikMi=false
 
         super.onStop()
-        Log.e("lisetneratandımı","onstop"+listenerAtandiMi)
-
 
         auth.removeAuthStateListener(mauthLis)
 
     }
 
     override fun onResume() {
-        Log.e("resumeesajlar","")
 
 
         fragmentAcikMi=true
-        Log.e("listeneratandımı","onresume"+listenerAtandiMi)
 
         if(listenerAtandiMi==false){
             tumMesajlar.clear()
             listenerAtandiMi=true
             recyclerAdapter.notifyDataSetChanged()
-            Log.e("listeneratandımıı","onresumeifsonbras"+listenerAtandiMi)
             mesajlarViewModeli.refreshMesajlar()
         }
         super.onResume()
@@ -204,15 +224,12 @@ class MesajlarFragment : Fragment() {
     }
 
     override fun onPause() {
-        Log.e("pausemesajlar","")
         fragmentAcikMi=false
         super.onPause()
 
 
-        Log.e("lisetneratandımıonpause",""+listenerAtandiMi)
-        if(listenerAtandiMi==true){
+        if(listenerAtandiMi){
             tumMesajlar.clear()
-            Log.e("lisetneratandımı","onpauseifsobrası"+listenerAtandiMi)
 
             listenerAtandiMi=false
             mesajlarViewModeli.removeListeners()
@@ -220,11 +237,6 @@ class MesajlarFragment : Fragment() {
 
 
     }
-    override fun onDestroy() {
-        super.onDestroy()
-        Log.e("ondestroymesajlar","")
-    }
-
 
 
 

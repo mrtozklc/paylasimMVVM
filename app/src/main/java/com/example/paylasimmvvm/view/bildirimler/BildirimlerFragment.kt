@@ -21,6 +21,8 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.ktx.Firebase
+import java.util.*
+import kotlin.collections.ArrayList
 
 
 class BildirimlerFragment : Fragment() {
@@ -36,10 +38,6 @@ class BildirimlerFragment : Fragment() {
 
 
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        (activity as AppCompatActivity).supportActionBar?.hide()
-    }
 
 
     override fun onCreateView(
@@ -62,39 +60,43 @@ class BildirimlerFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        bildirimlerViewModeli= ViewModelProvider(this)[BildirimlerViewModel::class.java]
+        bildirimlerViewModeli = ViewModelProvider(this)[BildirimlerViewModel::class.java]
         bildirimlerViewModeli.refreshBildirimler()
-
-
         observeliveData()
 
 
 
+        val layoutManager = LinearLayoutManager(activity)
+        binding.recyclerBildirim.layoutManager = layoutManager
+        recyclerviewadapter = BildirimlerRecyclerAdapter(tumBildirimler)
+        binding.recyclerBildirim.adapter = recyclerviewadapter
 
-        val layoutManager= LinearLayoutManager(activity)
-        binding.recyclerBildirim.layoutManager=layoutManager
-        recyclerviewadapter= BildirimlerRecyclerAdapter(tumBildirimler)
-        binding.recyclerBildirim.adapter=recyclerviewadapter
 
-        binding.refreshId.setOnRefreshListener {
+
+
+        recyclerviewadapter.setOnAllItemsDeletedListener {
             bildirimlerViewModeli.refreshBildirimler()
-
-            binding.refreshId.isRefreshing = false
         }
+
 
         binding.imageViewBack.setOnClickListener {
             findNavController().navigateUp()
         }
-
     }
     private fun observeliveData(){
 
 
         bildirimlerViewModeli.tumBildirimlerLive.observe(viewLifecycleOwner) { bildirimler ->
             bildirimler.let {
+                Collections.sort(bildirimler
+                ) { p0, p1 ->
+                    if (p0!!.time!! > p1!!.time!!) {
+                        -1
+                    } else 1
+                }
 
                 binding.recyclerBildirim.visibility = View.VISIBLE
-                recyclerviewadapter.kampanyalariGuncelle(bildirimler)
+                recyclerviewadapter.bildirimleriGuncelle(bildirimler)
             }
 
         }
@@ -135,7 +137,6 @@ class BildirimlerFragment : Fragment() {
 
         mauthLis= FirebaseAuth.AuthStateListener {
             val user=FirebaseAuth.getInstance().currentUser
-            Log.e("auth", "auth çalıstı$user")
 
             if (user==null){
 
@@ -153,6 +154,12 @@ class BildirimlerFragment : Fragment() {
         super.onStart()
         Log.e("hata","bildirimlerdesin")
         auth.addAuthStateListener(mauthLis)
+        (activity as AppCompatActivity).supportActionBar?.hide()
+    }
+
+    override fun onResume() {
+        super.onResume()
+
     }
 
     override fun onStop() {

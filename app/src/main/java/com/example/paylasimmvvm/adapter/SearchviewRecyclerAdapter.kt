@@ -51,8 +51,10 @@ class SearchviewRecyclerAdapter(private var data: ArrayList<KullaniciBilgileri>,
                 searchHistory["user_id"] = searchResult.user_id!!
 
                 FirebaseDatabase.getInstance().reference.child("SearchHistory").child(FirebaseAuth.getInstance().currentUser!!.uid).child(searchResult.user_id!!).setValue(searchHistory)
-                val action= HomeFragmentDirections.actionHomeFragmentToUserProfilFragment(searchResult.user_id!!)
-                Navigation.findNavController(itemView).navigate(action)
+                if (FirebaseAuth.getInstance().currentUser!!.uid!=searchResult.user_id){
+                    val action= HomeFragmentDirections.actionHomeFragmentToUserProfilFragment(searchResult.user_id!!)
+                    Navigation.findNavController(itemView).navigate(action)
+                }
 
             }
 

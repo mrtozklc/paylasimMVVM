@@ -31,7 +31,6 @@ class KokteyllerFiltreFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        (activity as AppCompatActivity).supportActionBar?.hide()
     }
 
 
@@ -50,7 +49,7 @@ class KokteyllerFiltreFragment : Fragment() {
 
         kokteylViewModeli= ViewModelProvider(this)[KokteylViewModel::class.java]
         badgeViewModeli= ViewModelProvider(this)[BadgeViewModel::class.java]
-        badgeViewModeli.refreshBadge()
+        badgeViewModeli.refreshMessageBadge()
 
 
 
@@ -66,9 +65,13 @@ class KokteyllerFiltreFragment : Fragment() {
         binding.searchh.setOnClickListener {
             binding.edittextSearch.visibility=View.VISIBLE
             binding.imageViewBack.visibility=View.VISIBLE
+            binding.searchh.visibility=View.GONE
             kokteylViewModeli.getCocktailNameList("name")
         }
+
+
             binding.imageViewBack.setOnClickListener {
+                binding.searchh.visibility=View.VISIBLE
             binding.edittextSearch.visibility=View.INVISIBLE
             binding.imageViewBack.visibility=View.INVISIBLE
             kokteylViewModeli.getCategoryList("list")
@@ -165,7 +168,7 @@ class KokteyllerFiltreFragment : Fragment() {
             }
         }
 
-        badgeViewModeli.badgeLive.observe(viewLifecycleOwner) {gorulmeyenMesajSayisi ->
+        badgeViewModeli.badgeLiveMessage.observe(viewLifecycleOwner) {gorulmeyenMesajSayisi ->
             Log.e("hoomeegelenbadge",""+gorulmeyenMesajSayisi.size)
             gorulmeyenMesajSayisi.let {
 
@@ -181,6 +184,12 @@ class KokteyllerFiltreFragment : Fragment() {
             }
 
         }
+
+    }
+
+    override fun onStart() {
+        super.onStart()
+        (activity as AppCompatActivity).supportActionBar?.hide()
 
     }
 

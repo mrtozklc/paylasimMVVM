@@ -34,15 +34,15 @@ import java.math.BigDecimal
 import java.math.RoundingMode
 
 
-class HomeFragmentRecyclerAdapter (var context: Context, private var tumKampanyalar:ArrayList<KullaniciKampanya>): RecyclerView.Adapter<HomeFragmentRecyclerAdapter.ViewHolder>(){
+class HomeFragmentRecyclerAdapter (var context: Context, private val tumKampanyalar:ArrayList<KullaniciKampanya>,private val tekGonderi:Boolean): RecyclerView.Adapter<HomeFragmentRecyclerAdapter.ViewHolder>(){
 
-    class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
+    class ViewHolder(itemView: View,private val tekGonderi: Boolean ): RecyclerView.ViewHolder(itemView) {
 
         val binding= RecyclerRowBinding.bind(itemView)
         private var profileImage = binding.profilImage
         private var userNameTitle = binding.kullaniciAdiTepe
         private var gonderi = binding.kampanyaPhoto
-        private var userNameveAciklama = binding.textView21
+        private var userName = binding.userName
         private var kampanyaTarihi = binding.kampanyaTarihi
         private var yorumYap = binding.imgYorum
         var gonderiBegen = binding.imgBegen
@@ -55,7 +55,32 @@ class HomeFragmentRecyclerAdapter (var context: Context, private var tumKampanya
         @SuppressLint("SetTextI18n")
         fun setData(anlikGonderi: KullaniciKampanya) {
 
+
             delete.visibility=View.GONE
+
+            if (tekGonderi){
+                delete.visibility=View.VISIBLE
+                binding.tvYorumGoster.visibility=View.GONE
+                binding.twMesafe.visibility=View.GONE
+                binding.imgBegen.visibility=View.GONE
+                binding.imgYorum.visibility=View.GONE
+
+            }else{
+
+
+                yorumlariGoster(anlikGonderi)
+
+                yorumYap.setOnClickListener {
+                    yorumlarFragmentiniBaslat(anlikGonderi)
+                }
+
+                yorumlariGoster.setOnClickListener {
+
+
+                    yorumlarFragmentiniBaslat(anlikGonderi)
+                }
+
+            }
 
 
             userNameTitle.text = anlikGonderi.userName
@@ -68,7 +93,8 @@ class HomeFragmentRecyclerAdapter (var context: Context, private var tumKampanya
                 Picasso.get().load(R.drawable.ic_baseline_person).placeholder(R.drawable.ic_baseline_person).error(R.drawable.ic_baseline_person).fit().centerCrop().into(profileImage)
             }
 
-            userNameveAciklama.text = anlikGonderi.userName.toString()+" "+anlikGonderi.postAciklama.toString()
+            userName.text = anlikGonderi.userName.toString()
+            binding.aciklama.text=anlikGonderi.postAciklama.toString()
 
             Picasso.get().load(anlikGonderi.postURL).into(gonderi)
 
@@ -257,7 +283,9 @@ class HomeFragmentRecyclerAdapter (var context: Context, private var tumKampanya
                     }
                 })
             }
+
             val mauth:String=FirebaseAuth.getInstance().currentUser!!.uid
+            begeniKontrolu(anlikGonderi)
 
             if (anlikGonderi.userID.equals(mauth)){
                 postMenu.visibility=View.GONE
@@ -265,29 +293,26 @@ class HomeFragmentRecyclerAdapter (var context: Context, private var tumKampanya
             gonderiBegen.setOnClickListener {
                 val ref = FirebaseDatabase.getInstance().reference
                 val currentID = FirebaseAuth.getInstance().currentUser!!.uid
-                ref.child("begeniler").child(anlikGonderi.postID!!)
+                ref.child("kampanya").child(anlikGonderi.userID!!).child(anlikGonderi.postID!!).child("begeniler")
                     .addListenerForSingleValueEvent(object : ValueEventListener {
                         override fun onDataChange(snapshot: DataSnapshot) {
                             if (snapshot.hasChild(currentID)) {
-                                ref.child("begeniler").child(anlikGonderi.postID!!).child(currentID)
+                                ref.child("kampanya").child(anlikGonderi.userID!!).child(anlikGonderi.postID!!).child("begeniler").child(currentID)
                                     .removeValue()
-                                if (anlikGonderi.userID!= FirebaseAuth.getInstance().currentUser!!.uid){
-                                    Bildirimler.bildirimKaydet(
-                                        anlikGonderi.userID!!,
-                                        Bildirimler.KAMPANYA_BEGENILDI_GERI,
-                                        anlikGonderi.postID!!)
-                                }
                                 gonderiBegen.setImageResource(R.drawable.ic_baseline_favorite)
                             } else {
-                                ref.child("begeniler").child(anlikGonderi.postID!!).child(currentID)
+                                ref.child("kampanya").child(anlikGonderi.userID!!).child(anlikGonderi.postID!!).child("begeniler").child(currentID)
                                     .setValue(currentID)
-                                if (anlikGonderi.userID!= FirebaseAuth.getInstance().currentUser!!.uid){
+
+                                if (anlikGonderi.userID!= FirebaseAuth.getInstance().currentUser!!.uid) {}
+
                                     Bildirimler.bildirimKaydet(
                                         anlikGonderi.userID!!,
                                         Bildirimler.KAMPANYA_BEGENILDI,
-                                        anlikGonderi.postID!!
+                                        anlikGonderi.postID!!,
+                                        anlikGonderi.postURL!!, ""
                                     )
-                                }
+
                                 gonderiBegen.setImageResource(R.drawable.baseline_favorite_red_24)
                                 begenmeSayisi.visibility=View.VISIBLE
                                 begenmeSayisi.text = ""+ snapshot.childrenCount.toString()+" beğeni"
@@ -297,18 +322,7 @@ class HomeFragmentRecyclerAdapter (var context: Context, private var tumKampanya
                         }
                     })
             }
-            begeniKontrolu(anlikGonderi)
 
-            yorumlariGoster(anlikGonderi)
-
-            yorumYap.setOnClickListener {
-                yorumlarFragmentiniBaslat(anlikGonderi)
-            }
-
-            yorumlariGoster.setOnClickListener {
-
-                yorumlarFragmentiniBaslat(anlikGonderi)
-            }
 
             if (anlikGonderi.userID.equals(mauth)){
                 postMenu.visibility=View.GONE
@@ -319,7 +333,7 @@ class HomeFragmentRecyclerAdapter (var context: Context, private var tumKampanya
 
             val mRef = FirebaseDatabase.getInstance().reference
             val userID = FirebaseAuth.getInstance().currentUser!!.uid
-            mRef.child("begeniler").child(anlikGonderi.postID!!).addValueEventListener(object : ValueEventListener {
+            mRef.child("kampanya").child(anlikGonderi.userID!!).child(anlikGonderi.postID!!).child("begeniler").addValueEventListener(object : ValueEventListener {
 
                 @SuppressLint("SetTextI18n")
                 override fun onDataChange(snapshot: DataSnapshot) {
@@ -347,32 +361,26 @@ class HomeFragmentRecyclerAdapter (var context: Context, private var tumKampanya
 
         private fun yorumlarFragmentiniBaslat(anlikGonderi: KullaniciKampanya) {
 
-            if (anlikGonderi.userID!=FirebaseAuth.getInstance().currentUser!!.uid){
-
-                Bildirimler.bildirimKaydet(anlikGonderi.userID!!,Bildirimler.YORUM_YAPILDI,anlikGonderi.postID!!)
-            }
-           val action= HomeFragmentDirections.actionHomeFragmentToCommentFragment(anlikGonderi.postID!!,true)
+           val action= HomeFragmentDirections.actionHomeFragmentToCommentFragment(anlikGonderi.userID!!,true,anlikGonderi.postID!!,anlikGonderi.postURL!!)
             Navigation.findNavController(itemView).navigate(action)
-
 
         }
 
+
+
         private fun yorumlariGoster(anlikGonderi: KullaniciKampanya) {
             val mref=FirebaseDatabase.getInstance().reference
-            mref.child("yorumlar").child(anlikGonderi.postID!!).addListenerForSingleValueEvent(object :ValueEventListener{
+
+            mref.child("kampanya").child(anlikGonderi.userID!!).child(anlikGonderi.postID!!).child("yorumlar").addListenerForSingleValueEvent(object :ValueEventListener{
                 @SuppressLint("SetTextI18n")
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    var yorumSayisi=0
-                    for (ds in snapshot.children){
-                        if (ds!!.key.toString() != anlikGonderi.postID){
-                            yorumSayisi++
-                        }
-                    }
-                    if (yorumSayisi>=1){
-                        yorumlariGoster.visibility=View.VISIBLE
-                        yorumlariGoster.text = "$yorumSayisi  yorum"
-                    }else{
-                        yorumlariGoster.visibility=View.GONE
+
+                    val yorumSayisi = snapshot.childrenCount.toInt()
+                    if (yorumSayisi >= 1) {
+                        yorumlariGoster.visibility = View.VISIBLE
+                        yorumlariGoster.text = "$yorumSayisi yorum"
+                    } else {
+                        yorumlariGoster.visibility = View.GONE
                     }
                 }
                 override fun onCancelled(error: DatabaseError) {
@@ -385,7 +393,7 @@ class HomeFragmentRecyclerAdapter (var context: Context, private var tumKampanya
 
         val viewHolder = LayoutInflater.from(context).inflate(R.layout.recycler_row, parent, false)
 
-        return ViewHolder(viewHolder)
+        return ViewHolder(viewHolder,tekGonderi)
     }
     override fun getItemCount(): Int {
         return tumKampanyalar.size

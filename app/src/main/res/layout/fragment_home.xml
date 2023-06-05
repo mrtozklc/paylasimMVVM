@@ -44,6 +44,7 @@
                 android:id="@+id/searchView2"
                 android:layout_width="0dp"
                 android:layoutDirection="rtl"
+                app:searchIcon="@drawable/ic_baseline_search_24"
                 android:layout_height="wrap_content"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

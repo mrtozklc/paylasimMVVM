@@ -31,7 +31,6 @@ class RegisterFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        (activity as AppCompatActivity).supportActionBar?.hide()
     }
 
 
@@ -83,6 +82,8 @@ class RegisterFragment : Fragment() {
         super.onStart()
         Log.e("hata","registedasın")
         auth.addAuthStateListener(mauthLis)
+        (activity as AppCompatActivity).supportActionBar?.hide()
+
     }
 
     override fun onStop() {

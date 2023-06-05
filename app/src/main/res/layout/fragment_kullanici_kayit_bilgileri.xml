@@ -34,7 +34,7 @@
         android:id="@+id/golgelik"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@drawable/register_edit_text"
+        android:background="@color/secondary_text_color"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageView_back" />
@@ -95,7 +95,7 @@
         android:layout_marginTop="16dp"
         android:enabled="false"
         android:textAllCaps="false"
-
+        android:background="@drawable/textview_bg2"
         android:text="Giriş"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

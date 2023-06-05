@@ -1,42 +1,90 @@
-<?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    >
 
     <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/begenenpp_id"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:id="@+id/profilPP"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignParentTop="true"
         android:layout_marginStart="8dp"
         android:layout_marginTop="16dp"
-        android:layout_marginBottom="8dp"
+        android:layout_marginBottom="16dp"
+        android:scaleType="centerCrop"
+        app:civ_border_color="#607D8B"
+        app:civ_border_width="1dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-
     <ImageView
-        android:id="@+id/begenilenKampanya_id"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:id="@+id/gonderiImageView"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignParentTop="true"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="8dp"
+        android:layout_toStartOf="@id/optionsImageView"
+        android:scaleType="centerCrop"
+        app:layout_constraintEnd_toStartOf="@+id/optionsImageView"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/optionsImageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="4dp"
+        android:src="@drawable/baseline_more_vert_24"
+        app:layout_constraintBottom_toBottomOf="@+id/gonderiImageView"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/gonderiImageView" />
+
+    <TextView
+        android:id="@+id/bildirimZamaniTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="2dp"
+        android:layout_toEndOf="@id/gonderiImageView"
+        android:textAlignment="center"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toTopOf="@+id/optionsImageView"
+        app:layout_constraintEnd_toEndOf="@+id/optionsImageView"
+        app:layout_constraintStart_toStartOf="@+id/optionsImageView"
+        app:layout_constraintTop_toTopOf="@+id/gonderiImageView" />
+
+    <TextView
+        android:id="@+id/contentTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/profilPP"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        style="@style/MyTextAppearance.Compat.Notification.Title"
+        android:layout_marginEnd="8dp"
+        android:layout_toStartOf="@id/gonderiImageView"
+        android:layout_toEndOf="@id/profilPP"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toStartOf="@+id/gonderiImageView"
+        app:layout_constraintStart_toEndOf="@+id/profilPP"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/tv_begendi"
-        android:layout_width="wrap_content"
+        android:id="@+id/contentText"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        style="@style/MyTextAppearance.Compat.Notification.Info"
+        android:layout_below="@id/contentTitle"
+        android:layout_alignStart="@id/contentTitle"
+        android:layout_alignEnd="@id/contentTitle"
         android:layout_marginStart="8dp"
-        android:text=""
-        android:textAlignment="center"
-        app:layout_constraintBottom_toBottomOf="@+id/begenenpp_id"
-        app:layout_constraintEnd_toStartOf="@+id/begenilenKampanya_id"
-        app:layout_constraintHorizontal_bias="0.169"
-        app:layout_constraintStart_toEndOf="@+id/begenenpp_id"
-        app:layout_constraintTop_toTopOf="@+id/begenenpp_id"
-        app:layout_constraintVertical_bias="0.38" />
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintEnd_toStartOf="@+id/gonderiImageView"
+        app:layout_constraintStart_toEndOf="@+id/profilPP"
+        app:layout_constraintTop_toBottomOf="@+id/contentTitle" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -32,7 +32,6 @@ class KokteyllerFragment2 : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        (activity as AppCompatActivity).supportActionBar?.hide()
     }
 
 
@@ -56,14 +55,17 @@ class KokteyllerFragment2 : Fragment() {
 
         kokteylViewModeli= ViewModelProvider(this)[KokteylViewModel::class.java]
         badgeViewModeli= ViewModelProvider(this)[BadgeViewModel::class.java]
-        badgeViewModeli.refreshBadge()
+        badgeViewModeli.refreshMessageBadge()
 
         binding.imageViewBack.setOnClickListener {
+            binding.searchh.visibility=View.VISIBLE
             findNavController().navigateUp()
         }
 
         binding.searchh.setOnClickListener {
+            binding.searchh.visibility=View.INVISIBLE
             binding.icecek.visibility=View.GONE
+
             binding.edittextSearch.visibility=view.visibility
 
         }
@@ -180,7 +182,7 @@ class KokteyllerFragment2 : Fragment() {
             }
         }
 
-        badgeViewModeli.badgeLive.observe(viewLifecycleOwner) {gorulmeyenMesajSayisi ->
+        badgeViewModeli.badgeLiveMessage.observe(viewLifecycleOwner) {gorulmeyenMesajSayisi ->
             gorulmeyenMesajSayisi.let {
 
 
@@ -196,6 +198,12 @@ class KokteyllerFragment2 : Fragment() {
 
         }
 
+
+    }
+
+    override fun onStart() {
+        super.onStart()
+        (activity as AppCompatActivity).supportActionBar?.hide()
 
     }
 

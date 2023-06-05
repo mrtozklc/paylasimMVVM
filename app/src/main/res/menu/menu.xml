@@ -12,7 +12,7 @@
     <item
         android:id="@+id/isletmeListFragment"
         android:title=""
-        android:icon="@drawable/ic_baseline_circle_notifications"
+        android:icon="@drawable/ic_baseline_nightlife"
         app:showAsAction="always" />
 
     <item
@@ -24,7 +24,7 @@
     <item
         android:id="@+id/kokteyllerFragment"
         android:title=""
-        android:icon="@drawable/ic_baseline_nightlife"
+        android:icon="@drawable/baseline_local_bar_24"
         app:showAsAction="always" />
 
     <item

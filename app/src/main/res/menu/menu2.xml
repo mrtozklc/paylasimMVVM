@@ -5,6 +5,7 @@
     <item
         android:id="@+id/bildirimlerbar"
         android:title="Bildirimler"
+        app:actionLayout="@layout/menu_item_badge"
         android:icon="@drawable/ic_baseline_circle_notifications"
         app:showAsAction="ifRoom" />
 

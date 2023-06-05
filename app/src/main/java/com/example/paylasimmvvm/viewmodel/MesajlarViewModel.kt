@@ -1,5 +1,4 @@
 package com.example.paylasimmvvm.viewmodel
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.paylasimmvvm.model.Mesajlar
@@ -48,7 +47,6 @@ class MesajlarViewModel:ViewModel() {
                 mesajYok.value=false
                 val eklenecekKonusma=snapshot.getValue(Mesajlar::class.java)
                 eklenecekKonusma!!.user_id=snapshot.key
-                Log.e("mesajlaradded calıstı","")
                 mesajlarArray.add(0, eklenecekKonusma)
                 mesajlarMutable.value=mesajlarArray
             }
@@ -59,8 +57,7 @@ class MesajlarViewModel:ViewModel() {
 
                     val guncellenecekKonusma = snapshot.getValue(Mesajlar::class.java)
                     guncellenecekKonusma!!.user_id= snapshot.key
-                    Log.e("maesajlarchildchanged calıstıgoruldu",""+guncellenecekKonusma?.goruldu)
-                    Log.e("maesajlarchildchanged calıstı",""+guncellenecekKonusma?.user_id)
+
 
 
                     mesajlarArray.removeAt(kontrol)
@@ -116,7 +113,6 @@ class MesajlarViewModel:ViewModel() {
     }
     fun removeListeners() {
         mListener?.let {
-            Log.e("removemesajlarlistener",""+it)
             mref.child("konusmalar").child(auth.currentUser!!.uid).removeEventListener(it)
         }
     }
