@@ -360,13 +360,7 @@ class HomeFragment : Fragment() {
     }
 
 
-
-
     private fun setUpRecyclerview(){
-        Log.e("recylersetup","")
-
-
-
 
         val layoutManager= LinearLayoutManager(activity)
         binding.recyclerAnaSayfa.layoutManager=layoutManager

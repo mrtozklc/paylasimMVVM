@@ -6,6 +6,42 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".view.yorumlar.comment_fragment">
 
+    <Button
+        android:id="@+id/sonraki_yorumlar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Sonraki Yorumlar"
+        android:visibility="gone"
+        android:background="@drawable/button_background_transparent"
+        android:textSize="10sp"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:textColor="@color/primary_color"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toBottomOf="@id/recyclerviewYorumlar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <Button
+        android:id="@+id/onceki_yorumlar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/button_background_transparent"
+        android:textSize="10sp"
+        android:visibility="gone"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:textColor="@color/primary_color"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:layout_marginTop="8dp"
+        android:text="önceki yorumlar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/recyclerviewYorumlar" />
+
     <TextView
         android:id="@+id/yorumYok"
         android:layout_width="match_parent"
@@ -82,6 +118,7 @@
 
         app:layout_constraintStart_toStartOf="parent" />
 
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerviewYorumlar"
         android:layout_width="0dp"
@@ -89,10 +126,10 @@
         android:layout_marginTop="2dp"
         app:layout_constraintBottom_toTopOf="@+id/et_mesajEkle"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/golgelik" />
-
-
+        app:layout_constraintTop_toBottomOf="@+id/golgelik"
+        app:layout_constraintVertical_bias="0.0" />
 
     <TextView
         android:id="@+id/tw_yorumPaylas"

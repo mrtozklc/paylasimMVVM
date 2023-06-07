@@ -92,6 +92,16 @@ class GonderiDetayFragment : Fragment() {
         binding.imageViewBack.setOnClickListener {
             findNavController().navigateUp()
         }
+        binding.oncekiYorumlar.setOnClickListener {
+
+
+        }
+
+
+        binding.sonrakiYorumlar.setOnClickListener {
+
+
+        }
     }
 
 
@@ -186,6 +196,15 @@ class GonderiDetayFragment : Fragment() {
 
             }
 
+        }
+
+        yorumlarDetayViewModel.oncekiYorumlarGorunur.observe(viewLifecycleOwner) { gorunur ->
+            binding.oncekiYorumlar.visibility = if (gorunur) View.VISIBLE else View.GONE
+        }
+
+
+        yorumlarDetayViewModel.sonrakiYorumlarGorunur.observe(viewLifecycleOwner) { gorunur ->
+            binding.sonrakiYorumlar.visibility = if (gorunur) View.VISIBLE else View.GONE
         }
 
     }
