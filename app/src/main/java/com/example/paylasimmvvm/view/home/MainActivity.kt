@@ -87,7 +87,7 @@ class MainActivity : AppCompatActivity() {
                 val bundle = Bundle().apply {
                     putString("gonderi_id", begenilenGonderiID)
                     putString("user_id", begenilenUserID)
-                    putString("yorum_key", "")
+                    putString("yorumKey", "")
                     putBoolean("yorum_var", true)
                     putString("bildirimID", bildirimID)
                 }
@@ -101,7 +101,7 @@ class MainActivity : AppCompatActivity() {
                 val bundle = Bundle().apply {
                     putString("gonderi_id", yorumYapilanGonderiID)
                     putString("user_id", begenilenUserID)
-                    putString("yorum_key", gonderiYorumKey)
+                    putString("yorumKey", gonderiYorumKey)
                     putBoolean("yorum_var", true)
                     putString("bildirimID", bildirimID)
                 }
@@ -116,7 +116,7 @@ class MainActivity : AppCompatActivity() {
                     val bundle = Bundle().apply {
                         putString("gonderi_id", begenilenYorumGonderiID)
                         putString("user_id", begenilenUserID)
-                        putString("yorum_key", begenilenYorumKey)
+                        putString("yorumKey", begenilenYorumKey)
                         putBoolean("yorum_var", true)
                         putString("bildirimID", bildirimID)
                     }

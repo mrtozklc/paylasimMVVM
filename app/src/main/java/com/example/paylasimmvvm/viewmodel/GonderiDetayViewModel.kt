@@ -30,7 +30,6 @@ class GonderiDetayViewModel:ViewModel() {
             gonderiArray.clear()
             mref.child("users").child("isletmeler").child(userID).addListenerForSingleValueEvent(object :ValueEventListener{
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    Log.e("snapshottuser",""+snapshot)
 
                     val userID=snapshot.getValue(KullaniciBilgileri::class.java)!!.user_id
                     val kullaniciadi=snapshot.getValue(KullaniciBilgileri::class.java)!!.user_name

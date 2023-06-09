@@ -376,6 +376,10 @@
         <argument
             android:name="post_url"
             app:argType="string" />
+        <argument
+            android:name="yorumKey"
+            app:argType="string"
+            app:nullable="true" />
     </fragment>
 
     <fragment
@@ -390,7 +394,7 @@
             android:name="user_id"
             app:argType="string" />
         <argument
-            android:name="yorum_key"
+            android:name="yorumKey"
             app:argType="string"
             app:nullable="true" />
         <argument

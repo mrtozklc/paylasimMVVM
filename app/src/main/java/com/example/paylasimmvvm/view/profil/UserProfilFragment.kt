@@ -161,7 +161,7 @@ class UserProfilFragment : Fragment() {
                 binding.paylasimlar.isEnabled=true
                 binding.mudavimler.isEnabled=true
                 val action=UserProfilFragmentDirections.actionUserProfilFragmentToCommentFragment(
-                    secilenUser,false,"","")
+                    secilenUser,false,"","",null)
                 Navigation.findNavController(it).navigate(action)
             }
 

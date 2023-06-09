@@ -361,7 +361,7 @@ class HomeFragmentRecyclerAdapter (var context: Context, private val tumKampanya
 
         private fun yorumlarFragmentiniBaslat(anlikGonderi: KullaniciKampanya) {
 
-           val action= HomeFragmentDirections.actionHomeFragmentToCommentFragment(anlikGonderi.userID!!,true,anlikGonderi.postID!!,anlikGonderi.postURL!!)
+           val action= HomeFragmentDirections.actionHomeFragmentToCommentFragment(anlikGonderi.userID!!,true,anlikGonderi.postID!!,anlikGonderi.postURL!!,null)
             Navigation.findNavController(itemView).navigate(action)
 
         }

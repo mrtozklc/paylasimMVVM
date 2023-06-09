@@ -141,7 +141,7 @@ class UserProfilRecyclerAdapter(var context: Context, private var tumKampanyalar
 
 
 
-            val action= UserProfilFragmentDirections.actionUserProfilFragmentToCommentFragment(anlikGonderi.userID!!,true,anlikGonderi.postID!!,anlikGonderi.postURL!!)
+            val action= UserProfilFragmentDirections.actionUserProfilFragmentToCommentFragment(anlikGonderi.userID!!,true,anlikGonderi.postID!!,anlikGonderi.postURL!!,null)
             Navigation.findNavController(itemView).navigate(action)
 
         }

@@ -234,7 +234,7 @@ class ProfilFragmentRecyclerAdapter (var context: Context, private var tumKampan
         }
 
         private fun yorumlarFragmentiniBaslat(anlikGonderi: KullaniciKampanya) {
-            val action=ProfilFragmentDirections.actionProfilFragmentToCommentFragment(anlikGonderi.userID!!,true,anlikGonderi.postID!!,anlikGonderi.postURL!!)
+            val action=ProfilFragmentDirections.actionProfilFragmentToCommentFragment(anlikGonderi.userID!!,true,anlikGonderi.postID!!,anlikGonderi.postURL!!,null)
             Navigation.findNavController(itemView).navigate(action)
 
         }

@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.paylasimmvvm.adapter.YorumlarRecyclerAdapter
 import com.example.paylasimmvvm.databinding.FragmentCommentFragmentBinding
 import com.example.paylasimmvvm.model.Yorumlar
@@ -65,14 +66,23 @@ class comment_fragment : Fragment() {
             yorumYapilanGonderi = arguments?.getString("yorumYapilanGonderi")
             yorumKey= arguments?.getString("yorumKey")
             val  bildirimID = it.getString("bildirimID")
+
             if (bildirimID!=null){
                 val databaseRef = FirebaseDatabase.getInstance().reference.child("bildirimler").child(FirebaseAuth.getInstance().currentUser!!.uid).child(bildirimID)
                 databaseRef.child("goruldu").setValue(true)
             }
+            Log.e("ispost?",""+isPost)
+            Log.e("yorumkey?",""+yorumKey)
+            Log.e("gonderiid?",""+gonderiID)
+            Log.e("tıklananuser?",""+tiklananUser)
 
 
 
             if (isPost){
+                if (yorumKey!=null){
+                    yorumlarViewModel.gonderiYorumlariniAlWithKey(tiklananUser,gonderiID,yorumKey!!)
+
+                }
                 if (yorumYapilanGonderi!=null){
                    yorumlarViewModel.gonderiYorumlariniAl(tiklananUser,yorumYapilanGonderi!!)
                 }else{
@@ -80,8 +90,14 @@ class comment_fragment : Fragment() {
                 }
             }
             if(!isPost){
+                if (yorumKey!=null){
+                    yorumlarViewModel.isletmeYorumlariniAlWithKey(tiklananUser,yorumKey!!)
 
-             yorumlarViewModel.isletmeYorumlariniAl(tiklananUser)
+                }else{
+                    yorumlarViewModel.isletmeYorumlariniAl(tiklananUser)
+                }
+
+
             }
 
 
@@ -108,14 +124,14 @@ class comment_fragment : Fragment() {
 
 
         binding.oncekiYorumlar.setOnClickListener {
-           yorumlarViewModel.loadNextComments()
+           yorumlarViewModel.nextComments()
 
         }
 
 
-            binding.sonrakiYorumlar.setOnClickListener {
-         yorumlarViewModel.loadPreviousComments()
-            }
+        binding.sonrakiYorumlar.setOnClickListener {
+         yorumlarViewModel.previousComments()
+        }
 
 
 
@@ -140,6 +156,7 @@ class comment_fragment : Fragment() {
                             postURL,
                             binding.etMesajEkle.text.toString(),
                             pushKey)
+                    yorumlarViewModel.gonderiYorumlariniAl(tiklananUser,gonderiID)
                 }else{
                     val yeniYorumIsletmeReference = FirebaseDatabase.getInstance().reference.child("users").child("isletmeler").child(tiklananUser).child("yorumlar").push()
                     val pushKey = yeniYorumIsletmeReference.key
@@ -158,8 +175,10 @@ class comment_fragment : Fragment() {
                             postURL,
                             binding.etMesajEkle.text.toString(),
                             pushKey)
+                    yorumlarViewModel.isletmeYorumlariniAl(tiklananUser)
                 }
                 binding.etMesajEkle.setText("")
+
                 binding.recyclerviewYorumlar.smoothScrollToPosition(binding.recyclerviewYorumlar.adapter!!.itemCount)
             }
         }
@@ -177,31 +196,20 @@ class comment_fragment : Fragment() {
         yorumlarViewModel.mutableYorumlar.observe(viewLifecycleOwner) { Yorumlar ->
             Yorumlar.let {
 
-                tumYorumlar.addAll(Yorumlar)
-                recyclerviewadapter.notifyDataSetChanged()
-
-
                 binding.recyclerviewYorumlar.visibility = View.VISIBLE
                 recyclerviewadapter.yorumlariGuncelle(Yorumlar)
 
                 tumYorumlar = Yorumlar as ArrayList<Yorumlar>
 
-                // ilgili yoruma kaydırma
-                binding.recyclerviewYorumlar.post {
-                    val yorumPosition = tumYorumlar.indexOfFirst { it.yorum_key == yorumKey }
-
-                    binding.recyclerviewYorumlar.scrollToPosition(yorumPosition)
                 }
-
 
             }
 
-        }
 
         yorumlarViewModel.yorumYok.observe(viewLifecycleOwner) { YorumYok->
             YorumYok.let {
                 if (it){
-                      binding.yorumYok.visibility=View.VISIBLE
+                    binding.yorumYok.visibility=View.VISIBLE
                     binding.recyclerviewYorumlar.visibility=View.GONE
 
                 }else{
@@ -224,16 +232,24 @@ class comment_fragment : Fragment() {
                 }
             }
         }
+        yorumlarViewModel.nextButtonVisibility.observe(viewLifecycleOwner) { isVisible ->
 
-        yorumlarViewModel.oncekiYorumlarGorunur.observe(viewLifecycleOwner) { gorunur ->
-            binding.oncekiYorumlar.visibility = if (gorunur) View.VISIBLE else View.GONE
+            if (isVisible) {
+              binding.oncekiYorumlar.visibility=View.VISIBLE
+            } else {
+
+                binding.oncekiYorumlar.visibility=View.GONE
+            }
         }
 
+        yorumlarViewModel.previousButtonVisibility.observe(viewLifecycleOwner){ isVisible ->
+            if (isVisible) {
+                binding.sonrakiYorumlar.visibility=View.VISIBLE
+            } else {
 
-        yorumlarViewModel.sonrakiYorumlarGorunur.observe(viewLifecycleOwner) { gorunur ->
-            binding.sonrakiYorumlar.visibility = if (gorunur) View.VISIBLE else View.GONE
+                binding.sonrakiYorumlar.visibility=View.GONE
+            }
         }
-
 
     }
     override fun onStart() {

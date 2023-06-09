@@ -5,6 +5,7 @@ import android.graphics.Typeface
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.StyleSpan
+import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -172,13 +173,16 @@ class BildirimlerRecyclerAdapter(private val tumBildirimler: ArrayList<BildirimM
                         FirebaseAuth.getInstance().currentUser!!.uid,
                         false,
                         "",
-                        ""
+                        "",
+                        anlikBildirim.yorum_key
                     )
                     Navigation.findNavController(view).navigate(action)
                 }
                 else -> {
 
                     if (anlikBildirim.gonderi_id!=null&& anlikBildirim.gonderi_id!!.isNotEmpty()){
+
+
                         val action = BildirimlerFragmentDirections.actionBildirimlerFragmentToGonderiDetayFragment(
                             anlikBildirim.gonderi_id!!,
                             FirebaseAuth.getInstance().currentUser!!.uid,
@@ -188,11 +192,13 @@ class BildirimlerRecyclerAdapter(private val tumBildirimler: ArrayList<BildirimM
                         Navigation.findNavController(view).navigate(action)
                     }else{
 
+
                         val action = BildirimlerFragmentDirections.actionBildirimlerFragmentToCommentFragment(
                             FirebaseAuth.getInstance().currentUser!!.uid,
                             false,
                             "",
-                            ""
+                            "",
+                            anlikBildirim.yorum_key
                         )
                         Navigation.findNavController(view).navigate(action)
                     }

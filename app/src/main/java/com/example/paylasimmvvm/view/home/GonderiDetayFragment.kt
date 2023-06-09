@@ -63,7 +63,8 @@ class GonderiDetayFragment : Fragment() {
             yorumVarMi = it.getBoolean("yorum_var")
             gonderiID = it.getString("gonderi_id")
             userID = it.getString("user_id")
-            yorumKey = it.getString("yorum_key")
+            yorumKey = it.getString("yorumKey")
+            Log.e("gonderiyorumkey111",""+yorumKey)
             val  bildirimID = it.getString("bildirimID")
             if (bildirimID!=null){
                 val databaseRef = FirebaseDatabase.getInstance().reference.child("bildirimler").child(FirebaseAuth.getInstance().currentUser!!.uid).child(bildirimID)
@@ -71,10 +72,16 @@ class GonderiDetayFragment : Fragment() {
             }
 
         }
-
+        Log.e("gonderiyorumkey",""+yorumKey)
 
             gonderiDetayViewModel.getGonderiDetayi(userID!!, gonderiID!!)
+
+        if (yorumKey!=null){
+            yorumlarDetayViewModel.gonderiYorumlariniAlWithKey(userID!!,gonderiID!!,yorumKey)
+        }else{
             yorumlarDetayViewModel.gonderiYorumlariniAl(userID!!, gonderiID!!)
+        }
+
 
 
         observeLiveData()
@@ -93,18 +100,16 @@ class GonderiDetayFragment : Fragment() {
             findNavController().navigateUp()
         }
         binding.oncekiYorumlar.setOnClickListener {
-
+            yorumlarDetayViewModel.nextComments()
 
         }
 
 
         binding.sonrakiYorumlar.setOnClickListener {
-
-
+            yorumlarDetayViewModel.previousComments()
         }
+
     }
-
-
     private fun observeLiveData() {
         gonderiDetayViewModel.gonderiMutable.observe(viewLifecycleOwner) { gonderi ->
             gonderi.let {
@@ -197,15 +202,24 @@ class GonderiDetayFragment : Fragment() {
             }
 
         }
+        yorumlarDetayViewModel.nextButtonVisibility.observe(viewLifecycleOwner) { isVisible ->
+            if (isVisible) {
+                binding.oncekiYorumlar.visibility=View.VISIBLE
+            } else {
 
-        yorumlarDetayViewModel.oncekiYorumlarGorunur.observe(viewLifecycleOwner) { gorunur ->
-            binding.oncekiYorumlar.visibility = if (gorunur) View.VISIBLE else View.GONE
+                binding.oncekiYorumlar.visibility=View.GONE
+            }
         }
 
+        yorumlarDetayViewModel.previousButtonVisibility.observe(viewLifecycleOwner){ isVisible ->
+            if (isVisible) {
+                binding.sonrakiYorumlar.visibility=View.VISIBLE
+            } else {
 
-        yorumlarDetayViewModel.sonrakiYorumlarGorunur.observe(viewLifecycleOwner) { gorunur ->
-            binding.sonrakiYorumlar.visibility = if (gorunur) View.VISIBLE else View.GONE
+                binding.sonrakiYorumlar.visibility=View.GONE
+            }
         }
+
 
     }
 

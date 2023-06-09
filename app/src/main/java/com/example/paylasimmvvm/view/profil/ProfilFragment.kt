@@ -192,7 +192,7 @@ class ProfilFragment : Fragment() {
             binding.mudavimler.isEnabled=true
 
 
-            val action=ProfilFragmentDirections.actionProfilFragmentToCommentFragment(tiklanilanKullanici!!,false,"","")
+            val action=ProfilFragmentDirections.actionProfilFragmentToCommentFragment(tiklanilanKullanici!!,false,"","",null)
             Navigation.findNavController(it).navigate(action)
 
 
