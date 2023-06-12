@@ -3,15 +3,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-
     xmlns:app="http://schemas.android.com/apk/res-auto">
-
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/profilPhotoYorumlar"
         android:layout_width="30dp"
         android:layout_height="30dp"
-        android:layout_marginStart="4dp"
+        android:layout_marginStart="8dp"
         android:layout_marginTop="16dp"
         app:civ_border_color="#6C6A6A"
         app:civ_border_width="1dp"
@@ -30,25 +28,24 @@
 
     <TextView
         android:id="@+id/tv_aciklama"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="4dp"
+        android:layout_marginEnd="16dp"
         android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/profilPhotoYorumlar"
-        app:layout_constraintTop_toBottomOf="@+id/username"
-        app:layout_constraintWidth_max="300dp" />
+        app:layout_constraintTop_toBottomOf="@+id/username" />
 
     <ImageView
         android:id="@+id/like"
-        android:layout_width="25dp"
-        android:layout_height="25dp"
-        android:layout_margin="8dp"
-        android:background="@drawable/ic_baseline_favorite"
-        app:layout_constraintBottom_toBottomOf="@+id/profilPhotoYorumlar"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/profilPhotoYorumlar"
-       />
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/baseline_thumb_up_alt_24"
+        app:layout_constraintStart_toStartOf="@+id/tv_aciklama"
+        app:layout_constraintTop_toBottomOf="@+id/tv_aciklama" />
 
     <TextView
         android:id="@+id/tv_yorumZamani"
@@ -56,20 +53,62 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:textSize="10sp"
-        app:layout_constraintBottom_toBottomOf="@+id/username"
+        style="@style/MyTextAppearance.Compat.Notification.Info"
+        app:layout_constraintBottom_toBottomOf="@id/username"
         app:layout_constraintStart_toEndOf="@+id/username"
-        app:layout_constraintTop_toTopOf="@+id/username"
-      />
+        app:layout_constraintTop_toTopOf="@+id/username" />
+
+    <TextView
+        android:id="@+id/replyTv"
+        style="@style/MyTextAppearance.Compat.Notification.Info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:text="Yanıtla"
+        app:layout_constraintBottom_toBottomOf="@+id/like"
+        app:layout_constraintStart_toEndOf="@id/like"
+        app:layout_constraintTop_toTopOf="@+id/like" />
 
     <TextView
         android:id="@+id/tv_begeni"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        app:layout_constraintEnd_toEndOf="@+id/like"
-        app:layout_constraintStart_toStartOf="@+id/like"
-        app:layout_constraintTop_toBottomOf="@+id/like" />
+        android:layout_marginStart="4dp"
+        app:layout_constraintBottom_toBottomOf="@id/like"
+        app:layout_constraintStart_toEndOf="@id/like"
+        app:layout_constraintTop_toTopOf="@id/like" />
 
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewReplies"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:paddingStart="25dp"
+        android:paddingEnd="25dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/like"
+      />
 
+    <TextView
+        android:id="@+id/yanit_sayisi"
+        style="@style/MyTextAppearance.Compat.Notification.Info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        app:layout_constraintStart_toEndOf="@+id/replyTv"
+        app:layout_constraintTop_toBottomOf="@+id/replyTv"
+        tools:visibility="gone" />
+
+    <TextView
+        android:id="@+id/replyHideTv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Yanıtları Gizle"
+        android:layout_marginTop="8dp"
+        android:visibility="gone"
+        style="@style/MyTextAppearance.Compat.Notification.Info"
+        app:layout_constraintStart_toEndOf="@+id/replyTv"
+        app:layout_constraintTop_toBottomOf="@+id/recyclerViewReplies" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

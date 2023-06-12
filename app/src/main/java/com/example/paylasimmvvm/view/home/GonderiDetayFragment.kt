@@ -1,6 +1,7 @@
 package com.example.paylasimmvvm.view.home
 
 import android.os.Bundle
+import android.text.TextUtils
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -11,12 +12,14 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.paylasimmvvm.R
 import com.example.paylasimmvvm.adapter.HomeFragmentRecyclerAdapter
 import com.example.paylasimmvvm.adapter.YorumlarRecyclerAdapter
 import com.example.paylasimmvvm.databinding.FragmentGonderiDetayBinding
 import com.example.paylasimmvvm.model.KullaniciKampanya
 import com.example.paylasimmvvm.model.Yorumlar
+import com.example.paylasimmvvm.util.Bildirimler
 import com.example.paylasimmvvm.view.profil.UserProfilFragmentArgs
 import com.example.paylasimmvvm.viewmodel.BadgeViewModel
 import com.example.paylasimmvvm.viewmodel.GonderiDetayViewModel
@@ -24,6 +27,7 @@ import com.example.paylasimmvvm.viewmodel.YorumlarViewModel
 import com.example.paylasimmvvm.viewmodel.kampanyalarViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ServerValue
 import java.util.*
 
 
@@ -39,6 +43,8 @@ class GonderiDetayFragment : Fragment() {
     var userID:String?=null
     var yorumKey:String?=null
     var yorumVarMi:Boolean?=null
+    private var isLastItemVisible = false
+
 
 
 
@@ -72,7 +78,7 @@ class GonderiDetayFragment : Fragment() {
             }
 
         }
-        Log.e("gonderiyorumkey",""+yorumKey)
+
 
             gonderiDetayViewModel.getGonderiDetayi(userID!!, gonderiID!!)
 
@@ -99,15 +105,49 @@ class GonderiDetayFragment : Fragment() {
         binding.imageViewBack.setOnClickListener {
             findNavController().navigateUp()
         }
-        binding.oncekiYorumlar.setOnClickListener {
-            yorumlarDetayViewModel.nextComments()
+/*
+        binding.nestedScroll.setOnScrollChangeListener { _, _, scrollY, _, _ ->
+            val layoutManager = binding.yorumlarRecycler.layoutManager as LinearLayoutManager
+            val lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition()
+            val totalItemCount = layoutManager.itemCount
+
+            if (lastVisibleItemPosition == totalItemCount - 1 && scrollY > 0) {
+                // User reached the end of the nested RecyclerView, handle accordingly
+                Log.e("kaydırmaayapıldı", "")
+                yorumlarDetayViewModel.nextComments()
+            }
+        }
+*/
+
+
+        binding.yorumEkle.setOnClickListener {
+            val yorum=binding.yorumEditText.text.toString().trim()
+            if(!TextUtils.isEmpty(yorum)){
+                val yeniYorumGonderiReference = FirebaseDatabase.getInstance().reference.child("kampanya").child(userID!!).child(gonderiID!!).child("yorumlar").push()
+                val pushKey = yeniYorumGonderiReference.key
+                val yeniYorum = hashMapOf<String, Any>(
+                    "yorum_key" to pushKey.toString(),
+                    "user_id" to FirebaseAuth.getInstance().currentUser!!.uid,
+                    "yorum" to binding.yorumEditText.text.toString(),
+                    "yorum_begeni" to "0",
+                    "yorum_tarih" to ServerValue.TIMESTAMP)
+                yeniYorumGonderiReference.setValue(yeniYorum)
+                if (userID!=FirebaseAuth.getInstance().currentUser!!.uid) {}
+                Bildirimler.bildirimKaydet(
+                    userID!!,
+                    Bildirimler.YORUM_YAPILDI,
+                    gonderiID!!,
+                    "",
+                    binding.yorumEditText.text.toString(),
+                    pushKey)
+                yorumlarDetayViewModel.gonderiYorumlariniAl(userID!!,gonderiID!!)
+                binding.yorumEditText.setText("")
+
+                binding.yorumlarRecycler.smoothScrollToPosition(binding.yorumlarRecycler.adapter!!.itemCount)
+            }
 
         }
 
-
-        binding.sonrakiYorumlar.setOnClickListener {
-            yorumlarDetayViewModel.previousComments()
-        }
 
     }
     private fun observeLiveData() {
@@ -160,16 +200,7 @@ class GonderiDetayFragment : Fragment() {
                 recyclerviewadapter2.yorumlariGuncelle(yorumlar)
                 tumYorumlar = yorumlar as ArrayList<Yorumlar>
 
-                // ilgili yoruma kaydırma
-                binding.yorumlarRecycler.post {
-                    val yorumPosition = tumYorumlar.indexOfFirst { it.yorum_key == yorumKey }
-                    val layoutManager = binding.yorumlarRecycler.layoutManager as LinearLayoutManager
-                    val targetView = layoutManager.findViewByPosition(yorumPosition)
-                    val targetY = targetView?.let {
-                        it.top + binding.nestedScroll.scrollY
-                    } ?: 0
-                    binding.nestedScroll.smoothScrollTo(0, targetY)
-                }
+
             }
         }
 
@@ -201,23 +232,6 @@ class GonderiDetayFragment : Fragment() {
 
             }
 
-        }
-        yorumlarDetayViewModel.nextButtonVisibility.observe(viewLifecycleOwner) { isVisible ->
-            if (isVisible) {
-                binding.oncekiYorumlar.visibility=View.VISIBLE
-            } else {
-
-                binding.oncekiYorumlar.visibility=View.GONE
-            }
-        }
-
-        yorumlarDetayViewModel.previousButtonVisibility.observe(viewLifecycleOwner){ isVisible ->
-            if (isVisible) {
-                binding.sonrakiYorumlar.visibility=View.VISIBLE
-            } else {
-
-                binding.sonrakiYorumlar.visibility=View.GONE
-            }
         }
 
 

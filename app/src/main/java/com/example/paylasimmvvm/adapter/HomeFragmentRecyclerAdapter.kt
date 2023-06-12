@@ -64,6 +64,9 @@ class HomeFragmentRecyclerAdapter (var context: Context, private val tumKampanya
                 binding.twMesafe.visibility=View.GONE
                 binding.imgBegen.visibility=View.GONE
                 binding.imgYorum.visibility=View.GONE
+                binding.profilImage.visibility=View.GONE
+                binding.kullaniciAdiTepe.visibility=View.GONE
+                binding.delete.visibility=View.GONE
 
             }else{
 
