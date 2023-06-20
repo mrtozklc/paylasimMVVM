@@ -65,13 +65,13 @@
         app:layout_constraintVertical_bias="0.0" />
 
     <androidx.core.widget.NestedScrollView
+        android:id="@+id/nestedScroll"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:id="@+id/nestedScroll"
-        app:layout_constraintTop_toBottomOf="@+id/golgelik"
-        app:layout_constraintBottom_toBottomOf="parent">
+        app:layout_constraintTop_toBottomOf="@+id/golgelik">
 
         <LinearLayout
+            android:id="@+id/linearID2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
@@ -87,43 +87,47 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginTop="16dp">
 
-                <EditText
-                    android:id="@+id/yorumEditText"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:hint="Yorumunuzu girin"
-                    android:layout_marginEnd="8dp"
-                    android:background="@drawable/textview_bg2"
-                    android:paddingStart="12dp"
-                    android:paddingTop="12dp"
-                    android:paddingEnd="12dp"
-                    android:paddingBottom="12dp"
-                    android:maxHeight="200dp"
-                    android:inputType="textMultiLine"
-                    android:textSize="18sp" />
-
-                <TextView
-                    android:id="@+id/yorumEkle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Paylaş"
-                    android:padding="12dp"
-                    android:layout_marginEnd="4dp"
-                    android:textSize="18sp"
-                    android:textAlignment="center" />
-
-            </LinearLayout>
 
 
         </LinearLayout>
 
     </androidx.core.widget.NestedScrollView>
+
+    <LinearLayout
+        android:id="@+id/linearID"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="2dp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <EditText
+            android:id="@+id/yorumEditText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_weight="1"
+            android:background="@drawable/textview_bg2"
+            android:hint="Yorumunuzu girin"
+            android:inputType="textMultiLine"
+            android:maxHeight="200dp"
+            android:paddingStart="12dp"
+            android:paddingTop="12dp"
+            android:paddingEnd="12dp"
+            android:paddingBottom="12dp"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/yorumEkle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="4dp"
+            android:padding="12dp"
+            android:text="Paylaş"
+            android:textAlignment="center"
+            android:textSize="18sp" />
+
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

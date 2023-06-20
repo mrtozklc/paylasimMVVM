@@ -1,6 +1,6 @@
 package com.example.paylasimmvvm.util
 
-import com.example.paylasimmvvm.model.KullaniciBilgileri
+import com.example.paylasimmvvm.login.KullaniciBilgileri
 
 
 class EventbusData {

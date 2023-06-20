@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".view.profil.ProfilEditFragment">
+    tools:context=".profileEdit.ProfilEditFragment">
 
 
     <ProgressBar
@@ -31,23 +31,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView12" />
 
-    <TextView
-        android:id="@+id/foto_degis"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="Fotoğraf değiştir"
-        android:textSize="18sp"
-        android:paddingLeft="20dp"
-        android:background="@drawable/textview_bg2"
-        android:paddingTop="8dp"
-        android:textStyle="bold"
-        android:paddingRight="20dp"
-        android:paddingBottom="8dp"
-        app:layout_constraintEnd_toEndOf="@+id/profile_image"
-        app:layout_constraintHorizontal_bias="0.512"
-        app:layout_constraintStart_toStartOf="@+id/profile_image"
-        app:layout_constraintTop_toBottomOf="@+id/profile_image" />
+
 
     <ImageView
         android:id="@+id/backButton"
@@ -61,22 +45,6 @@
        />
 
 
-    <TextView
-        android:id="@+id/tw_menuEkle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@drawable/textview_bg2"
-        android:paddingLeft="20dp"
-        android:paddingTop="8dp"
-        android:paddingRight="20dp"
-        android:paddingBottom="8dp"
-        android:text="Menü Ekle"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@+id/sifre_degistir"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/sifre_degistir"
-        app:layout_constraintTop_toTopOf="@+id/sifre_degistir" />
 
     <ImageView
         android:id="@+id/kayitButon"
@@ -114,19 +82,19 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/foto_degis" />
+        app:layout_constraintTop_toBottomOf="@+id/linear_id" />
 
     <EditText
         android:id="@+id/editTextTextPersonName2"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:hint="Ad Soyad"
         android:inputType="textPersonName"
         android:textSize="16sp"
+        style="@style/MyTextAppearance.Compat.Notification.Info"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -153,9 +121,9 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-
         android:layout_marginEnd="8dp"
         android:hint="Kullanıcı Adı"
+        style="@style/MyTextAppearance.Compat.Notification.Info"
         android:inputType="textPersonName"
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -163,24 +131,62 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView20" />
 
-    <TextView
-        android:id="@+id/sifre_degistir"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/linear_id"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="40dp"
-        android:layout_marginTop="24dp"
-        android:background="@drawable/textview_bg2"
-        android:paddingLeft="20dp"
-        android:paddingTop="8dp"
-        android:paddingRight="20dp"
-        android:paddingBottom="8dp"
-
-
-        android:text="Şifre Değiştir"
-        android:textSize="18sp"
-        android:textStyle="bold"
+        android:layout_marginStart="2dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="2dp"
+        android:animateLayoutChanges="true"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextTextPersonName3" />
+        app:layout_constraintTop_toBottomOf="@id/profile_image">
+
+        <TextView
+            android:id="@+id/sifre_degistir"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/textview_bg2"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:padding="8dp"
+            android:text="Şifre Değiştir"
+            android:textSize="18sp"
+            android:textStyle="bold"
+         />
+        <TextView
+            android:id="@+id/foto_degis"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Fotoğraf değiştir"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:background="@drawable/textview_bg2"
+            android:textStyle="bold"
+            android:textSize="18sp"
+            android:padding="8dp"
+         />
+
+        <TextView
+            android:id="@+id/tw_menuEkle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/textview_bg2"
+            android:text="Menü Ekle"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:padding="8dp"
+            android:textSize="18sp"
+            android:textStyle="bold"
+
+        />
+
+
+
+    </LinearLayout>
+
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

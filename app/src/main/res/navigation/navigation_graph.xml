@@ -8,7 +8,7 @@
 
     <fragment
         android:id="@+id/registerFragment"
-        android:name="com.example.paylasimmvvm.view.login.RegisterFragment"
+        android:name="com.example.paylasimmvvm.login.RegisterFragment"
         android:label="fragment_register"
         tools:layout="@layout/fragment_register" >
         <action
@@ -27,7 +27,7 @@
     </fragment>
     <fragment
         android:id="@+id/isletmeKayitBilgileriFragment"
-        android:name="com.example.paylasimmvvm.view.login.IsletmeKayitBilgileriFragment"
+        android:name="com.example.paylasimmvvm.login.IsletmeKayitBilgileriFragment"
         android:label="fragment_isletme_kayit_bilgileri"
         tools:layout="@layout/fragment_isletme_kayit_bilgileri" >
         <action
@@ -43,7 +43,7 @@
     </fragment>
     <fragment
         android:id="@+id/kullaniciKayitBilgileriFragment"
-        android:name="com.example.paylasimmvvm.view.login.KullaniciKayitBilgileriFragment"
+        android:name="com.example.paylasimmvvm.login.KullaniciKayitBilgileriFragment"
         android:label="fragment_kullanici_kayit_bilgileri"
         tools:layout="@layout/fragment_kullanici_kayit_bilgileri" >
         <action
@@ -58,7 +58,7 @@
     </fragment>
     <fragment
         android:id="@+id/signOutFragment"
-        android:name="com.example.paylasimmvvm.view.login.SignOutFragment"
+        android:name="com.example.paylasimmvvm.login.SignOutFragment"
         android:label="fragment_sign_out"
         tools:layout="@layout/fragment_sign_out" >
         <action
@@ -67,7 +67,7 @@
     </fragment>
     <fragment
         android:id="@+id/chatFragment"
-        android:name="com.example.paylasimmvvm.view.mesajlar.ChatFragment"
+        android:name="com.example.paylasimmvvm.massage.ChatFragment"
         android:label="fragment_chat"
         tools:layout="@layout/fragment_chat" >
         <action
@@ -83,7 +83,7 @@
     </fragment>
     <fragment
         android:id="@+id/profilEditFragment"
-        android:name="com.example.paylasimmvvm.view.profil.ProfilEditFragment"
+        android:name="com.example.paylasimmvvm.profileEdit.ProfilEditFragment"
         android:label="fragment_profil_edit"
         tools:layout="@layout/fragment_profil_edit" >
         <action
@@ -107,7 +107,7 @@
     </fragment>
     <fragment
         android:id="@+id/sifreDegistirFragment"
-        android:name="com.example.paylasimmvvm.view.profil.SifreDegistirFragment"
+        android:name="com.example.paylasimmvvm.profileEdit.SifreDegistirFragment"
         android:label="fragment_sifre_degistir"
         tools:layout="@layout/fragment_sifre_degistir" >
         <action
@@ -116,7 +116,7 @@
     </fragment>
     <fragment
         android:id="@+id/userProfilFragment"
-        android:name="com.example.paylasimmvvm.view.profil.UserProfilFragment"
+        android:name="com.example.paylasimmvvm.profile.UserProfilFragment"
         android:label="fragment_user_profil"
         tools:layout="@layout/fragment_user_profil" >
         <action
@@ -142,7 +142,7 @@
     </fragment>
     <fragment
         android:id="@+id/profilFragment"
-        android:name="com.example.paylasimmvvm.view.profil.ProfilFragment"
+        android:name="com.example.paylasimmvvm.profile.ProfilFragment"
         android:label="fragment_profil"
         tools:layout="@layout/fragment_profil" >
         <action
@@ -154,8 +154,8 @@
             android:id="@+id/action_profilFragment_to_kokteyllerFragment"
             app:destination="@id/kokteyllerFragment" />
         <action
-            android:id="@+id/action_profilFragment_to_kampanyaOlusturFragment"
-            app:destination="@id/kampanyaOlusturFragment" />
+            android:id="@+id/action_profilFragment_to_gonderiOlusturFragment"
+            app:destination="@id/gonderiOlusturFragment" />
 
         <action
             android:id="@+id/action_profilFragment_to_profilEditFragment"
@@ -175,7 +175,7 @@
     </fragment>
     <fragment
         android:id="@+id/loginFragment"
-        android:name="com.example.paylasimmvvm.view.login.LoginFragment"
+        android:name="com.example.paylasimmvvm.login.LoginFragment"
         android:label="fragment_login"
         tools:layout="@layout/fragment_login" >
         <action
@@ -187,7 +187,7 @@
     </fragment>
     <fragment
         android:id="@+id/homeFragment"
-        android:name="com.example.paylasimmvvm.view.home.HomeFragment"
+        android:name="com.example.paylasimmvvm.home.HomeFragment"
         android:label="fragment_home"
         tools:layout="@layout/fragment_home" >
         <action
@@ -203,8 +203,8 @@
             android:id="@+id/action_homeFragment_to_userProfilFragment"
             app:destination="@id/userProfilFragment" />
         <action
-            android:id="@+id/action_homeFragment_to_kampanyaOlusturFragment"
-            app:destination="@id/kampanyaOlusturFragment" />
+            android:id="@+id/action_homeFragment_to_gonderiOlusturFragment"
+            app:destination="@id/gonderiOlusturFragment" />
         <action
             android:id="@+id/action_homeFragment_to_signOutFragment"
             app:destination="@id/signOutFragment" />
@@ -235,7 +235,7 @@
     </fragment>
     <fragment
         android:id="@+id/bildirimlerFragment"
-        android:name="com.example.paylasimmvvm.view.bildirimler.BildirimlerFragment"
+        android:name="com.example.paylasimmvvm.notifications.BildirimlerFragment"
         android:label="fragment_bildirimler"
         tools:layout="@layout/fragment_bildirimler">
         <action
@@ -266,7 +266,7 @@
 
     <fragment
         android:id="@+id/mesajlarFragment"
-        android:name="com.example.paylasimmvvm.view.mesajlar.MesajlarFragment"
+        android:name="com.example.paylasimmvvm.massage.MesajlarFragment"
         android:label="fragment_mesajlar"
         tools:layout="@layout/fragment_mesajlar" >
         <action
@@ -277,15 +277,15 @@
             app:destination="@id/homeFragment" />
     </fragment>
     <fragment
-        android:id="@+id/kampanyaOlusturFragment"
-        android:name="com.example.paylasimmvvm.view.kampanyaOlustur.KampanyaOlusturFragment"
-        android:label="fragment_kampanya_olustur"
-        tools:layout="@layout/fragment_kampanya_olustur" >
+        android:id="@+id/gonderiOlusturFragment"
+        android:name="com.example.paylasimmvvm.createPost.GonderiOlusturFragment"
+        android:label="fragment_gonderi_olustur"
+        tools:layout="@layout/fragment_gonderi_olustur" >
         <action
-            android:id="@+id/action_kampanyaOlusturFragment_to_homeFragment"
+            android:id="@+id/action_gonderiOlusturFragment_to_homeFragment"
             app:destination="@id/homeFragment" />
         <action
-            android:id="@+id/action_kampanyaOlusturFragment_to_profilFragment"
+            android:id="@+id/action_gonderiOlusturFragment_to_profilFragment"
             app:destination="@id/profilFragment" />
         <argument
             android:name="isUser"
@@ -297,7 +297,7 @@
 
     <fragment
         android:id="@+id/kokteyllerFragment"
-        android:name="com.example.paylasimmvvm.view.icecekler.KokteyllerFiltreFragment"
+        android:name="com.example.paylasimmvvm.cocktail.KokteyllerFiltreFragment"
         android:label="fragment_kokteyller"
         tools:layout="@layout/fragment_kokteyller_filtre" >
 
@@ -310,7 +310,7 @@
     </fragment>
     <fragment
         android:id="@+id/kokteylDetayiFragment"
-        android:name="com.example.paylasimmvvm.view.icecekler.KokteylDetayiFragment"
+        android:name="com.example.paylasimmvvm.cocktail.KokteylDetayiFragment"
         android:label="fragment_kokteyl_detayi"
         tools:layout="@layout/fragment_kokteyl_detayi" >
         <argument
@@ -320,7 +320,7 @@
 
     <fragment
         android:id="@+id/kokteyllerFragment2"
-        android:name="com.example.paylasimmvvm.view.icecekler.KokteyllerFragment2"
+        android:name="com.example.paylasimmvvm.cocktail.KokteyllerFragment2"
         android:label="fragment_kokteyller2"
         tools:layout="@layout/fragment_kokteyller2" >
         <action
@@ -332,7 +332,7 @@
     </fragment>
     <fragment
         android:id="@+id/isletmeListFragment"
-        android:name="com.example.paylasimmvvm.view.home.IsletmeListFragment"
+        android:name="com.example.paylasimmvvm.home.IsletmeListFragment"
         android:label="fragment_isletme_list"
         tools:layout="@layout/fragment_isletme_list" >
         <action
@@ -347,7 +347,7 @@
     </fragment>
     <fragment
         android:id="@+id/isletmeMenuFragment"
-        android:name="com.example.paylasimmvvm.view.profil.IsletmeMenuFragment"
+        android:name="com.example.paylasimmvvm.profileEdit.IsletmeMenuFragment"
         android:label="fragment_isletme_menu"
         tools:layout="@layout/fragment_isletme_menu" >
         <action
@@ -356,7 +356,7 @@
     </fragment>
     <fragment
         android:id="@+id/comment_fragment"
-        android:name="com.example.paylasimmvvm.view.yorumlar.comment_fragment"
+        android:name="com.example.paylasimmvvm.comments.comment_fragment"
         android:label="fragment_comment_fragment"
         tools:layout="@layout/fragment_comment_fragment" >
         <argument
@@ -384,7 +384,7 @@
 
     <fragment
         android:id="@+id/gonderiDetayFragment"
-        android:name="com.example.paylasimmvvm.view.home.GonderiDetayFragment"
+        android:name="com.example.paylasimmvvm.postDetail.GonderiDetayFragment"
         android:label="fragment_gonderi_detay"
         tools:layout="@layout/fragment_gonderi_detay" >
         <argument

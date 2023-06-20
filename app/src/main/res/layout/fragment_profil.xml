@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".view.profil.ProfilFragment"
+    tools:context=".profile.ProfilFragment"
   >
     <ProgressBar
         android:id="@+id/progresBarKokteyl"
@@ -135,12 +135,11 @@
         app:layout_constraintTop_toBottomOf="@+id/linear_id" />
 
 
-
     <GridView
         android:id="@+id/grid_id"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="2dp"
+        android:layout_marginTop="4dp"
         android:horizontalSpacing="2dp"
         android:numColumns="2"
         android:verticalSpacing="2dp"

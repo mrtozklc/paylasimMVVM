@@ -7,8 +7,6 @@ import com.google.firebase.database.*
 object Bildirimler {
 
     private var mref = FirebaseDatabase.getInstance().reference
-    private var mauth = FirebaseAuth.getInstance()
-    private var muser = mauth.currentUser!!.uid
 
     const val KAMPANYA_BEGENILDI = 1
     const val YORUM_YAPILDI = 2
@@ -23,7 +21,8 @@ object Bildirimler {
         gonderiID: String,
         postURL: String,
         yorum: String? = null,
-        yorumKey: String? = null
+        yorumKey: String? = null,
+        gonderiSahibi:String?=null
     ) {
 
         val bildirimlerRef = mref.child("bildirimler").child(bildirimYapanUserID)
@@ -39,7 +38,6 @@ object Bildirimler {
 
                     for (bildirimSnapshot in dataSnapshot.children) {
                         val id=bildirimSnapshot.children.toString()
-                        Log.e("bildirimidler",""+id)
                         eskiBildirimler.add(bildirimSnapshot)
                         if (eskiBildirimler.size >= silinecekBildirimSayisi) {
                             break
@@ -51,7 +49,7 @@ object Bildirimler {
                     }
                 }
 
-                kaydetYeniBildirim(bildirimlerRef, bildirimTuru, gonderiID, postURL, yorum, yorumKey)
+                kaydetYeniBildirim(bildirimYapanUserID, bildirimTuru, gonderiID, postURL, yorum, yorumKey, gonderiSahibi!!)
             }
 
             override fun onCancelled(databaseError: DatabaseError) {
@@ -61,19 +59,22 @@ object Bildirimler {
     }
 
     private fun kaydetYeniBildirim(
-        bildirimlerRef: DatabaseReference,
+        bildirimYapanUserID: String,
         bildirimTuru: Int,
         gonderiID: String,
         postURL: String,
         yorum: String?,
-        yorumKey: String?
+        yorumKey: String?,
+        gonderiSahibi:String
     ) {
+        val bildirimlerRef= mref.child("bildirimler").child(bildirimYapanUserID)
         val yeniBildirimID = bildirimlerRef.push().key.toString()
         val yeniBildirim = HashMap<String, Any>()
         yeniBildirim["bildirim_tur"] = bildirimTuru
-        yeniBildirim["user_id"] = FirebaseAuth.getInstance().currentUser!!.uid
-        yeniBildirim["gonderi_id"] = gonderiID
+        yeniBildirim["bildirim_yapan_id"] = bildirimYapanUserID
+        yeniBildirim["gonderi_sahibi_id"] =gonderiSahibi
         yeniBildirim["post_url"] = postURL
+        yeniBildirim["gonderi_id"] = gonderiID
         yeniBildirim["goruldu"] = false
         yeniBildirim["time"] = ServerValue.TIMESTAMP
         yeniBildirim["bildirim_id"] = yeniBildirimID

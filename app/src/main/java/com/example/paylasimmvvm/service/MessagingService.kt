@@ -16,9 +16,9 @@ import android.util.Log
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import com.example.paylasimmvvm.R
-import com.example.paylasimmvvm.view.home.MainActivity
-import com.example.paylasimmvvm.view.mesajlar.ChatFragment
-import com.example.paylasimmvvm.view.mesajlar.MesajlarFragment
+import com.example.paylasimmvvm.home.MainActivity
+import com.example.paylasimmvvm.massage.ChatFragment
+import com.example.paylasimmvvm.massage.MesajlarFragment
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -82,8 +82,10 @@ class MessagingService:FirebaseMessagingService() {
             val yorumKey=message.data["yorumKey"]
             val gonderiID=message.data["gonderiID"]
             val bildirimID=message.data["bildirimID"]
+            val gonderiSahibiID=message.data["gonderiSahibiID"]
 
-            yeniYorumBegeniBildirimi(kimYolladi, begenenUserID,yorum,yorumKey,begenilenUserID,gonderiID,bildirimID)
+
+            yeniYorumBegeniBildirimi(kimYolladi, begenenUserID,yorum,yorumKey,begenilenUserID,gonderiID,bildirimID,gonderiSahibiID)
 
 
         }
@@ -95,8 +97,9 @@ class MessagingService:FirebaseMessagingService() {
             val yorum=message.data["yorum"]
             val yorumKey=message.data["yorumKey"]
             val bildirimID=message.data["bildirimID"]
+            val gonderiSahibiID=message.data["gonderiSahibiID"]
 
-           yeniYorumIsletmeBildirimi(kimYolladi, yorumYapanUserID, yorum,yorumKey,yorumYapilanUserID,bildirimID)
+           yeniYorumIsletmeBildirimi(kimYolladi, yorumYapanUserID, yorum,yorumKey,yorumYapilanUserID,bildirimID,gonderiSahibiID)
 
 
         }
@@ -105,7 +108,7 @@ class MessagingService:FirebaseMessagingService() {
     }
 
     private fun yeniYorumIsletmeBildirimi( kimYolladi: String?,yorumYapanUserID: String?,yorum: String?, yorumKey: String?,
-        yorumYapilanUserID: String?,bildirimID:String?) {
+        yorumYapilanUserID: String?,bildirimID:String?,gonderiSahibiID: String?) {
         val pendingIntent = Intent(this, MainActivity::class.java)
 
         pendingIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
@@ -113,6 +116,8 @@ class MessagingService:FirebaseMessagingService() {
         pendingIntent.putExtra("isletmeYorumYapilanUserID", yorumYapilanUserID)
         pendingIntent.putExtra("isletmeYapilanYorum", yorum)
         pendingIntent.putExtra("bildirimID", bildirimID)
+        pendingIntent.putExtra("gonderiSahibiID", gonderiSahibiID)
+
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         val bildirimPendingIntent = PendingIntent.getActivity(
             this,
@@ -149,13 +154,14 @@ class MessagingService:FirebaseMessagingService() {
 
     }
     @SuppressLint("SuspiciousIndentation")
-    private fun yeniYorumBegeniBildirimi(kimYolladi: String?, begenenUserID: String?, yorum: String?, yorumKey: String?, begenilenUserID:String?, gonderiID: String?,bildirimID:String?) {
+    private fun yeniYorumBegeniBildirimi(kimYolladi: String?, begenenUserID: String?, yorum: String?, yorumKey: String?, begenilenUserID:String?, gonderiID: String?,bildirimID:String?,gonderiSahibiID:String?) {
         val pendingIntent = Intent(this, MainActivity::class.java)
 
         pendingIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         pendingIntent.putExtra("begenilenYorumKey", yorumKey)
         pendingIntent.putExtra("begenilenYorumGonderiID", gonderiID)
         pendingIntent.putExtra("begenilenUserID", begenilenUserID)
+        pendingIntent.putExtra("gonderiSahibiID", gonderiSahibiID)
         pendingIntent.putExtra("begenilenYorum", yorum)
         pendingIntent.putExtra("bildirimID", bildirimID)
 
