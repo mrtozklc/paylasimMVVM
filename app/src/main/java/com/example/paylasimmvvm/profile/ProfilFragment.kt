@@ -252,7 +252,6 @@ class ProfilFragment : Fragment() {
         menuHost.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                 menuInflater.inflate(R.menu.menu2, menu)
-
                 val menuItem = menu.findItem(R.id.bildirimlerbar)
                 val actionView = menuItem.actionView
 
@@ -260,17 +259,16 @@ class ProfilFragment : Fragment() {
 
                 profilBadges.badgeLiveNotification.observe(viewLifecycleOwner) {gorulmeyenBildirim ->
                     gorulmeyenBildirim.let {
+
                         val count = gorulmeyenBildirim.size
                         if (count > 0) {
                                 if (notificationCount != null) {
                                     notificationCount.text = count.toString()
                                     notificationCount.visibility = View.VISIBLE
                                 }
-
                             } else {
-                                if (notificationCount != null) {
-                                    notificationCount.visibility = View.GONE
-                                }
+                                notificationCount?.visibility = View.GONE
+
                             }
 
 
@@ -518,7 +516,6 @@ class ProfilFragment : Fragment() {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if (snapshot.value !=null){
                         isUser=true
-                        binding.paylasimlar.visibility=View.VISIBLE
                         val okunanKullanici= snapshot.getValue(KullaniciBilgileri::class.java)
                         EventBus.getDefault().postSticky(EventbusData.kullaniciBilgileriniGonder(okunanKullanici))
 

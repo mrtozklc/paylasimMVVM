@@ -6,6 +6,18 @@
     android:layout_height="match_parent"
     tools:context=".cocktail.KokteyllerFiltreFragment">
 
+    <TextView
+        android:id="@+id/kokteyl_bar_id"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="KOKTEYL BAR"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/searchh"
+        app:layout_constraintEnd_toStartOf="@+id/searchh"
+        app:layout_constraintStart_toEndOf="@+id/imageView_back"
+        app:layout_constraintTop_toTopOf="@+id/searchh" />
+
 
 
 
@@ -33,8 +45,8 @@
 
     <ImageView
         android:id="@+id/searchh"
-        android:layout_width="35dp"
-        android:layout_height="35dp"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -63,6 +75,21 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/imageView_back"
         app:layout_constraintTop_toTopOf="@+id/imageView_back" />
+    <GridView
+        android:id="@+id/idGRVKokteyl"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="4dp"
+        android:horizontalSpacing="6dp"
+        android:numColumns="3"
+        android:verticalSpacing="2dp"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageView_back"
+        app:layout_constraintVertical_bias="0.0" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerKokteyl"

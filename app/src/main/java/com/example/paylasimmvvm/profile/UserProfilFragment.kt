@@ -2,6 +2,7 @@ package com.example.paylasimmvvm.profile
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -257,7 +258,7 @@ class UserProfilFragment : Fragment() {
                         binding.recyclerProfil.visibility=View.VISIBLE
 
                         val okunanKullanici= snapshot.getValue(KullaniciBilgileri::class.java)
-
+                        tiklananUser=okunanKullanici!!.user_id!!
 
                         binding.kullaniciadiId.text = okunanKullanici!!.user_name
 
@@ -285,8 +286,7 @@ class UserProfilFragment : Fragment() {
 
 
                         val okunanKullanici= snapshot.getValue(KullaniciBilgileri::class.java)
-
-                        binding.paylasimlar.visibility=View.VISIBLE
+                        tiklananUser=okunanKullanici!!.user_id!!
                         binding.kullaniciadiId.text = okunanKullanici!!.user_name
 
 

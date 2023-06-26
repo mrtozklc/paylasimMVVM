@@ -9,12 +9,9 @@
         android:icon="@drawable/ic_baseline_circle_notifications"
         app:showAsAction="ifRoom" />
 
-
-
-
     <item
         android:id="@+id/kampanyaOlustur_id"
-        android:title="Kampanya Oluştur" />
+        android:title="Gönderi Oluştur" />
 
     <item
         android:id="@+id/profilDuzenle_id"

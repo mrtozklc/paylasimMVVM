@@ -73,7 +73,7 @@ class kampanyalarViewModel: ViewModel() {
             }
         }
     }
-    private fun verileriGetir() {
+ /*   private fun verileriGetir() {
         yukleniyor.value = true
         mref = FirebaseDatabase.getInstance().reference
 
@@ -246,128 +246,84 @@ class kampanyalarViewModel: ViewModel() {
                 }
             }
         })
-    }
+    }*/
 
-  /*  private fun verileriGetir() {
+    private fun verileriGetir() {
+        tumGonderiler.clear()
         yukleniyor.value = true
         mref = FirebaseDatabase.getInstance().reference
 
         for (i in 0 until tumKullaniciIDleri.size) {
             val kullaniciID = tumKullaniciIDleri[i]
 
-            mref.child("users").child("isletmeler").child(kullaniciID).addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(isletmeSnapshot: DataSnapshot) {
-                    if (isletmeSnapshot.value !=null){
-                        val isletmeBilgileri = isletmeSnapshot.getValue(KullaniciBilgileri::class.java)
-                        isletmeBilgileri?.let {
-                            val userIDD = it.user_id
-                            val kullaniciadi = it.user_name
-                            val photoURL = it.user_detail?.profile_picture
-                            val isletmeLati = it.user_detail?.latitude
-                            val isletmeLongi = it.user_detail?.longitude
-                            val isletmeTuru = it.user_detail?.isletme_turu
-                            val muzikTuru = it.user_detail?.muzik_turu
+            mref.child("kampanya").child(kullaniciID).addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(kampanyaSnapshot: DataSnapshot) {
+                    if (kampanyaSnapshot.exists()) {
+                        for (ds in kampanyaSnapshot.children) {
+                            val kampanyaOlustur = ds.getValue(KampanyaOlustur::class.java)
+                            kampanyaOlustur?.let {
+                                val kullaniciTipi = it.user
+                                val postIDD=it.post_id
+                                val fileURL=it.file_url
+                                val aciklamaDS=it.aciklama
+                                val yuklenmeDS=it.yuklenme_tarih
+                                val geri_sayimDS=it.geri_sayim
 
-                            mref.child("kampanya").child(kullaniciID).addListenerForSingleValueEvent(object : ValueEventListener {
-                                override fun onDataChange(kampanyaSnapshot: DataSnapshot) {
-                                    for (ds in kampanyaSnapshot.children) {
-                                        val kampanyaOlustur = ds.getValue(KampanyaOlustur::class.java)
-                                        kampanyaOlustur?.let {
+                                val kullaniciBilgileriRef = if (kullaniciTipi == false) {
+                                    mref.child("users").child("isletmeler").child(kullaniciID)
+                                } else {
+                                    mref.child("users").child("kullanicilar").child(kullaniciID)
+                                }
+
+                                kullaniciBilgileriRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                                    override fun onDataChange(kullaniciSnapshot: DataSnapshot) {
+                                        val kullaniciBilgileri = kullaniciSnapshot.getValue(KullaniciBilgileri::class.java)
+                                        kullaniciBilgileri?.let {
+                                            val userIDD = it.user_id
+                                            val kullaniciadi = it.user_name
+                                            val photoURL = it.user_detail?.profile_picture
+                                            val isletmeLati = it.user_detail?.latitude
+                                            val isletmeLongi = it.user_detail?.longitude
+                                            val isletmeTuru = it.user_detail?.isletme_turu
+                                            val muzikTuru = it.user_detail?.muzik_turu
+
                                             val eklenecekUserPost = KullaniciKampanya().apply {
                                                 userID = userIDD
                                                 userName = kullaniciadi
                                                 userPhotoURL = photoURL
-                                                postID = it.post_id
-                                                postURL = it.file_url
-                                                postAciklama = it.aciklama
-                                                postYuklenmeTarih = it.yuklenme_tarih
-                                                geri_sayim = it.geri_sayim
+                                                postID =postIDD
+                                                postURL =fileURL
+                                                postAciklama =aciklamaDS
+                                                postYuklenmeTarih =yuklenmeDS
+                                                geri_sayim = geri_sayimDS
                                                 isletmeLatitude = isletmeLati
                                                 isletmeLongitude = isletmeLongi
                                                 isletme_turu = isletmeTuru
                                                 muzik_turu = muzikTuru
                                             }
                                             tumGonderiler.add(eklenecekUserPost)
-                                        }
-                                    }
 
-                                    if (i >= tumKullaniciIDleri.size - 1) {
-                                        if (tumKullaniciIDleri.size > 0) {
                                             kampanyalar.value = tumGonderiler
                                             kampanyaYok.value = false
                                             yukleniyor.value = false
+
+
+
                                         }
                                     }
-                                }
 
-                                override fun onCancelled(kampanyaError: DatabaseError) {
-                                }
-                            })
+                                    override fun onCancelled(kullaniciError: DatabaseError) {
+                                    }
+                                })
+                            }
                         }
-                    }else{
-                        mref.child("users").child("kullanicilar").child(kullaniciID).addListenerForSingleValueEvent(object : ValueEventListener {
-                            override fun onDataChange(kullaniciSnapshot: DataSnapshot) {
-                                val kullaniciBilgileri = kullaniciSnapshot.getValue(
-                                    KullaniciBilgileri::class.java)
-                                kullaniciBilgileri?.let {
-                                    val userIDD = it.user_id
-                                    val kullaniciadi = it.user_name
-                                    val photoURL = it.user_detail?.profile_picture
-                                    val isletmeLati = it.user_detail?.latitude
-                                    val isletmeLongi = it.user_detail?.longitude
-                                    val isletmeTuru = it.user_detail?.isletme_turu
-                                    val muzikTuru = it.user_detail?.muzik_turu
-
-                                    mref.child("kampanya").child(kullaniciID).addListenerForSingleValueEvent(object : ValueEventListener {
-                                        override fun onDataChange(kampanyaSnapshot: DataSnapshot) {
-                                            for (ds in kampanyaSnapshot.children) {
-                                                val kampanyaOlustur = ds.getValue(KampanyaOlustur::class.java)
-                                                kampanyaOlustur?.let {
-                                                    val eklenecekUserPost = KullaniciKampanya().apply {
-                                                        userID = userIDD
-                                                        userName = kullaniciadi
-                                                        userPhotoURL = photoURL
-                                                        postID = it.post_id
-                                                        postURL = it.file_url
-                                                        postAciklama = it.aciklama
-                                                        postYuklenmeTarih = it.yuklenme_tarih
-                                                        geri_sayim = it.geri_sayim
-                                                        isletmeLatitude = isletmeLati
-                                                        isletmeLongitude = isletmeLongi
-                                                        isletme_turu = isletmeTuru
-                                                        muzik_turu = muzikTuru
-                                                    }
-                                                    tumGonderiler.add(eklenecekUserPost)
-                                                }
-                                            }
-                                            if (i >= tumKullaniciIDleri.size - 1) {
-                                                if (tumKullaniciIDleri.size > 0) {
-                                                    kampanyalar.value = tumGonderiler
-                                                    kampanyaYok.value = false
-                                                    yukleniyor.value = false
-                                                }
-                                            }
-                                        }
-                                        override fun onCancelled(kampanyaError: DatabaseError) {
-                                        }
-                                    })
-                                }
-                            }
-                            override fun onCancelled(kullaniciError: DatabaseError) {
-                            }
-                        })
-
                     }
-
                 }
-
-                override fun onCancelled(isletmeError: DatabaseError) {
+                override fun onCancelled(kampanyaError: DatabaseError) {
                 }
             })
-
         }
-
-    }*/
+    }
 
     fun getIsletmeList(){
 

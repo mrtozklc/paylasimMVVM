@@ -153,7 +153,7 @@
             android:gravity="center"
             android:padding="8dp"
             android:text="Şifre Değiştir"
-            android:textSize="18sp"
+            android:textSize="16sp"
             android:textStyle="bold"
          />
         <TextView
@@ -165,7 +165,7 @@
             android:gravity="center"
             android:background="@drawable/textview_bg2"
             android:textStyle="bold"
-            android:textSize="18sp"
+            android:textSize="16sp"
             android:padding="8dp"
          />
 
@@ -178,7 +178,7 @@
             android:layout_weight="1"
             android:gravity="center"
             android:padding="8dp"
-            android:textSize="18sp"
+            android:textSize="16sp"
             android:textStyle="bold"
 
         />

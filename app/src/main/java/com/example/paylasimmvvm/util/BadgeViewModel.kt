@@ -1,6 +1,7 @@
 package com.example.paylasimmvvm.util
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.paylasimmvvm.notifications.BildirimModel
@@ -72,6 +73,7 @@ class BadgeViewModel:ViewModel() {
                         }
                     }
                     badgeLiveNotification.value = badgeArrayNotification
+                    Log.e("viewmodel",""+badgeLiveNotification.value)
                 }
             }
             override fun onCancelled(error: DatabaseError) {}

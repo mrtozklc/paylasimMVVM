@@ -8,10 +8,8 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import com.example.paylasimmvvm.R
 import com.example.paylasimmvvm.databinding.FragmentRegisterBinding
@@ -23,16 +21,9 @@ import org.greenrobot.eventbus.EventBus
 
 class RegisterFragment : Fragment() {
     private lateinit var binding: FragmentRegisterBinding
-
+    private var mailWatcher: TextWatcher? = null
     lateinit var mref: DatabaseReference
     lateinit var auth: FirebaseAuth
-    private lateinit var mauthLis: FirebaseAuth.AuthStateListener
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
-
-
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -46,68 +37,49 @@ class RegisterFragment : Fragment() {
         mref = FirebaseDatabase.getInstance().reference
         auth= FirebaseAuth.getInstance()
 
-        setupAuthLis(view)
         register()
         return view
     }
 
-    private fun checkMail(kontrolEdilenMail: String): Boolean {
-
-        return android.util.Patterns.EMAIL_ADDRESS.matcher(kontrolEdilenMail).matches()
-
-    }
-    private fun setupAuthLis(view:View) {
-
-        mauthLis= FirebaseAuth.AuthStateListener {
-            val user=FirebaseAuth.getInstance().currentUser
-
-            if (user!=null){
-                val action= RegisterFragmentDirections.actionRegisterFragmentToHomeFragment()
-                Navigation.findNavController(view).navigate(action)
-
-            }
-        }
-
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        mailWatcher = object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                binding.etRegisterMailLayout.error = null
+
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+
+            }
+
+        }
 
         binding.imageViewBack.setOnClickListener {
             findNavController().navigateUp()
         }
     }
-    override fun onStart() {
-        super.onStart()
-        Log.e("hata","registedasın")
-        auth.addAuthStateListener(mauthLis)
-        (activity as AppCompatActivity).supportActionBar?.hide()
-
-    }
-
-    override fun onStop() {
-        super.onStop()
-        auth.removeAuthStateListener(mauthLis)
-    }
 
 
     private fun register() {
-        binding.editTextTextPersonName.visibility=View.GONE
+        binding.etRegisterMailLayout.visibility=View.GONE
         binding.btnKayit.visibility=View.GONE
-
-
-
 
         binding.textViewKullanici.setOnClickListener {
             binding.textViewKullanici.isEnabled=false
             binding.textViewIsletme.isEnabled=true
             binding.btnKayit.visibility=View.VISIBLE
-            binding.editTextTextPersonName.visibility=View.VISIBLE
-            binding. editTextTextPersonName.setText("")
-            binding.editTextTextPersonName.inputType = InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
-            binding. editTextTextPersonName.hint = "E-POSTA"
-            binding. btnKayit.isEnabled = false
+            binding.etRegisterMailLayout.visibility=View.VISIBLE
+            binding. registerMail.setText("")
+            binding.textViewKullanici.background=null
+            binding.textViewIsletme.setBackgroundResource(R.drawable.textview_bg2)
 
+            binding.registerMail.inputType = InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
 
         }
 
@@ -115,72 +87,39 @@ class RegisterFragment : Fragment() {
             binding.textViewKullanici.isEnabled=true
             binding.textViewIsletme.isEnabled=false
             binding.btnKayit.visibility=View.VISIBLE
-            binding.editTextTextPersonName.visibility=View.VISIBLE
-            binding. editTextTextPersonName.setText("")
-            binding.editTextTextPersonName.inputType = InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
-            binding.editTextTextPersonName.hint = "E-Posta"
-            binding. btnKayit.isEnabled = false
-
+            binding.textViewKullanici.setBackgroundResource(R.drawable.textview_bg2)
+            binding.textViewIsletme.background=null
+            binding.etRegisterMailLayout.visibility=View.VISIBLE
+            binding. registerMail.setText("")
+            binding.registerMail.inputType = InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
 
         }
-
-        binding.editTextTextPersonName.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-
-            }
-
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                binding. btnKayit.isEnabled = p0!!.length >= 10
-
-
-            }
-
-            override fun afterTextChanged(p0: Editable?) {
-
-            }
-
-        })
 
         binding.btnKayit.setOnClickListener {
 
-            if(binding.editTextTextPersonName.hint.toString() == "E-POSTA"){
+            if(!binding.textViewKullanici.isEnabled){
 
-
-                if (checkMail( binding.editTextTextPersonName.text.toString())) {
+                if (checkMail( binding.registerMail.text.toString())) {
 
                     var emailKullanimdaMi = false
-
 
                     mref.child("users").child("isletmeler")
                         .addListenerForSingleValueEvent(object : ValueEventListener {
                             override fun onCancelled(error: DatabaseError) {
 
                             }
-
                             override fun onDataChange(snapshot: DataSnapshot) {
 
                                 if (snapshot.value != null) {
 
                                     for (user in snapshot.children) {
 
-
                                         val okunanKullanici = user.getValue(KullaniciBilgileri::class.java)
-                                        if (okunanKullanici!!.email!! == binding.editTextTextPersonName.text.toString()) {
-
-
-                                            Log.e("kullaniciların", "işletmebölümü$okunanKullanici")
-
-
-
-                                            Toast.makeText(  activity!!, "E-mail Kullanımda", Toast.LENGTH_SHORT).show()
-
-
+                                        if (okunanKullanici!!.email!! == binding.registerMail.text.toString()) {
+                                            binding.etRegisterMailLayout.error="E-posta Kullanımda"
                                             emailKullanimdaMi = true
                                             break
                                         }
-
-
-
 
                                     }
                                     //işletme değil kullanicilara bak
@@ -193,18 +132,10 @@ class RegisterFragment : Fragment() {
                                                     val okunanKullanici = user.getValue(
                                                         KullaniciBilgileri::class.java)
 
-                                                    if (okunanKullanici!!.email!! == binding.editTextTextPersonName.text.toString()) {
-
-                                                        Log.e("kullaniciların",
-                                                            "kullanicibölümü$okunanKullanici"
-                                                        )
-
-
-                                                        Toast.makeText(  activity!!, "E-mail Kullanımda", Toast.LENGTH_SHORT).show()
-
+                                                    if (okunanKullanici!!.email!! == binding.registerMail.text.toString()) {
+                                                        binding.etRegisterMailLayout.error="E-posta Kullanımda"
                                                         emailKullanimdaMi = true
                                                         break
-
                                                     }
 
                                                 } // işletme var kullanici var kullanici bulunamadı,kaydet
@@ -212,23 +143,17 @@ class RegisterFragment : Fragment() {
                                                     binding. loginroot.visibility = View.GONE
 
                                                     findNavController().navigate(R.id.kullaniciKayitBilgileriFragment)
-
-
                                                     EventBus.getDefault().postSticky(
                                                         EventbusData.kayitBilgileriniGonder(
                                                             null,
-                                                            binding.editTextTextPersonName.text.toString(),
+                                                            binding.registerMail.text.toString(),
                                                             null,
                                                             true,
-
                                                         )
                                                     )
                                                 }
                                             }
                                             if(!emailKullanimdaMi){
-
-                                                Log.e("veritabanında işletme var,kullanici yok ancak kayıtlı değil,kaydet","çalıstı")
-
 
                                                 binding.loginroot.visibility = View.GONE
 
@@ -237,22 +162,18 @@ class RegisterFragment : Fragment() {
                                                 EventBus.getDefault().postSticky(
                                                     EventbusData.kayitBilgileriniGonder(
                                                         null,
-                                                        binding.editTextTextPersonName.text.toString(),
+                                                        binding.registerMail.text.toString(),
                                                         null,
                                                         true,
-
                                                     )
                                                 )
-
                                             }
-
                                         }
 
                                         override fun onCancelled(error: DatabaseError) {
                                         }
 
                                     })
-
                                 }
 
                                 //veritabanında hiç işletme  yok, kullanicilara bak
@@ -265,28 +186,18 @@ class RegisterFragment : Fragment() {
                                             if (snapshot.value !=null){
                                                 for (user in snapshot.children){
 
-
                                                     val okunanKullanici = user.getValue(
                                                         KullaniciBilgileri::class.java)
-                                                    if (okunanKullanici!!.email!! == binding.editTextTextPersonName.text.toString()) {
-
-                                                        Log.e("işletme yok",
-                                                            "kullanici var,bulunan kullanici$okunanKullanici"
-                                                        )
-                                                        Toast.makeText(activity!!, "E-mail Kullanımda", Toast.LENGTH_SHORT).show()
-
+                                                    if (okunanKullanici!!.email!! == binding.registerMail.text.toString()) {
+                                                        binding.etRegisterMailLayout.error="E-posta Kullanımda"
                                                         emailKullanimdaMi = true
                                                         break
                                                     }
-
-
 
                                                 }
                                                 //veritabanında işletme yok,kullanici var ancak kayıtlı değil,kaydet
                                                 if(!emailKullanimdaMi)
                                                 {
-                                                    Log.e("veritabanında işletme yok,kullanici var ancak kayıtlı değil,kaydet","çalıstı")
-
 
                                                     binding.loginroot.visibility = View.GONE
 
@@ -295,7 +206,7 @@ class RegisterFragment : Fragment() {
                                                     EventBus.getDefault().postSticky(
                                                         EventbusData.kayitBilgileriniGonder(
                                                             null,
-                                                            binding. editTextTextPersonName.text.toString(),
+                                                            binding. registerMail.text.toString(),
                                                             null,
                                                             true,
 
@@ -306,11 +217,6 @@ class RegisterFragment : Fragment() {
                                             if  (!emailKullanimdaMi)
                                             //veritabanında  işletme ve kullanici yok direkt kaydet
                                             {
-                                                Log.e("elsekkaydet","direktkaydetcalıstı")
-
-                                                Log.e("veritabanında kullanicida yok direkt kaydet","çalıstı")
-
-
 
                                                 binding. loginroot.visibility = View.GONE
 
@@ -319,7 +225,7 @@ class RegisterFragment : Fragment() {
                                                 EventBus.getDefault().postSticky(
                                                     EventbusData.kayitBilgileriniGonder(
                                                         null,
-                                                        binding.editTextTextPersonName.text.toString(),
+                                                        binding.registerMail.text.toString(),
                                                         null,
                                                         true,
 
@@ -336,25 +242,20 @@ class RegisterFragment : Fragment() {
                             }
                         })
                 }else {
-                    Toast.makeText(
-                        requireActivity(),
-                        "Lütfen geçerli bir E-mail  giriniz",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    binding.etRegisterMailLayout.error="Geçersiz E-posta"
+
                 }
             }
             else{
-                if (checkMail( binding.editTextTextPersonName.text.toString())) {
+                if (checkMail( binding.registerMail.text.toString())) {
 
                     var emailKullanimdaMi = false
-
 
                     mref.child("users").child("isletmeler")
                         .addListenerForSingleValueEvent(object : ValueEventListener {
                             override fun onCancelled(error: DatabaseError) {
 
                             }
-
                             override fun onDataChange(snapshot: DataSnapshot) {
 
                                 if (snapshot.value != null) {
@@ -363,22 +264,12 @@ class RegisterFragment : Fragment() {
 
 
                                         val okunanKullanici = user.getValue(KullaniciBilgileri::class.java)
-                                        if (okunanKullanici!!.email!! == binding.editTextTextPersonName.text.toString()) {
+                                        if (okunanKullanici!!.email!! == binding.registerMail.text.toString()) {
 
-
-                                            Log.e("kullaniciların", "işletmebölümü$okunanKullanici")
-
-
-
-                                            Toast.makeText(  activity!!, "E-mail Kullanımda", Toast.LENGTH_SHORT).show()
-
-
+                                            binding.etRegisterMailLayout.error="E-posta Kullanımda"
                                             emailKullanimdaMi = true
                                             break
                                         }
-
-
-
 
                                     }
                                     //işletme değil kullanicilara bak
@@ -391,15 +282,9 @@ class RegisterFragment : Fragment() {
                                                     val okunanKullanici = user.getValue(
                                                         KullaniciBilgileri::class.java)
 
-                                                    if (okunanKullanici!!.email!! == binding.editTextTextPersonName.text.toString()) {
+                                                    if (okunanKullanici!!.email!! == binding.registerMail.text.toString()) {
 
-                                                        Log.e("kullaniciların",
-                                                            "kullanicibölümü$okunanKullanici"
-                                                        )
-
-
-                                                        Toast.makeText(  activity!!, "E-mail Kullanımda", Toast.LENGTH_SHORT).show()
-
+                                                        binding.etRegisterMailLayout.error="E-posta Kullanımda"
                                                         emailKullanimdaMi = true
                                                         break
 
@@ -415,7 +300,7 @@ class RegisterFragment : Fragment() {
                                                     EventBus.getDefault().postSticky(
                                                         EventbusData.kayitBilgileriniGonder(
                                                             null,
-                                                            binding.editTextTextPersonName.text.toString(),
+                                                            binding.registerMail.text.toString(),
                                                             null,
                                                             true,
 
@@ -425,9 +310,6 @@ class RegisterFragment : Fragment() {
                                             }
                                             if(!emailKullanimdaMi){
 
-                                                Log.e("veritabanında işletme var,kullanici yok ancak kayıtlı değil,kaydet","çalıstı")
-
-
                                                 binding.loginroot.visibility = View.GONE
 
                                                 findNavController().navigate(R.id.isletmeKayitBilgileriFragment)
@@ -435,7 +317,7 @@ class RegisterFragment : Fragment() {
                                                 EventBus.getDefault().postSticky(
                                                     EventbusData.kayitBilgileriniGonder(
                                                         null,
-                                                        binding.editTextTextPersonName.text.toString(),
+                                                        binding.registerMail.text.toString(),
                                                         null,
                                                         true,
 
@@ -443,12 +325,9 @@ class RegisterFragment : Fragment() {
                                                 )
 
                                             }
-
                                         }
-
                                         override fun onCancelled(error: DatabaseError) {
                                         }
-
                                     })
 
                                 }
@@ -466,12 +345,10 @@ class RegisterFragment : Fragment() {
 
                                                     val okunanKullanici = user.getValue(
                                                         KullaniciBilgileri::class.java)
-                                                    if (okunanKullanici!!.email!! == binding.editTextTextPersonName.text.toString()) {
+                                                    if (okunanKullanici!!.email!! == binding.registerMail.text.toString()) {
 
-                                                        Log.e("işletme yok",
-                                                            "kullanici var,bulunan kullanici$okunanKullanici"
-                                                        )
-                                                        Toast.makeText(activity!!, "E-mail Kullanımda", Toast.LENGTH_SHORT).show()
+
+                                                        binding.etRegisterMailLayout.error="E-posta Kullanımda"
 
                                                         emailKullanimdaMi = true
                                                         break
@@ -483,8 +360,6 @@ class RegisterFragment : Fragment() {
                                                 //veritabanında işletme yok,kullanici var ancak kayıtlı değil,kaydet
                                                 if(!emailKullanimdaMi)
                                                 {
-                                                    Log.e("veritabanında işletme yok,kullanici var ancak kayıtlı değil,kaydet","çalıstı")
-
 
                                                     binding.loginroot.visibility = View.GONE
 
@@ -493,7 +368,7 @@ class RegisterFragment : Fragment() {
                                                     EventBus.getDefault().postSticky(
                                                         EventbusData.kayitBilgileriniGonder(
                                                             null,
-                                                            binding. editTextTextPersonName.text.toString(),
+                                                            binding. registerMail.text.toString(),
                                                             null,
                                                             true,
 
@@ -504,11 +379,6 @@ class RegisterFragment : Fragment() {
                                             if  (!emailKullanimdaMi)
                                             //veritabanında  işletme ve kullanici yok direkt kaydet
                                             {
-                                                Log.e("elsekkaydet","direktkaydetcalıstı")
-
-                                                Log.e("veritabanında kullanicida yok direkt kaydet","çalıstı")
-
-
 
                                                 binding. loginroot.visibility = View.GONE
 
@@ -517,7 +387,7 @@ class RegisterFragment : Fragment() {
                                                 EventBus.getDefault().postSticky(
                                                     EventbusData.kayitBilgileriniGonder(
                                                         null,
-                                                        binding.editTextTextPersonName.text.toString(),
+                                                        binding.registerMail.text.toString(),
                                                         null,
                                                         true,
 
@@ -534,17 +404,33 @@ class RegisterFragment : Fragment() {
                             }
                         })
                 }else {
-                    Toast.makeText(
-                        requireActivity(),
-                        "Lütfen geçerli bir E-mail  giriniz",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    binding.etRegisterMailLayout.error="Geçersiz E-posta"
+
                 }
 
             }
 
         }
 
+    }
+    private fun checkMail(kontrolEdilenMail: String): Boolean {
+
+        return android.util.Patterns.EMAIL_ADDRESS.matcher(kontrolEdilenMail).matches()
+
+    }
+
+
+    override fun onStart() {
+        super.onStart()
+        binding.registerMail.addTextChangedListener(mailWatcher)
+        Log.e("hata","registedasın")
+        (activity as AppCompatActivity).supportActionBar?.hide()
+
+    }
+
+    override fun onStop() {
+        super.onStop()
+        binding.registerMail.removeTextChangedListener(mailWatcher)
     }
 
 }

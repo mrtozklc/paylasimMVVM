@@ -55,5 +55,9 @@ data class Drink(
      val kokteylicerik10:String?,
 
      @SerializedName("strGlass")
-      val kokteyGlass:String?
+      val kokteyGlass:String?,
+
+     @SerializedName("strCategoryImage")
+    val kokteylKategoriImage:String?,
+
 )

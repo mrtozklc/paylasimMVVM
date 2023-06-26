@@ -3,9 +3,11 @@ package com.example.paylasimmvvm.login
 import android.content.Context
 import android.location.Address
 import android.location.Geocoder
+import android.location.Geocoder.GeocodeListener
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,6 +22,7 @@ import com.example.paylasimmvvm.R
 import com.example.paylasimmvvm.databinding.FragmentIsletmeKayitBilgileriBinding
 import com.example.paylasimmvvm.util.EventbusData
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.tabs.TabLayout.TabLayoutOnPageChangeListener
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.*
@@ -32,33 +35,23 @@ import java.util.*
 class IsletmeKayitBilgileriFragment : Fragment() {
     private lateinit var binding:FragmentIsletmeKayitBilgileriBinding
     var gelenEmail = ""
-
     lateinit var auth: FirebaseAuth
     lateinit var mref: DatabaseReference
     var emailleKayit = true
     var secilenMuzik:String?=null
     var secilenIsletmeTuru:String?=null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
-
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        // Inflate the layout for this fragment
-
         binding= FragmentIsletmeKayitBilgileriBinding.inflate(layoutInflater,container,false)
         val view= binding.root
-
-
-
         auth = Firebase.auth
         mref = FirebaseDatabase.getInstance().reference
 
-        val muzikTuru = java.util.ArrayList<String>()
+        val muzikTuru = ArrayList<String>()
         muzikTuru.add("Pop")
         muzikTuru.add("Rock & Blues")
         muzikTuru.add("Rap")
@@ -70,7 +63,7 @@ class IsletmeKayitBilgileriFragment : Fragment() {
 
 
 
-        val isletmeTuru = java.util.ArrayList<String>()
+        val isletmeTuru = ArrayList<String>()
         isletmeTuru.add("Cafe-Bar")
         isletmeTuru.add("Kokteyl Bar")
         isletmeTuru.add("Pub")
@@ -155,7 +148,7 @@ class IsletmeKayitBilgileriFragment : Fragment() {
                                                     val okunanKullanici= user.getValue(
                                                         KullaniciBilgileri::class.java)
                                                     if (okunanKullanici != null) {
-                                                        if (okunanKullanici.user_name!!.equals( binding.etKullaniciAdiISletme.text.toString())) {
+                                                        if (okunanKullanici.user_name!! == binding.etKullaniciAdiISletme.text.toString()) {
                                                             Toast.makeText(activity, "Kullanıcı adı Kullanımda", Toast.LENGTH_SHORT).show()
                                                             userNameKullanimdaMi = true
                                                             break
@@ -193,12 +186,19 @@ class IsletmeKayitBilgileriFragment : Fragment() {
                                                         .child(userID)
                                                         .setValue(kaydedilecekKullanici)
                                                         .addOnCompleteListener { p0 ->
-                                                            if (p0.isSuccessful) { Toast.makeText(activity, "Hoşgeldiniz \n$userName", Toast.LENGTH_SHORT).show()
-                                                                val action =
-                                                                    IsletmeKayitBilgileriFragmentDirections.actionIsletmeKayitBilgileriFragmentToHomeFragment()
-                                                                Navigation.findNavController(it).navigate(action)
-                                                                val bottomNav = requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView)
-                                                                bottomNav.visibility = View.VISIBLE
+                                                            if (p0.isSuccessful) {
+                                                                val user = auth.currentUser
+                                                                user?.sendEmailVerification()
+                                                                    ?.addOnCompleteListener { verificationTask ->
+                                                                        if (verificationTask.isSuccessful) {
+                                                                            Toast.makeText(activity,"Lütfen Mailinizi Kontrol Edin",Toast.LENGTH_LONG).show()
+                                                                         val action=IsletmeKayitBilgileriFragmentDirections.actionIsletmeKayitBilgileriFragmentToLoginFragment()
+                                                                            Navigation.findNavController(it).navigate(action)
+                                                                        } else {
+                                                                            Log.e("doğrulama epostası hatası",""+verificationTask.exception)
+
+                                                                        }
+                                                                    }
 
                                                             } else {
                                                                 auth.currentUser!!.delete().addOnCompleteListener { p0 ->
@@ -239,12 +239,18 @@ class IsletmeKayitBilgileriFragment : Fragment() {
                                                     .child(userID).setValue(kaydedilecekKullanici)
                                                     .addOnCompleteListener { p0->
                                                         if (p0.isSuccessful) {
-                                                            Toast.makeText(activity, "Hoşgeldiniz \n$userName", Toast.LENGTH_SHORT).show()
-                                                            val action =
-                                                                IsletmeKayitBilgileriFragmentDirections.actionIsletmeKayitBilgileriFragmentToHomeFragment()
-                                                            Navigation.findNavController(it).navigate(action)
-                                                            val bottomNav = requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView)
-                                                            bottomNav.visibility = View.VISIBLE
+                                                            val user = auth.currentUser
+                                                            user?.sendEmailVerification()
+                                                                ?.addOnCompleteListener { verificationTask ->
+                                                                    if (verificationTask.isSuccessful) {
+                                                                        Toast.makeText(activity,"Lütfen Mailinizi Kontrol Edin",Toast.LENGTH_LONG).show()
+                                                                        val action=IsletmeKayitBilgileriFragmentDirections.actionIsletmeKayitBilgileriFragmentToLoginFragment()
+                                                                        Navigation.findNavController(it).navigate(action)
+                                                                    } else {
+                                                                        Log.e("doğrulama epostası hatası",""+verificationTask.exception)
+
+                                                                    }
+                                                                }
                                                         } else {
                                                             auth.currentUser!!.delete().addOnCompleteListener { p0 ->
                                                                     if (p0.isSuccessful) {
@@ -279,12 +285,9 @@ class IsletmeKayitBilgileriFragment : Fragment() {
 
         override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
 
-            if ( binding.etAdSoyadISletme.text.toString().isNotEmpty() && binding.etKullaniciAdiISletme.text.toString()
-                    .isNotEmpty() && binding.etSifreIsletme.text.toString().isNotEmpty() && binding.etAdresIsletme.text.toString()
-                    .isNotEmpty() && binding.etTelefonIsletme.text.toString().isNotEmpty()) {
-                binding. btnGirisISletme.isEnabled = true
-
-            }
+            binding. btnGirisISletme.isEnabled = binding.etAdSoyadISletme.text.toString().isNotEmpty() && binding.etKullaniciAdiISletme.text.toString()
+                .isNotEmpty() && binding.etSifreIsletme.text.toString().isNotEmpty() && binding.etAdresIsletme.text.toString()
+                .isNotEmpty() && binding.etTelefonIsletme.text.toString().isNotEmpty()
         }
 
         override fun afterTextChanged(p0: Editable?) {
@@ -316,9 +319,6 @@ class IsletmeKayitBilgileriFragment : Fragment() {
                     val addressList: List<*>? = geocoder?.getFromLocationName(locationAddress, 1)
                     if (addressList != null && addressList.isNotEmpty()) {
                         val address = addressList[0] as Address
-
-
-
                         val latitude=address.latitude
                         val longitude=address.longitude
 

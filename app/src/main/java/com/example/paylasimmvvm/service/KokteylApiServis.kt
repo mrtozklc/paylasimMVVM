@@ -30,13 +30,6 @@ class KokteylApiServis {
     fun getKokteylName(name:String)=api.getName(name)
 
 
-
-
-
-
-
-
-
    // fun getDataList(List:String)=api.getDataList(List)
 
 

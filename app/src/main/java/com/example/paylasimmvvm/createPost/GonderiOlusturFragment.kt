@@ -169,8 +169,8 @@ class GonderiOlusturFragment : Fragment() {
 
 
         db.child("kampanya").child(auth.uid!!).child(postID!!).setValue(yuklenenPost)
-        db.child("kampanya").child(auth.uid!!).child(postID).child("yuklenme_tarih").setValue(
-            ServerValue.TIMESTAMP)
+        db.child("kampanya").child(auth.uid!!).child(postID).child("yuklenme_tarih").setValue(ServerValue.TIMESTAMP)
+        db.child("kampanya").child(auth.uid!!).child(postID).child("user").setValue(isUser)
         Toast.makeText(requireActivity(),"Gönderi Oluşturuldu", Toast.LENGTH_LONG).show()
 
 

@@ -89,7 +89,8 @@ class ProfilViewModel:ViewModel() {
                         })
                     }else{
 
-                        mref.child("users").child("kullanicilar").child(FirebaseAuth.getInstance().currentUser!!.uid).addListenerForSingleValueEvent(object :
+
+                        mref.child("users").child("kullanicilar").child(secilenUser).addListenerForSingleValueEvent(object :
                             ValueEventListener {
                             override fun onDataChange(snapshot: DataSnapshot) {
 
@@ -176,8 +177,6 @@ class ProfilViewModel:ViewModel() {
                 menuArray.clear()
                 menuSayisiArray.clear()
                 menuSayisiArray.add(snapshot.childrenCount.toInt())
-
-
 
                 if (snapshot.value !=null){
 
